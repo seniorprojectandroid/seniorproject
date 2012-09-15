@@ -35,13 +35,16 @@ import android.os.Bundle;
 
 public class RestClient {
 	
+	public static final String GET = "GET";
+	public static final String POST = "POST";
+	
 	private static final String CHAR_SET = "UTF-8";
 	
 	protected String appId = null;
 	
 	public RestClient(String appID)
 	{
-		this.appId = appId;
+		this.appId = appID;
 	}
 	
 	protected String openUrl(String url, String method, Bundle params)
