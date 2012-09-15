@@ -13,6 +13,8 @@ import com.facebook.android.*;
 import com.facebook.android.AsyncFacebookRunner.RequestListener;
 import com.facebook.android.Facebook.*;
 
+import edu.fiu.cs.seniorproject.utils.Logger;
+
 public class FacebookLoginActivity extends Activity {
 
     private Facebook facebook = null;
@@ -28,16 +30,24 @@ public class FacebookLoginActivity extends Activity {
         
         facebook.authorize(this, new DialogListener() {
             @Override
-            public void onComplete(Bundle values) {}
+            public void onComplete(Bundle values) {
+            	Logger.Info("authorize completed!!!");
+            }
 
             @Override
-            public void onFacebookError(FacebookError error) {}
+            public void onFacebookError(FacebookError error) {
+            	Logger.Error("Error authorizing facebook!!!");
+            }
 
             @Override
-            public void onError(DialogError e) {}
+            public void onError(DialogError e) {
+            	Logger.Error("Error showing dialog!!!");
+            }
 
             @Override
-            public void onCancel() {}
+            public void onCancel() {
+            	Logger.Warning("User canceled to authorization!!!");
+            }
         });
     }
 
@@ -52,18 +62,23 @@ public class FacebookLoginActivity extends Activity {
     	  mAsyncRunner.logout(view.getContext(), new RequestListener() {
 			
 			public void onMalformedURLException(MalformedURLException e, Object state) {
+				Logger.Error("onMalformedURLException");
 			}
 			
 			public void onIOException(IOException e, Object state) {
+				Logger.Error("onIOException");
 			}
 			
 			public void onFileNotFoundException(FileNotFoundException e, Object state) {
+				Logger.Error("onFileNotFoundException");
 			}
 			
 			public void onFacebookError(FacebookError e, Object state) {
+				Logger.Error("onFacebookError");
 			}
 			
 			public void onComplete(String response, Object state) {
+				Logger.Info("logout completed");
 			}
 		});
     	
