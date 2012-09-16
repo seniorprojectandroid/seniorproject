@@ -2,7 +2,6 @@ package edu.fiu.cs.seniorproject.client;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 
 import edu.fiu.cs.seniorproject.utils.Logger;
 
