@@ -4,6 +4,7 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
+import com.google.android.maps.MyLocationOverlay;
 
 import edu.fiu.cs.seniorproject.utils.Logger;
 
@@ -21,6 +22,7 @@ public class GeoLocationActivity extends MapActivity {
 
 	private LocationManager mLocationManager = null;
 	private GeoLocationListener mListener = null;
+	private CustomLocationOverlay mMyLocationOverlay = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,8 +32,11 @@ public class GeoLocationActivity extends MapActivity {
         MapView mapView = (MapView) findViewById(R.id.geolocation_mapview);
         mapView.setBuiltInZoomControls(true);
         
-        this.mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        this.mListener = new GeoLocationListener();
+        //this.mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        //this.mListener = new GeoLocationListener();
+        mMyLocationOverlay = new CustomLocationOverlay(this, mapView);
+        mapView.getOverlays().add(mMyLocationOverlay);
+        mapView.postInvalidate();
     }
 
     @Override
@@ -43,6 +48,20 @@ public class GeoLocationActivity extends MapActivity {
     @Override
     protected boolean isRouteDisplayed() {
         return false;
+    }
+    
+    @Override
+    public void onResume() {
+    	super.onResume();
+    	mMyLocationOverlay.enableMyLocation();
+    	Logger.Info("My Location listener set!!!");
+    }
+    
+    @Override
+    public void onPause() {
+    	super.onPause();
+    	mMyLocationOverlay.disableMyLocation();
+    	Logger.Info("My Location listener removed!!!");
     }
     
     @Override
@@ -78,8 +97,11 @@ public class GeoLocationActivity extends MapActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        Logger.Info("Remove listener!!!");
-        mLocationManager.removeUpdates(mListener);
+        
+        if ( this.mLocationManager != null ) {    
+	        Logger.Info("Remove listener!!!");
+	        mLocationManager.removeUpdates(mListener);
+        }
     }
     
 //    private void enableLocationSettings() {
@@ -87,19 +109,51 @@ public class GeoLocationActivity extends MapActivity {
 //        startActivity(settingsIntent);
 //    }
     
+    protected void updateLocationInfo(String latitudeInfo, String longitudeInfo) {
+    	TextView latitude = (TextView)findViewById(R.id.latitude_value);
+    	if ( latitude != null) {
+    		latitude.setText( latitudeInfo );
+    	}
+    	
+    	TextView longitude = (TextView)findViewById(R.id.longitude_value);
+    	if ( longitude != null) {
+    		longitude.setText( longitudeInfo );
+    	}	
+    }
+    
+    private class CustomLocationOverlay extends MyLocationOverlay {
+
+		public CustomLocationOverlay(Context arg0, MapView arg1) {
+			super(arg0, arg1);			
+		}
+    	
+		@Override
+		public void onLocationChanged(Location location ) {
+			super.onLocationChanged(location);
+			updateLocationInfo(String.valueOf( location.getLatitude() ), String.valueOf(location.getLongitude()) );
+			
+			MapView mapView = (MapView) findViewById(R.id.geolocation_mapview);
+	    	if ( mapView != null ) {
+	    		MapController mc = mapView.getController();
+	    		if ( mc != null ) {
+	    			int currentZoom = mapView.getZoomLevel();
+	    			for( int i = currentZoom + 1; i <= 17; i++ ) {	    				
+	    				mc.zoomIn();
+	    			}
+	    			//mc.setZoom(17);
+	    			mc.animateTo(new GeoPoint( (int)(location.getLatitude() * 1E6), (int)(location.getLongitude() * 1E6)));
+	    			mapView.invalidate();
+	    		}
+	    	}
+		}
+    }
+    
     private class GeoLocationListener implements LocationListener {
 
 		@Override
 		public void onLocationChanged(Location location) {
-			TextView latitude = (TextView)findViewById(R.id.latitude_value);
-	    	if ( latitude != null) {
-	    		latitude.setText( String.valueOf( location.getLatitude() ) );
-	    	}
-	    	
-	    	TextView longitude = (TextView)findViewById(R.id.longitude_value);
-	    	if ( longitude != null) {
-	    		longitude.setText( String.valueOf(location.getLongitude()));
-	    	}
+			
+			updateLocationInfo(String.valueOf( location.getLatitude() ), String.valueOf(location.getLongitude()) );
 	    	
 	    	MapView mapView = (MapView) findViewById(R.id.geolocation_mapview);
 	    	if ( mapView != null ) {
@@ -115,30 +169,14 @@ public class GeoLocationActivity extends MapActivity {
 		@Override
 		public void onProviderDisabled(String provider) {
 			if ( provider != null && provider.equals(LocationManager.GPS_PROVIDER)) {
-				TextView latitude = (TextView)findViewById(R.id.latitude_value);
-		    	if ( latitude != null) {
-		    		latitude.setText( "Disabled" );
-		    	}
-		    	
-		    	TextView longitude = (TextView)findViewById(R.id.longitude_value);
-		    	if ( longitude != null) {
-		    		longitude.setText( "Disabled" );
-		    	}		
+				updateLocationInfo("Disabled", "Disabled");
 			}			
 		}
 
 		@Override
 		public void onProviderEnabled(String provider) {
 			if ( provider != null && provider.equals(LocationManager.GPS_PROVIDER)) {
-				TextView latitude = (TextView)findViewById(R.id.latitude_value);
-		    	if ( latitude != null) {
-		    		latitude.setText( "Loading.." );
-		    	}
-		    	
-		    	TextView longitude = (TextView)findViewById(R.id.longitude_value);
-		    	if ( longitude != null) {
-		    		longitude.setText( "Loading.." );
-		    	}		
+				updateLocationInfo("Loading..", "Loading.." );		
 			}			
 		}
 
