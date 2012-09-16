@@ -1,5 +1,10 @@
 package edu.fiu.cs.seniorproject;
 
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.List;
+import java.util.Locale;
+
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -9,10 +14,13 @@ import com.google.android.maps.MyLocationOverlay;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 import android.content.Context;
+import android.location.Geocoder;
+import android.location.Address;
 //import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 //import android.provider.Settings;
 import android.view.Menu;
@@ -145,9 +153,57 @@ public class GeoLocationActivity extends MapActivity {
 	    			mapView.invalidate();
 	    		}
 	    	}
+	    	(new ReverseGeocodingTask(GeoLocationActivity.this)).execute(new Location[] {location});
 		}
     }
     
+	 // AsyncTask encapsulating the reverse-geocoding API.  Since the geocoder API is blocked,
+	 // we do not want to invoke it from the UI thread.
+	 private class ReverseGeocodingTask extends AsyncTask<Location, Void, String> {
+	 Context mContext;
+	 private final WeakReference<TextView> mAddressTextField;
+	 
+     public ReverseGeocodingTask(Context context) {
+         super();
+         mContext = context;
+         mAddressTextField = new WeakReference<TextView>( (TextView)findViewById(R.id.adress_value) );
+     }
+
+     @Override
+     protected String doInBackground(Location... params) {
+         Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
+
+         Location loc = params[0];
+         List<Address> addresses = null;
+         try {
+             // Call the synchronous getFromLocation() method by passing in the lat/long values.
+             addresses = geocoder.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
+         } catch (IOException e) {
+            Logger.Error("Exception getting address " + e.getMessage() );
+         }
+         
+         String addressText = "Loading..";
+         if (addresses != null && addresses.size() > 0) {
+             Address address = addresses.get(0);
+             // Format the first line of address (if available), city, and country name.
+             addressText = String.format("%s, %s, %s",
+                     address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
+                     address.getLocality(),
+                     address.getCountryName());             
+         }
+         return addressText;
+     }
+     
+     protected void onPostExecute(String addressText) {
+    	 if ( mAddressTextField != null ) {
+	    	TextView address = mAddressTextField.get();
+			if ( address != null) {
+				address.setText( addressText );
+			}
+    	 }
+     }
+ }
+ 
     private class GeoLocationListener implements LocationListener {
 
 		@Override
