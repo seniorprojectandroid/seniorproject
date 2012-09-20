@@ -10,8 +10,10 @@
     <string name="log_out">Please click to log out</string>
     <string name="login_wfacebook">Click to log in with facebook</string>
     <string name="title_activity_geo_location">GeoLocation</string>
-	<string name="latitude">Latitude</string>
-	<string name="longitude">Longitude</string>
-	<string name="checkin">Check-In</string>
-	<string name="show_geolocation">Show Geolocation</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="checkin">Check-In</string>
+    <string name="show_geolocation">Show Geolocation</string>
+    <string name="title_activity_checkin">Checkin</string>
+
 </resources>
