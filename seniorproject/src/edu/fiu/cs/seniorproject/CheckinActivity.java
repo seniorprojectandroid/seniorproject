@@ -12,33 +12,40 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class CheckinActivity extends Activity {
 
 	private FacebookManager fManager = null;
+	private List<Place> mPlaceList = null;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkin);
         
-//        String[] myList = new String[]{"Rey", "Gato", "Julio", "Robeto" , "Quien falta aqui."};
-//        ListView myListView = (ListView) findViewById(R.id.place_list);
-//        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(this, R.layout.checkin_row,R.id.checkin_place_name,myList);
-//        myListView.setAdapter(myAdapter);
+        Intent intent = getIntent();
+        final String latitude = intent != null ? intent.getStringExtra("latitude") : null;
+        final String longitude = intent != null ? intent.getStringExtra("longitude") : null;
         
         fManager = new FacebookManager();
-        fManager.login(this, new IRequestResult() {
+        fManager.login(this, new String[] {"publish_stream"}, new IRequestResult() {
 			
 			@Override
 			public void onComplete(boolean success) {
 				if(success)
 				{
-					Location myLocation = new Location();
-					myLocation.setLatitude("25.7593282");
-					myLocation.setLongitude("-80.371674");
-					new PlaceDownloader().execute(myLocation);
+					if ( latitude != null && longitude != null )
+					{
+						Location myLocation = new Location();
+						myLocation.setLatitude(latitude);// ("25.7593282");
+						myLocation.setLongitude(longitude);// ("-80.371674");
+						new PlaceDownloader().execute(myLocation);
+					}
 				}
 				else
 				{
@@ -63,6 +70,23 @@ public class CheckinActivity extends Activity {
         fManager.authorizeCallback(requestCode, resultCode, data);
     }
     
+    private class FeedPublisher extends AsyncTask<Integer, Void, Void>
+    {
+    	@Override
+	   	 protected Void doInBackground(Integer... params)
+	   	 {
+    		int myIndex = params[0];
+    		Place myPlace = mPlaceList.get(myIndex);
+    		fManager.PostFeed("Testing checkin!!!", myPlace.getId());
+			return null;	
+	   	 }
+    	
+    	 @Override
+    	 protected void onPostExecute(Void result)
+    	 {    		 
+    	 }
+    }
+    
     private class PlaceDownloader extends AsyncTask<Location, Void, List<Place>>
     {
     	 @Override
@@ -77,14 +101,25 @@ public class CheckinActivity extends Activity {
     	 {
 			if(myPlaceList != null && myPlaceList.size() > 0) 
 			{
+				mPlaceList = myPlaceList;
 				String[] placesOnList = new String[myPlaceList.size()];
 				for(int i = 0; i<myPlaceList.size(); i++)
 				{
 					placesOnList[i]=myPlaceList.get(i).getName();
-					
 				}
 				
 				ListView myListView = (ListView) findViewById(R.id.place_list);
+				myListView.setOnItemClickListener(new OnItemClickListener() {
+
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						// TODO Auto-generated method stub
+						Logger.Debug("click on position " + arg2);
+						new FeedPublisher().execute(arg2);
+					}
+				});
+				
 		        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(CheckinActivity.this, R.layout.checkin_row,R.id.checkin_place_name,placesOnList);
 		        myListView.setAdapter(myAdapter);
 			}
