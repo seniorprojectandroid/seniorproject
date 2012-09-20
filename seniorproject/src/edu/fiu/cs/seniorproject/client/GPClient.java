@@ -31,8 +31,11 @@ public class GPClient extends RestClient{
   		 *	&event_id=weafgerg1234235
 		 */
 		Bundle params = this.getBundle();
-		params.putString("reference", reference);
-		params.putString("event_id", eventId);
+		
+		if(reference != null)
+			params.putString("reference", reference);
+		if(eventId != null)
+			params.putString("event_id", eventId);
 		
 		String result = null;
 		String url = "https://maps.googleapis.com/maps/api/place/event/details/json";
@@ -74,11 +77,18 @@ public class GPClient extends RestClient{
 
 
 		Bundle params = this.getBundle();
-		params.putString("longitude", longitude);
-		params.putString("latitude", latitude);
-		params.putString("radius",radius);
-		params.putString("types",types);
-		params.putString("name",name);
+		
+		if(longitude != null)
+			params.putString("longitude", longitude);
+		if(latitude != null)
+			params.putString("latitude", latitude);
+		if(radius != null)
+			params.putString("radius",radius);
+		if(types != null)
+			params.putString("types",types);
+		if(name != null)
+			params.putString("name",name);
+		
 		params.putString("sensor","false");
 		
 		String result = null;
