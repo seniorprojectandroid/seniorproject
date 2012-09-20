@@ -33,6 +33,7 @@ public class GeoLocationActivity extends MapActivity {
 	private LocationManager mLocationManager = null;
 	private GeoLocationListener mListener = null;
 	private CustomLocationOverlay mMyLocationOverlay = null;
+	private edu.fiu.cs.seniorproject.data.Location currentLocation = new edu.fiu.cs.seniorproject.data.Location();
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,6 +52,8 @@ public class GeoLocationActivity extends MapActivity {
     
     public void onCheckinClick(View view) {
     	Intent intent = new Intent(this, CheckinActivity.class);
+    	intent.putExtra("latitude", currentLocation.getLongitude());
+    	intent.putExtra("longitude", currentLocation.getLongitude());
     	this.startActivity(intent);
     }
 
@@ -134,6 +137,8 @@ public class GeoLocationActivity extends MapActivity {
     	if ( longitude != null) {
     		longitude.setText( longitudeInfo );
     	}	
+    	currentLocation.setLatitude(latitudeInfo);
+    	currentLocation.setLongitude(longitudeInfo);
     }
     
     private class CustomLocationOverlay extends MyLocationOverlay {

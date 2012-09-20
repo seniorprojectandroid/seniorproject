@@ -33,8 +33,12 @@ public class FacebookManager {
 	private Facebook mFacebook;
 	
 	public void login(Activity activity, final IRequestResult listener ) {
+		login(activity, new String[] {}, listener);		
+	}
+	
+	public void login(Activity activity, String[] permissions, final IRequestResult listener ) {
 		Facebook fb = getFacebookClient();
-		fb.authorize(activity, new DialogListener() {
+		fb.authorize(activity, permissions, new DialogListener() {
 
 			@Override
 			public void onComplete(Bundle values) {
@@ -75,7 +79,24 @@ public class FacebookManager {
 	}
 	
 	
+	public void PostFeed( String message, String placeId ) {
 	
+		Bundle params = new Bundle();
+		params.putString("message", message);
+		params.putString("place", placeId);
+		
+		try {
+			String response = getFacebookClient().request( "me/feed",params, "POST");	
+			Logger.Debug("response = " + response);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	public List<Place> getPlacesAtLocation( Location location, int distance ) {
 		
 		LinkedList<Place> result = null;
