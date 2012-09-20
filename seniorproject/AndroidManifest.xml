@@ -41,6 +41,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.fiu.cs.seniorproject.MainActivity" />
         </activity>
+        <activity
+            android:name=".CheckinActivity"
+            android:label="@string/title_activity_checkin" > 
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.GeoLocationActivity" />           
+        </activity>
     </application>
 
 </manifest>

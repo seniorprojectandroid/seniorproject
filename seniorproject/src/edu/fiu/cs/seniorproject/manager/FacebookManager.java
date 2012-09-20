@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.facebook.android.DialogError;
@@ -65,6 +66,15 @@ public class FacebookManager {
 			Logger.Warning("Exception logging out facebook!!");
 		}
 	}
+	
+	public void authorizeCallback(int requestCode, int resultCode, Intent data)
+	{
+		Facebook fb = getFacebookClient();
+		fb.authorizeCallback(requestCode, resultCode, data);		
+		
+	}
+	
+	
 	
 	public List<Place> getPlacesAtLocation( Location location, int distance ) {
 		
