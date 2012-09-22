@@ -16,7 +16,7 @@ import edu.fiu.cs.seniorproject.client.MBCAClient;
 import edu.fiu.cs.seniorproject.config.AppConfig;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
-public abstract class MBCAProvider implements DataProvider 
+public abstract class MBCAProvider extends DataProvider 
 {
 	private MBCAClient MBCAClient;
 	
