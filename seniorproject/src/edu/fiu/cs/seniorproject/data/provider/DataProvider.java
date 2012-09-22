@@ -17,6 +17,6 @@ public abstract class DataProvider {
 	 
 	 public abstract Event getEventDetails(String eventId);
 	 
-	 public abstract Place getPlaceDetails(String placeId);
+	 public abstract Place getPlaceDetails(String placeId, String reference);
 
 }
