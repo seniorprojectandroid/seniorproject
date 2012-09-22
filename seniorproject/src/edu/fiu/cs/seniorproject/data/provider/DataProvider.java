@@ -6,6 +6,7 @@ import android.location.Location;
 
 import edu.fiu.cs.seniorproject.data.Event;
 import edu.fiu.cs.seniorproject.data.Place;
+import edu.fiu.cs.seniorproject.data.SourceType;
 
 
 
@@ -19,4 +20,13 @@ public abstract class DataProvider {
 	 
 	 public abstract Place getPlaceDetails(String placeId);
 
+	 public abstract SourceType getSource();
+	 
+	 public boolean supportEvents() {
+		 return true;
+	 }
+	 
+	 public boolean supportPlaces() {
+		 return true;
+	 }
 }
