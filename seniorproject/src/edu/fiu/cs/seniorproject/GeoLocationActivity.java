@@ -1,30 +1,20 @@
 package edu.fiu.cs.seniorproject;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.List;
-import java.util.Locale;
-
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 
+import edu.fiu.cs.seniorproject.manager.AppLocationManager;
+import edu.fiu.cs.seniorproject.manager.AppLocationManager.ILocationUpdateListener;
+import edu.fiu.cs.seniorproject.manager.AppLocationManager.IReverseGeoLocationListener;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
-import android.content.Context;
 import android.content.Intent;
-import android.location.Geocoder;
 import android.location.Address;
-//import android.content.Intent;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.InputFilter.LengthFilter;
-//import android.provider.Settings;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
@@ -32,22 +22,52 @@ import android.widget.Toast;
 
 public class GeoLocationActivity extends MapActivity {
 
-	private LocationManager mLocationManager = null;
-	private GeoLocationListener mListener = null;
-	private CustomLocationOverlay mMyLocationOverlay = null;
+	private MyLocationOverlay mMyLocationOverlay = null;
 	private edu.fiu.cs.seniorproject.data.Location currentLocation = new edu.fiu.cs.seniorproject.data.Location();
+	
+	private final ILocationUpdateListener mGeoLocationListener = new ILocationUpdateListener() {
+		@Override
+		public void onLocationUpdate(Location newLocation) {
+			updateLocationInfo(String.valueOf( newLocation.getLatitude() ), String.valueOf(newLocation.getLongitude()) );
+	    	
+	    	MapView mapView = (MapView) findViewById(R.id.geolocation_mapview);
+	    	if ( mapView != null ) {
+	    		MapController mc = mapView.getController();
+	    		if ( mc != null ) {
+	    			mc.animateTo(new GeoPoint( (int)(newLocation.getLatitude() * 1E6), (int)(newLocation.getLongitude() * 1E6)));
+	    			mc.setZoom(17);	    	    			
+	    			mapView.invalidate();
+	    		}
+	    	}
+	    	
+	    	AppLocationManager.getCurrentAddress(getApplicationContext(), mReverseGeoLocationListener);
+		}
+	};
+	
+	private final IReverseGeoLocationListener mReverseGeoLocationListener = new IReverseGeoLocationListener() {
+		@Override
+		public void onAdressResult(Address address) {
+			TextView addressView = (TextView)findViewById(R.id.adress_value);
+			if ( address != null && addressView != null ) {
+	            String addressText = String.format("%s, %s, %s",
+	                     address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
+	                     address.getLocality(),
+	                     address.getCountryName());             
+	            addressView.setText(addressText);
+			}
+		}
+	};
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geo_location);
         
+        AppLocationManager.init(this);
         MapView mapView = (MapView) findViewById(R.id.geolocation_mapview);
         mapView.setBuiltInZoomControls(true);
         
-        //this.mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        //this.mListener = new GeoLocationListener();
-        mMyLocationOverlay = new CustomLocationOverlay(this, mapView);
+        mMyLocationOverlay = new MyLocationOverlay(this, mapView);
         mapView.getOverlays().add(mMyLocationOverlay);
         mapView.postInvalidate();
     }
@@ -79,6 +99,7 @@ public class GeoLocationActivity extends MapActivity {
     public void onResume() {
     	super.onResume();
     	mMyLocationOverlay.enableMyLocation();
+    	AppLocationManager.registerListener(mGeoLocationListener);
     	Logger.Info("My Location listener set!!!");
     }
     
@@ -86,54 +107,10 @@ public class GeoLocationActivity extends MapActivity {
     public void onPause() {
     	super.onPause();
     	mMyLocationOverlay.disableMyLocation();
+    	AppLocationManager.unregisterListener(mGeoLocationListener);
     	Logger.Info("My Location listener removed!!!");
     }
-    
-    @Override
-    public void onStart() {
-    	super.onStart();    	
-    	 
-         if ( this.mLocationManager != null ) {        	 
-        	 Logger.Info("Set listener!!!");
-        	 
-        	 this.mLocationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
-        	            1000,          // 10-second interval.
-        	            5,             // 10 meters.
-        	            mListener);
-        	 this.mLocationManager.requestLocationUpdates( LocationManager.NETWORK_PROVIDER,
-     	            1000,          // 10-second interval.
-     	            5,             // 10 meters.
-     	            mListener);
-        	 
- 	        final boolean gpsEnabled = this.mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
- 	
- 	        if (!gpsEnabled) {
- 	            // Build an alert dialog here that requests that the user enable
- 	            // the location services, then when the user clicks the "OK" button,
- 	            // call enableLocationSettings()
- 	        	Logger.Warning("GPS is disabled!!!");
- 	        	//enableLocationSettings();
- 	        } else {
- 	        	Logger.Info("GPS is enabled. waiting for location..");
- 	        }
-         }
-    }
-    
-    @Override
-    protected void onStop() {
-        super.onStop();
-        
-        if ( this.mLocationManager != null ) {    
-	        Logger.Info("Remove listener!!!");
-	        mLocationManager.removeUpdates(mListener);
-        }
-    }
-    
-//    private void enableLocationSettings() {
-//        Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//        startActivity(settingsIntent);
-//    }
-    
+
     protected void updateLocationInfo(String latitudeInfo, String longitudeInfo) {
     	TextView latitude = (TextView)findViewById(R.id.latitude_value);
     	if ( latitude != null) {
@@ -146,119 +123,5 @@ public class GeoLocationActivity extends MapActivity {
     	}	
     	currentLocation.setLatitude(latitudeInfo);
     	currentLocation.setLongitude(longitudeInfo);
-    }
-    
-    private class CustomLocationOverlay extends MyLocationOverlay {
-
-		public CustomLocationOverlay(Context arg0, MapView arg1) {
-			super(arg0, arg1);			
-		}
-    	
-		@Override
-		public void onLocationChanged(Location location ) {
-			super.onLocationChanged(location);
-			updateLocationInfo(String.valueOf( location.getLatitude() ), String.valueOf(location.getLongitude()) );
-			
-			MapView mapView = (MapView) findViewById(R.id.geolocation_mapview);
-	    	if ( mapView != null ) {
-	    		MapController mc = mapView.getController();
-	    		if ( mc != null ) {
-	    			int currentZoom = mapView.getZoomLevel();
-	    			for( int i = currentZoom + 1; i <= 17; i++ ) {	    				
-	    				mc.zoomIn();
-	    			}
-	    			//mc.setZoom(17);
-	    			mc.animateTo(new GeoPoint( (int)(location.getLatitude() * 1E6), (int)(location.getLongitude() * 1E6)));
-	    			mapView.invalidate();
-	    		}
-	    	}
-	    	(new ReverseGeocodingTask(GeoLocationActivity.this)).execute(new Location[] {location});
-		}
-    }
-    
-	 // AsyncTask encapsulating the reverse-geocoding API.  Since the geocoder API is blocked,
-	 // we do not want to invoke it from the UI thread.
-	 private class ReverseGeocodingTask extends AsyncTask<Location, Void, String>
-	 {
-		 Context mContext;
-			 private final WeakReference<TextView> mAddressTextField;
-			 
-		     public ReverseGeocodingTask(Context context) {
-		         super();
-		         mContext = context;
-		         mAddressTextField = new WeakReference<TextView>( (TextView)findViewById(R.id.adress_value) );
-		     }
-		
-		     @Override
-		     protected String doInBackground(Location... params) {
-		         Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
-		
-		         Location loc = params[0];
-		         List<Address> addresses = null;
-		         try {
-		             // Call the synchronous getFromLocation() method by passing in the lat/long values.
-		             addresses = geocoder.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
-		         } catch (IOException e) {
-		            Logger.Error("Exception getting address " + e.getMessage() );
-		         }
-		         
-		         String addressText = "Loading..";
-		         if (addresses != null && addresses.size() > 0) {
-		             Address address = addresses.get(0);
-		             // Format the first line of address (if available), city, and country name.
-		             addressText = String.format("%s, %s, %s",
-		                     address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
-		                     address.getLocality(),
-		                     address.getCountryName());             
-		         }
-		         return addressText;
-		     }
-		     
-		     protected void onPostExecute(String addressText) {
-		    	 if ( mAddressTextField != null ) {
-			    	TextView address = mAddressTextField.get();
-					if ( address != null) {
-						address.setText( addressText );
-					}
-		    	 }
-		     }
-	 }
- 
-    private class GeoLocationListener implements LocationListener {
-
-		@Override
-		public void onLocationChanged(Location location) {
-			
-			updateLocationInfo(String.valueOf( location.getLatitude() ), String.valueOf(location.getLongitude()) );
-	    	
-	    	MapView mapView = (MapView) findViewById(R.id.geolocation_mapview);
-	    	if ( mapView != null ) {
-	    		MapController mc = mapView.getController();
-	    		if ( mc != null ) {
-	    			mc.animateTo(new GeoPoint( (int)(location.getLatitude() * 1E6), (int)(location.getLongitude() * 1E6)));
-	    			mc.setZoom(17);	    	    			
-	    			mapView.invalidate();
-	    		}
-	    	}
-		}
-
-		@Override
-		public void onProviderDisabled(String provider) {
-			if ( provider != null && provider.equals(LocationManager.GPS_PROVIDER)) {
-				updateLocationInfo("Disabled", "Disabled");
-			}			
-		}
-
-		@Override
-		public void onProviderEnabled(String provider) {
-			if ( provider != null && provider.equals(LocationManager.GPS_PROVIDER)) {
-				updateLocationInfo("Loading..", "Loading.." );		
-			}			
-		}
-
-		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) {
-		}    	
-    }
-    
+    }   
 }
