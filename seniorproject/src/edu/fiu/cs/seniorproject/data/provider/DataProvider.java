@@ -1,24 +1,32 @@
 package edu.fiu.cs.seniorproject.data.provider;
 
-import java.util.LinkedList;
+import java.util.List;
+
+import android.location.Location;
 
 import edu.fiu.cs.seniorproject.data.Event;
 import edu.fiu.cs.seniorproject.data.Place;
+import edu.fiu.cs.seniorproject.data.SourceType;
 
 
 
-public interface DataProvider {
-	
-	 public String getEvent();
+public abstract class DataProvider {
 	 
-	 public String getPlaces();
+	 public abstract List<Event> getEventList(Location location, String category, String radius, String query);
 	 
-	 public LinkedList<Event> getEventList(String query);
+	 public abstract List<Place> getPlaceList(Location location, String category, String radius, String query);
 	 
-	 public LinkedList<Place> getPlaceList(String query);
+	 public abstract Event getEventDetails(String eventId);
 	 
-	 public Event getEventDetails(String location, String eventId);
-	 
-	 public Place getPlaceDeetails(String location, String placeId);
+	 public abstract Place getPlaceDetails(String placeId, String reference);
 
+	 public abstract SourceType getSource();
+	 
+	 public boolean supportEvents() {
+		 return true;
+	 }
+	 
+	 public boolean supportPlaces() {
+		 return true;
+	 }
 }
