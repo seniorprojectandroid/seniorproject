@@ -23,10 +23,12 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.InputFilter.LengthFilter;
 //import android.provider.Settings;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class GeoLocationActivity extends MapActivity {
 
@@ -51,10 +53,15 @@ public class GeoLocationActivity extends MapActivity {
     }
     
     public void onCheckinClick(View view) {
-    	Intent intent = new Intent(this, CheckinActivity.class);
-    	intent.putExtra("latitude", currentLocation.getLongitude());
-    	intent.putExtra("longitude", currentLocation.getLongitude());
-    	this.startActivity(intent);
+    	
+    	if ( currentLocation.getLatitude() != null && currentLocation.getLongitude() != null ) {
+	    	Intent intent = new Intent(this, CheckinActivity.class);
+	    	intent.putExtra("latitude", currentLocation.getLatitude());
+	    	intent.putExtra("longitude", currentLocation.getLongitude());
+	    	this.startActivity(intent);
+    	} else {
+    		Toast.makeText(this, "Waiting for location..", Toast.LENGTH_SHORT ).show();
+    	}
     }
 
     @Override
