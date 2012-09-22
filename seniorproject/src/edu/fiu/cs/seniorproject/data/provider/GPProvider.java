@@ -19,6 +19,7 @@ import edu.fiu.cs.seniorproject.client.GPClient;
 import edu.fiu.cs.seniorproject.config.AppConfig;
 import edu.fiu.cs.seniorproject.data.Event;
 import edu.fiu.cs.seniorproject.data.Place;
+import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class  GPProvider extends DataProvider {
@@ -28,8 +29,6 @@ public class  GPProvider extends DataProvider {
 	public GPProvider() {
 		this.gpClient = new GPClient(AppConfig.GOOGLE_PLACE_APP_ID);
 	}
-
-
 
 	public Place getPlaceDetails(String reference, String eventId) {
 
@@ -166,6 +165,16 @@ public class  GPProvider extends DataProvider {
 	public Event getEventDetails(String eventId) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean supportEvents() {
+		return false;
+	}
+	
+	@Override
+	public SourceType getSource() {
+		return SourceType.GOOGLE_PLACE;
 	}
 
 }

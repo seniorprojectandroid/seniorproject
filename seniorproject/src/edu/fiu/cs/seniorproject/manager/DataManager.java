@@ -70,12 +70,12 @@ public class DataManager {
 		return result;
 	}
 	
-	public Place getPlaceDetails( String placeId, SourceType source ) {
+	public Place getPlaceDetails( String placeId, String reference, SourceType source ) {
 		Place result = null;
 		for( int i = 0; i < mProviderList.size(); i++ ) {
 			DataProvider provider = mProviderList.get(i);
 			if ( provider.supportPlaces() && provider.getSource() == source ) {
-				result = provider.getPlaceDetails(placeId);
+				result = provider.getPlaceDetails(placeId, reference);
 				break;
 			}
 		}
