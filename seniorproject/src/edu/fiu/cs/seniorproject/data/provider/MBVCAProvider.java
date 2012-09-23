@@ -7,13 +7,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.location.Location;
-
-//import android.provider.ContactsContract.CommonDataKinds.Event;
-
 import edu.fiu.cs.seniorproject.client.MBVCAClient;
 import edu.fiu.cs.seniorproject.config.AppConfig;
 import edu.fiu.cs.seniorproject.data.Event;
+import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.Place;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.utils.Logger;
@@ -56,7 +53,7 @@ public class MBVCAProvider extends DataProvider
 								}
 								
 								if ( iter.has("lat") && iter.has("lng")) {
-									edu.fiu.cs.seniorproject.data.Location eventLocation = new edu.fiu.cs.seniorproject.data.Location();
+									Location eventLocation = new Location();
 									eventLocation.setLatitude( String.valueOf( iter.getDouble("lat") ) );
 									eventLocation.setLongitude(String.valueOf(iter.getDouble("lng")));
 									event.setLocation(eventLocation);

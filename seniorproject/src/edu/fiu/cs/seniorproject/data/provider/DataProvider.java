@@ -2,13 +2,10 @@ package edu.fiu.cs.seniorproject.data.provider;
 
 import java.util.List;
 
-import android.location.Location;
-
 import edu.fiu.cs.seniorproject.data.Event;
+import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.Place;
 import edu.fiu.cs.seniorproject.data.SourceType;
-
-
 
 public abstract class DataProvider {
 	 

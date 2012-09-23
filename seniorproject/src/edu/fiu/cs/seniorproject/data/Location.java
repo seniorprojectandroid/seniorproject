@@ -8,9 +8,13 @@ public class Location
 	
 	public Location()
 	{
-		
 	}
 
+	public Location(String lat, String lng) {
+		this.latitude = lat;
+		this.longitude = lng;
+	}
+	
 	public String getLatitude() 
 	{
 		return latitude;
