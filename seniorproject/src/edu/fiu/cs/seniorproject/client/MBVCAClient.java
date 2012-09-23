@@ -3,17 +3,38 @@ package edu.fiu.cs.seniorproject.client;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import edu.fiu.cs.seniorproject.config.AppConfig;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 import android.os.Bundle;
 
-public class MBCAClient extends RestClient{
+public class MBVCAClient extends RestClient{
 
-	public MBCAClient(String appId)
+	private static final String BASE_API = "http://www.miamibeachapi.com/api/index.php/";
+	
+	public MBVCAClient(String appId)
 	{
 		super(appId);
 	}
 	
+	public String getEventList() {
+		Bundle params = getBundle();
+		
+		String query = String.format("{\"start_time\":{\"$gt\":%d},\"datatable_category_id\":{\"$exists\":true},\"calendar_id\":1}", System.currentTimeMillis() / 1000L );
+		Logger.Debug("Query string in MBVCA = " + query);
+		params.putString("query", query);
+		params.putString("srt", "{\"start_time\":1}" );
+		
+		String response = null;
+		try {
+			return openUrl( BASE_API + "search/solodev_view", GET, params );
+		} catch (MalformedURLException e) {
+			Logger.Warning("Malformed exception getting MBVCA events " + e.getMessage() );
+		} catch (IOException e) {
+			Logger.Warning("IO exception getting MBVCA events " + e.getMessage() );
+		}
+		return response;
+	}
 	/**
 	 * 
 	 * @param reference
@@ -49,10 +70,10 @@ public class MBCAClient extends RestClient{
 		
 		}catch(MalformedURLException e)
 		{
-			Logger.Error("MBCAClient getEvents MalformedURLException");
+			Logger.Error("MBVCAClient getEvents MalformedURLException");
 		}catch(IOException e)
 		{
-			Logger.Error("MBCAClient getEvents IOException");
+			Logger.Error("MBVCAClient getEvents IOException");
 		}
 		
 		return result;
@@ -103,10 +124,10 @@ public class MBCAClient extends RestClient{
 		
 		}catch(MalformedURLException e)
 		{
-			Logger.Error("MBCAClient getPlaces MalformedURLException");
+			Logger.Error("MBVCAClient getPlaces MalformedURLException");
 		}catch(IOException e)
 		{
-			Logger.Error("MBCAClient getPlaces IOException");
+			Logger.Error("MBVCAClient getPlaces IOException");
 		}
 		
 		return result;
@@ -115,7 +136,8 @@ public class MBCAClient extends RestClient{
 	public Bundle getBundle()
 	{
 		Bundle bundle = new Bundle();
-		bundle.putString("key", this.appId);
+		bundle.putString("token", AppConfig.MBVCA_TOKEN);
+		bundle.putString("token_secret", AppConfig.MBVCA_TOKEN_SECRET);
 		return bundle;
 	}
 	

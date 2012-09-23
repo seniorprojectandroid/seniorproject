@@ -29,4 +29,9 @@ public class MainActivity extends Activity {
     	Intent intent = new Intent(this, GeoLocationActivity.class);
     	this.startActivity(intent);
     }
+    
+    public void onShowEventsClick(View view) {
+    	Intent intent = new Intent(this, EventsActivity.class);
+    	this.startActivity(intent);
+    }
 }

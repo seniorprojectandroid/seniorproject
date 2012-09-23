@@ -9,6 +9,7 @@ import edu.fiu.cs.seniorproject.data.Event;
 import edu.fiu.cs.seniorproject.data.Place;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.data.provider.DataProvider;
+import edu.fiu.cs.seniorproject.data.provider.MBVCAProvider;
 
 public class DataManager {
 
@@ -17,6 +18,8 @@ public class DataManager {
 	
 	private DataManager() {
 		// register all the providers
+		mProviderList.add(new MBVCAProvider());
+		//mProviderList.add(new GPProvider());
 	}
 	
 	public List<Event> getEventList(Location location, String category, String radius, String query) {
@@ -27,10 +30,14 @@ public class DataManager {
 				DataProvider provider = mProviderList.get(i);
 				
 				if ( provider.supportEvents() ) {
-					if ( result == null ) {
-						provider.getEventList(location, category, radius, query);
-					} else {
-						result.addAll(provider.getEventList(location, category, radius, query));
+					List<Event> providerList = provider.getEventList(location, category, radius, query);
+					
+					if ( providerList != null && providerList.size() > 0 ) {
+						if ( result == null ) {
+							result = providerList;
+						} else {
+							result.addAll(providerList);
+						}
 					}
 				}
 			}
@@ -47,10 +54,14 @@ public class DataManager {
 				DataProvider provider = mProviderList.get(i);
 				
 				if ( provider.supportPlaces() ) {
-					if ( result == null ) {
-						result = provider.getPlaceList(location, category, radius, query);
-					} else {
-						result.addAll(mProviderList.get(i).getPlaceList(location, category, radius, query));
+					List<Place> providerList = provider.getPlaceList(location, category, radius, query);
+					
+					if ( providerList != null && providerList.size() > 0 ) {
+						if ( result == null ) {
+							result = providerList;
+						} else {
+							result.addAll(providerList);
+						}
 					}
 				}
 			}

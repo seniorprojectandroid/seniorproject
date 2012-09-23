@@ -20,6 +20,7 @@
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -42,10 +43,17 @@
         </activity>
         <activity
             android:name=".CheckinActivity"
-            android:label="@string/title_activity_checkin" > 
+            android:label="@string/title_activity_checkin" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="edu.fiu.cs.seniorproject.GeoLocationActivity" />           
+                android:value="edu.fiu.cs.seniorproject.GeoLocationActivity" />
+        </activity>
+        <activity
+            android:name=".EventsActivity"
+            android:label="@string/title_activity_events" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.MainActivity" />
         </activity>
     </application>
 

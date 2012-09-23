@@ -2,9 +2,10 @@ package edu.fiu.cs.seniorproject.data;
 
 public class Event {
 	
+	private String id = null;
 	private String name =null;
 	private String time = null;
-	private String desscription = null;
+	private String description = null;
 	private Location location = null;
 	private SourceType source = SourceType.GOOGLE_PLACE;
 	
@@ -29,12 +30,12 @@ public class Event {
 		this.name = name;
 	}
 
-	public String getDesscription() {
-		return desscription;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setDesscription(String desscription) {
-		this.desscription = desscription;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public Location getLocation() {
@@ -51,6 +52,14 @@ public class Event {
 
 	public void setSource(SourceType source) {
 		this.source = source;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 }
