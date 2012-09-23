@@ -53,14 +53,23 @@ public class MBVCAProvider extends DataProvider
 								}
 								
 								if ( iter.has("lat") && iter.has("lng")) {
-									Location eventLocation = new Location();
-									eventLocation.setLatitude( String.valueOf( iter.getDouble("lat") ) );
-									eventLocation.setLongitude(String.valueOf(iter.getDouble("lng")));
+									Location eventLocation = new Location(String.valueOf( iter.getDouble("lat") ),String.valueOf(iter.getDouble("lng")) );
+									
+									if ( iter.has("venue") ) {
+										eventLocation.setAddress( iter.getString("venue"));
+									} else if ( iter.has("location")) {
+										eventLocation.setAddress("location");
+									}
+									
 									event.setLocation(eventLocation);
 								}
 
 								if ( iter.has("start_time")) {
 									event.setTime(String.valueOf(iter.getInt("start_time")));
+								}
+								
+								if ( iter.has("image")) {
+									event.setImage(iter.getString("image"));
 								}
 								
 								event.setSource(SourceType.MBVCA);

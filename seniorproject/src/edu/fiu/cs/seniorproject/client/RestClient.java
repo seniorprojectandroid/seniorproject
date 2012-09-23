@@ -155,11 +155,16 @@ public class RestClient {
 	
 	private String read(InputStream in) throws IOException {
         StringBuilder sb = new StringBuilder();
-        BufferedReader r = new BufferedReader(new InputStreamReader(in), 1000);
-        for (String line = r.readLine(); line != null; line = r.readLine()) {
-            sb.append(line);
+        
+        try {
+	        BufferedReader r = new BufferedReader(new InputStreamReader(in), 1000);
+	        for (String line = r.readLine(); line != null; line = r.readLine()) {
+	            sb.append(line);
+	        }
+	        in.close();
+        } catch (Exception e) {
+        	Logger.Error("Exception reading from network. " + e.getMessage() );
         }
-        in.close();
         return sb.toString();
     }
 }
