@@ -5,7 +5,7 @@ import java.net.MalformedURLException;
 
 import edu.fiu.cs.seniorproject.utils.Logger;
 
-import android.location.Location;
+import edu.fiu.cs.seniorproject.data.Location;
 import android.os.Bundle;
 
 public class GPClient extends RestClient{

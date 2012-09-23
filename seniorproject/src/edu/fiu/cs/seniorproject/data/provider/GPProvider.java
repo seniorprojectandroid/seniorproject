@@ -11,13 +11,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.location.Location;
 
 //import android.provider.ContactsContract.CommonDataKinds.Event;
 
 import edu.fiu.cs.seniorproject.client.GPClient;
 import edu.fiu.cs.seniorproject.config.AppConfig;
 import edu.fiu.cs.seniorproject.data.Event;
+import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.Place;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.utils.Logger;
@@ -33,21 +33,45 @@ public class  GPProvider extends DataProvider {
 	public Place getPlaceDetails(String reference, String eventId) {
 
 		JSONObject data = null;
+		JSONObject results;
+		JSONObject resultLocation;
 		String result = null;
 		Place place = null;
+		Location locat;
 		
 		result = this.getPlaceDet(reference, eventId);
 		
 		if(result != null && result.length() > 0)
 		{
 			try {
-				data = new JSONObject(result);
-				
+					data = new JSONObject(result);
+					
 				if(data != null && data.has("result"))
 				{
 					place = new Place();
-//					place.setTime(data.getString("start_time"));
-//					place.setDesscription(data.getString("summary"));
+					results = data.getJSONObject("result");
+					
+					
+					//results.getString("formatted_address");
+					//results.getString("formatted_phone_number");
+					
+					//name
+					place.setName(results.getString("name"));
+					
+					//rating
+					//results.getString("rating");
+					
+					resultLocation = results.getJSONObject("geometry").getJSONObject("location");
+
+					locat = new Location();
+					
+					locat.setLongitude(resultLocation.getString("lng"));
+					locat.setLatitude(resultLocation.getString("lat"));
+					
+					place.setLocation(locat);
+					
+					//website
+					place.setWebsite(results.getString("website"));
 					
 				}
 				else
@@ -68,53 +92,69 @@ public class  GPProvider extends DataProvider {
 	}
 
 	
+	@Override
 	public List<Place> getPlaceList(Location location, String category, String radius, String query) {
 
 		String result = null;
 		JSONObject data = null;
 		JSONArray jsonArray = null;
-		LinkedList<Place> placeList = null;
+		LinkedList<Place> placeList = new LinkedList<Place>();
+		JSONObject eachPlace = null;
+		Place place = null;
+		Location loc = null;
 		
 		result = getPlaces(location,category,radius,query);
 		
-		
+	
 		if(result !=null && result.length() > 0)
 		{
-			try
+			try 
 			{
-				data = new JSONObject("result");
-			
-			
-			if(data != null && data.has("result"))
-			{
-				
-				jsonArray = data.getJSONArray(result);
-				
-				if(jsonArray.length() > 0)
-				{
-					JSONObject jsonOb = null;
-					placeList = new LinkedList<Place>();
+				data = new JSONObject(result);	
+				jsonArray = data.getJSONArray("result");
 					
-					for(int i = 0; i < jsonArray.length(); i++)
+			} catch (JSONException e) 
+			{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+			}
+			
+			for(int i = 0; i < jsonArray.length(); i++)
+			{
+				place = new Place();
+				loc = new Location();
+				
+				try {
+					eachPlace = jsonArray.getJSONObject(i);
+					
+					if(eachPlace != null)
 					{
-						Place place = new Place();
-						jsonOb = jsonArray.getJSONObject(i);
-						
-						place.setLocation(jsonOb.getString("formatted_address"));
-						place.setName(jsonOb.getString("name"));
-						place.setId(jsonOb.getString("id"));
+						loc.setLatitude(eachPlace.getJSONObject("geometry").getJSONObject("location").getString("lat"));
+						loc.setLongitude(eachPlace.getJSONObject("geometry").getJSONObject("location").getString("lng"));
+						place.setName(eachPlace.getString("name"));
+						place.setReference(eachPlace.getString("reference"));
+						place.setLocation(loc);
+						place.setId(eachPlace.getString("id"));
 						
 						placeList.add(place);
 					}
-				}	
+					else
+					{
+						Logger.Error("");
+					}
+					
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-			}catch(JSONException e)
-			{
-				Logger.Error(e.getMessage());
-			}
-			
+					
 		}
-		
+		else
+		{
+			Logger.Error("");
+		}
+
 		return placeList;
 	}
 
@@ -150,19 +190,16 @@ public class  GPProvider extends DataProvider {
 		return result;
 	}
 
-
-
 	@Override
-	public List<Event> getEventList(Location location, String category,
-			String radius, String query) {
+	public Event getEventDetails(String eventId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 
-
 	@Override
-	public Event getEventDetails(String eventId) {
+	public List<Event> getEventList(Location location, String category,
+			String radius, String query) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -178,4 +215,3 @@ public class  GPProvider extends DataProvider {
 	}
 
 }
-

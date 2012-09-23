@@ -1,21 +1,42 @@
 package edu.fiu.cs.seniorproject.data;
+import edu.fiu.cs.seniorproject.data.Location;
 
 public class Place {
 	
-	private String id = null;
-	private String name = null;
-	private String location = null;
-	private String description = null;
+	private String id;
+	private String name;
+	private Location location;
+	private String description;
+	private String website;
+	private String reference;
 	
+
 	public Place()
 	{		
 	}
 
-	public String getLocation() {
+	public String getReference() {
+		return reference;
+	}
+
+
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
+	
+	public String getWebsite() {
+		return website;
+	}
+
+	public void setWebsite(String website) {
+		this.website = website;
+	}
+
+	public Location getLocation() {
 		return location;
 	}
 
-	public void setLocation(String location) {
+	public void setLocation(Location location) {
 		this.location = location;
 	}
 
