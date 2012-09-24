@@ -31,6 +31,8 @@ import java.net.URLEncoder;
 
 import edu.fiu.cs.seniorproject.utils.Logger;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 public class RestClient {
@@ -167,4 +169,20 @@ public class RestClient {
         }
         return sb.toString();
     }
+	
+	public static Bitmap downloadBitmap( String url ) {
+		Logger.Debug("download bitmap from " + url );
+		HttpURLConnection conn;
+		try {
+			conn = (HttpURLConnection) new URL(url).openConnection();
+			conn.setRequestProperty("User-Agent", System.getProperties().getProperty("http.agent") + " MBVCA");
+			return BitmapFactory.decodeStream(conn.getInputStream());
+		} catch (MalformedURLException e) {
+			Logger.Error("MalformedURLException reading bitmap" + e.getMessage() );
+		} catch (IOException e) {
+			Logger.Error("IOException reading bitmap " + e.getMessage() );
+		}
+        
+		return null;
+	}
 }
