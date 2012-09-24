@@ -48,7 +48,8 @@ public class RestClient {
 	}
 	
 	protected String openUrl(String url, String method, Bundle params)
-				throws MalformedURLException, IOException {
+				throws MalformedURLException, IOException
+	{
 	
 		// random string as boundary for multi-part http post
         String strBoundary = "3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
@@ -105,7 +106,7 @@ public class RestClient {
             response = read(conn.getErrorStream());
         }
         return response;
-	}
+	}// end openUrl
 	
 	private String encodeUrl(Bundle parameters)
 	{

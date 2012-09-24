@@ -32,13 +32,16 @@ public class FacebookManager {
 	
 	private Facebook mFacebook;
 	
-	public void login(Activity activity, final IRequestResult listener ) {
+	public void login(Activity activity, final IRequestResult listener )
+	{
 		login(activity, new String[] {}, listener);		
 	}
 	
-	public void login(Activity activity, String[] permissions, final IRequestResult listener ) {
+	public void login(Activity activity, String[] permissions, final IRequestResult listener )
+	{
 		Facebook fb = getFacebookClient();
-		fb.authorize(activity, permissions, new DialogListener() {
+		fb.authorize(activity, permissions, new DialogListener()
+		{
 
 			@Override
 			public void onComplete(Bundle values) {

@@ -1,6 +1,7 @@
 package edu.fiu.cs.seniorproject.data;
 
-public class Event {
+public class Event
+{
 	
 	private String name =null;
 	private String time = null;

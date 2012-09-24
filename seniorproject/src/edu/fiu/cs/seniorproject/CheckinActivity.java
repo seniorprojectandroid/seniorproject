@@ -27,7 +27,8 @@ public class CheckinActivity extends Activity {
 	private ProgressDialog mProgress = null;
 	
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkin);
         
@@ -35,7 +36,7 @@ public class CheckinActivity extends Activity {
         final String latitude = intent != null ? intent.getStringExtra("latitude") : null;
         final String longitude = intent != null ? intent.getStringExtra("longitude") : null;
         
-        Logger.Debug("latitude = " + latitude + " longitude = " + longitude );
+        Logger.Debug("latitude = " + latitude + " longitude = " + longitude );   
         
         fManager = new FacebookManager();
         fManager.login(this, new String[] {"publish_stream"}, new IRequestResult() {
@@ -61,17 +62,19 @@ public class CheckinActivity extends Activity {
 			}
         });
         
-    }// 25.7593282,-80.371674
+    }// end onCreate // 25.7593282,-80.371674
 
     
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         getMenuInflater().inflate(R.menu.activity_checkin, menu);
         return true;
     }
     
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
         super.onActivityResult(requestCode, resultCode, data);
         fManager.authorizeCallback(requestCode, resultCode, data);
     }
@@ -92,7 +95,7 @@ public class CheckinActivity extends Activity {
     	 { 
     		 Toast.makeText(CheckinActivity.this, "Checkin Posted..", Toast.LENGTH_SHORT ).show();
     	 }
-    }
+    }// end FeedPublisher
     
     private class PlaceDownloader extends AsyncTask<Location, Void, List<Place>>
     {
@@ -106,7 +109,8 @@ public class CheckinActivity extends Activity {
     	 @Override
     	 protected void onPostExecute(List<Place> myPlaceList)
     	 {
-    		 if ( mProgress != null ) {
+    		 if ( mProgress != null )
+    		 {
     			 mProgress.dismiss();
     		 }
 			if(myPlaceList != null && myPlaceList.size() > 0) 
@@ -119,20 +123,25 @@ public class CheckinActivity extends Activity {
 				}
 				
 				ListView myListView = (ListView) findViewById(R.id.place_list);
-				myListView.setOnItemClickListener(new OnItemClickListener() {
-
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1,
-							int arg2, long arg3) {
-						// TODO Auto-generated method stub
-						Logger.Debug("click on position " + arg2);
-						new FeedPublisher().execute(arg2);
-					}
-				});
+				
+				myListView.setOnItemClickListener(
+						new OnItemClickListener()
+						{
+							@Override
+							public void onItemClick(AdapterView<?> arg0, View arg1,	int arg2, long arg3)
+							{
+								// TODO Auto-generated method stub
+								Logger.Debug("click on position " + arg2);
+								new FeedPublisher().execute(arg2);
+							}
+						}
+				);
 				
 		        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(CheckinActivity.this, R.layout.checkin_row,R.id.checkin_place_name,placesOnList);
 		        myListView.setAdapter(myAdapter);
-			}
-    	 }
-    }
+			}// end if
+			
+    	 }// end onPostExecute
+    	 
+    }// end PlaceDownloader
 }
