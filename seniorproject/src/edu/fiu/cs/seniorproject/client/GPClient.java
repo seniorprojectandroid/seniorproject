@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 
 import edu.fiu.cs.seniorproject.utils.Logger;
 
+import edu.fiu.cs.seniorproject.data.Location;
 import android.os.Bundle;
 
 public class GPClient extends RestClient{
@@ -22,7 +23,7 @@ public class GPClient extends RestClient{
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	public String getEvent(String reference, String eventId) throws MalformedURLException, IOException
+	public String getPlaceDetails(String reference, String eventId) throws MalformedURLException, IOException
 	{
 		/*
 		 * 	https://maps.googleapis.com/maps/api/place/event/details/format?sensor=true_or_false
@@ -38,7 +39,7 @@ public class GPClient extends RestClient{
 			params.putString("event_id", eventId);
 		
 		String result = null;
-		String url = "https://maps.googleapis.com/maps/api/place/event/details/json";
+		String url = "https://maps.googleapis.com/maps/api/place/details/json";
 		String method = "GET";
 
 		try
@@ -47,15 +48,15 @@ public class GPClient extends RestClient{
 		
 		}catch(MalformedURLException e)
 		{
-			Logger.Error("GPClient getEvents MalformedURLException");
+			Logger.Error("GPClient getPlace MalformedURLException");
 		}catch(IOException e)
 		{
-			Logger.Error("GPClient getEvents IOException");
+			Logger.Error("GPClient getPlace IOException");
 		}
 		
 		return result;
 	}
-	
+		
 	/**
 	 * 
 	 * @param longitude
@@ -67,7 +68,7 @@ public class GPClient extends RestClient{
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	public String getPlaces(String longitude, String latitude, String radius, String types, String name) throws MalformedURLException, IOException
+	public String getPlaces(Location location, String category, String radius, String query) throws MalformedURLException, IOException
 	{
 	   /*
 	    * https://maps.googleapis.com/maps/api/place/search/json?
@@ -75,21 +76,12 @@ public class GPClient extends RestClient{
 		* sensor=false&key=AddYourOwnKeyHere
 		*/
 
-
 		Bundle params = this.getBundle();
 		
-		if(longitude != null)
-			params.putString("longitude", longitude);
-		if(latitude != null)
-			params.putString("latitude", latitude);
+		if(location != null)
+			params.putString("location", location.getLatitude() + "," + location.getLongitude());
 		if(radius != null)
-			params.putString("radius",radius);
-		if(types != null)
-			params.putString("types",types);
-		if(name != null)
-			params.putString("name",name);
-		
-		params.putString("sensor","false");
+			params.putString("radius", radius);
 		
 		String result = null;
 		String url = "https://maps.googleapis.com/maps/api/place/search/json";

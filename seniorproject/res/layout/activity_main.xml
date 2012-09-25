@@ -34,4 +34,13 @@
         android:onClick="onShowGeoLocationClick"
         android:text="@string/show_geolocation" />
 
+    <Button
+        android:id="@+id/events_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/show_geolocation"
+        android:layout_centerHorizontal="true"
+        android:onClick="onShowEventsClick"
+        android:text="@string/events" />
+
 </RelativeLayout>
