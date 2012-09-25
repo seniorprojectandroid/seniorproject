@@ -15,19 +15,36 @@ import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.support.v4.app.NavUtils;
 import android.text.format.DateFormat;
 
 public class EventsActivity extends Activity {
 
 	private EventLoader mEventLoader = null;
+	private List<Event> mEventlist = null;
+	
+	private final OnItemClickListener mClickListener = new OnItemClickListener() {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			if ( mEventlist != null && mEventlist.size() > position ) {
+				Event targetEvent = mEventlist.get(position);
+				Intent intent = new Intent(EventsActivity.this, EventDetailsActivity.class);
+				intent.putExtra("event_id", targetEvent.getId());
+				intent.putExtra("source", targetEvent.getSource());
+				EventsActivity.this.startActivity(intent);
+			}
+		}
+	};
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +97,8 @@ public class EventsActivity extends Activity {
 			if ( eventList != null && eventList.size() > 0 ) {
 				if ( mListView != null && mListView.get() != null ) {
 					
+					mEventlist = eventList;	// store the event list
+					
 					// create the grid item mapping
 					String[] from = new String[] {"name", "place", "time", "distance" };
 					int[] to = new int[] { R.id.event_name, R.id.event_place, R.id.event_time, R.id.event_distance };
@@ -113,6 +132,7 @@ public class EventsActivity extends Activity {
 					SimpleAdapter adapter = new SimpleAdapter(EventsActivity.this, fillMaps, R.layout.event_row, from, to);
 					mListView.get().setAdapter(adapter);
 					mListView.get().setVisibility(View.VISIBLE);
+					mListView.get().setOnItemClickListener(mClickListener);
 				}
 			} else {
 				if ( mTextView != null && mTextView.get() != null ) {

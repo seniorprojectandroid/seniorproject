@@ -1,5 +1,6 @@
 package edu.fiu.cs.seniorproject.data.provider;
 
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,11 +18,15 @@ import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class MBVCAProvider extends DataProvider 
 {
+	private final static String IMAGE_BASE_URL = "http://www.miamibeachapi.com";
+	
 	private final MBVCAClient mMBVCAClient;
+	private final Hashtable<String, Event> mEventMap;
 	
 	public MBVCAProvider()
 	{
 		this.mMBVCAClient  = new MBVCAClient(AppConfig.MBVCA_APP_ID);
+		this.mEventMap = new Hashtable<String, Event>();
 	}
 
 	@Override
@@ -40,6 +45,7 @@ public class MBVCAProvider extends DataProvider
 					if ( eventList != null && eventList.length() > 0 ) {
 						
 						result = new LinkedList<Event>();
+						mEventMap.clear();
 						for( int i = 0; i < eventList.length(); i++ ) {
 							JSONObject iter = eventList.getJSONObject(i);
 							
@@ -69,11 +75,16 @@ public class MBVCAProvider extends DataProvider
 								}
 								
 								if ( iter.has("image")) {
-									event.setImage(iter.getString("image"));
+									String image = iter.getString("image");
+									
+									if ( !image.isEmpty() && !image.equals("null")) {
+										event.setImage( IMAGE_BASE_URL + iter.getString("image"));
+									}
 								}
 								
 								event.setSource(SourceType.MBVCA);
 								result.add(event);
+								mEventMap.put(event.getId(), event);
 							}
 						}
 					}
@@ -94,7 +105,7 @@ public class MBVCAProvider extends DataProvider
 
 	@Override
 	public Event getEventDetails(String eventId) {
-		return null;
+		return mEventMap.get(eventId);
 	}
 
 	@Override

@@ -16,6 +16,9 @@
     <string name="show_geolocation">Show Geolocation</string>
     <string name="title_activity_checkin">Checkin</string>
     <string name="title_activity_events">Events</string>
-	<string name="events">Events</string>
-	<string name="loading">Loading..</string>
+    <string name="events">Events</string>
+    <string name="loading">Loading..</string>
+    <string name="title_activity_event_details">Event Details</string>
+    <string name="event_image">Event Image</string>
+
 </resources>
