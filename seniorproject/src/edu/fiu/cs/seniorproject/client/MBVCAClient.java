@@ -20,9 +20,11 @@ public class MBVCAClient extends RestClient{
 	public String getEventList() {
 		Bundle params = getBundle();
 		
-		String query = String.format("{\"start_time\":{\"$gt\":%d},\"datatable_category_id\":{\"$exists\":true},\"calendar_id\":1}", System.currentTimeMillis() / 1000L );
+		// read today events by default
+		long unixtimestamp = System.currentTimeMillis() / 1000L;
+		String query = String.format("{\"start_time\":{\"$gt\":%d,\"$lt\":%d},\"datatable_category_id\":{\"$exists\":true},\"calendar_id\":1}", unixtimestamp, unixtimestamp + (24 * 60 * 60 ) );
 		Logger.Debug("Query string in MBVCA = " + query);
-		params.putString("query", query);
+		params.putString("qry", query);
 		params.putString("srt", "{\"start_time\":1}" );
 		
 		String response = null;

@@ -31,6 +31,8 @@ import java.net.URLEncoder;
 
 import edu.fiu.cs.seniorproject.utils.Logger;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 public class RestClient {
@@ -48,7 +50,8 @@ public class RestClient {
 	}
 	
 	protected String openUrl(String url, String method, Bundle params)
-				throws MalformedURLException, IOException {
+				throws MalformedURLException, IOException
+	{
 	
 		// random string as boundary for multi-part http post
         String strBoundary = "3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
@@ -105,7 +108,7 @@ public class RestClient {
             response = read(conn.getErrorStream());
         }
         return response;
-	}
+	}// end openUrl
 	
 	private String encodeUrl(Bundle parameters)
 	{
@@ -155,11 +158,32 @@ public class RestClient {
 	
 	private String read(InputStream in) throws IOException {
         StringBuilder sb = new StringBuilder();
-        BufferedReader r = new BufferedReader(new InputStreamReader(in), 1000);
-        for (String line = r.readLine(); line != null; line = r.readLine()) {
-            sb.append(line);
+        
+        try {
+	        BufferedReader r = new BufferedReader(new InputStreamReader(in), 1000);
+	        for (String line = r.readLine(); line != null; line = r.readLine()) {
+	            sb.append(line);
+	        }
+	        in.close();
+        } catch (Exception e) {
+        	Logger.Error("Exception reading from network. " + e.getMessage() );
         }
-        in.close();
         return sb.toString();
     }
+	
+	public static Bitmap downloadBitmap( String url ) {
+		Logger.Debug("download bitmap from " + url );
+		HttpURLConnection conn;
+		try {
+			conn = (HttpURLConnection) new URL(url).openConnection();
+			conn.setRequestProperty("User-Agent", System.getProperties().getProperty("http.agent") + " MBVCA");
+			return BitmapFactory.decodeStream(conn.getInputStream());
+		} catch (MalformedURLException e) {
+			Logger.Error("MalformedURLException reading bitmap" + e.getMessage() );
+		} catch (IOException e) {
+			Logger.Error("IOException reading bitmap " + e.getMessage() );
+		}
+        
+		return null;
+	}
 }

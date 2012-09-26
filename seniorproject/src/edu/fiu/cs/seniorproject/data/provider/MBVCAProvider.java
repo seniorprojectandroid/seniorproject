@@ -1,5 +1,6 @@
 package edu.fiu.cs.seniorproject.data.provider;
 
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -7,9 +8,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+<<<<<<< HEAD
 
 //import android.provider.ContactsContract.CommonDataKinds.Event;
 
+=======
+>>>>>>> refs/remotes/origin/master
 import edu.fiu.cs.seniorproject.client.MBVCAClient;
 import edu.fiu.cs.seniorproject.config.AppConfig;
 import edu.fiu.cs.seniorproject.data.Event;
@@ -20,11 +24,15 @@ import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class MBVCAProvider extends DataProvider 
 {
+	private final static String IMAGE_BASE_URL = "http://www.miamibeachapi.com";
+	
 	private final MBVCAClient mMBVCAClient;
+	private final Hashtable<String, Event> mEventMap;
 	
 	public MBVCAProvider()
 	{
 		this.mMBVCAClient  = new MBVCAClient(AppConfig.MBVCA_APP_ID);
+		this.mEventMap = new Hashtable<String, Event>();
 	}
 
 	@Override
@@ -43,6 +51,7 @@ public class MBVCAProvider extends DataProvider
 					if ( eventList != null && eventList.length() > 0 ) {
 						
 						result = new LinkedList<Event>();
+						mEventMap.clear();
 						for( int i = 0; i < eventList.length(); i++ ) {
 							JSONObject iter = eventList.getJSONObject(i);
 							
@@ -56,9 +65,14 @@ public class MBVCAProvider extends DataProvider
 								}
 								
 								if ( iter.has("lat") && iter.has("lng")) {
-									edu.fiu.cs.seniorproject.data.Location eventLocation = new edu.fiu.cs.seniorproject.data.Location();
-									eventLocation.setLatitude( String.valueOf( iter.getDouble("lat") ) );
-									eventLocation.setLongitude(String.valueOf(iter.getDouble("lng")));
+									Location eventLocation = new Location(String.valueOf( iter.getDouble("lat") ),String.valueOf(iter.getDouble("lng")) );
+									
+									if ( iter.has("venue") ) {
+										eventLocation.setAddress( iter.getString("venue"));
+									} else if ( iter.has("location")) {
+										eventLocation.setAddress("location");
+									}
+									
 									event.setLocation(eventLocation);
 								}
 
@@ -66,8 +80,17 @@ public class MBVCAProvider extends DataProvider
 									event.setTime(String.valueOf(iter.getInt("start_time")));
 								}
 								
+								if ( iter.has("image")) {
+									String image = iter.getString("image");
+									
+									if ( !image.isEmpty() && !image.equals("null")) {
+										event.setImage( IMAGE_BASE_URL + iter.getString("image"));
+									}
+								}
+								
 								event.setSource(SourceType.MBVCA);
 								result.add(event);
+								mEventMap.put(event.getId(), event);
 							}
 						}
 					}
@@ -88,7 +111,7 @@ public class MBVCAProvider extends DataProvider
 
 	@Override
 	public Event getEventDetails(String eventId) {
-		return null;
+		return mEventMap.get(eventId);
 	}
 
 	@Override

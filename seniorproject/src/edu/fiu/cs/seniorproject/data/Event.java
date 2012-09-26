@@ -1,12 +1,14 @@
 package edu.fiu.cs.seniorproject.data;
 
-public class Event {
+public class Event
+{
 	
 	private String id = null;
 	private String name =null;
 	private String time = null;
 	private String description = null;
 	private Location location = null;
+	private String image = null;
 	private SourceType source = SourceType.GOOGLE_PLACE;
 	
 	public Event()
@@ -60,6 +62,14 @@ public class Event {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 
 }
