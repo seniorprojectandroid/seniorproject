@@ -3,7 +3,8 @@ package edu.fiu.cs.seniorproject.manager;
 import java.util.LinkedList;
 import java.util.List;
 
-import android.location.Location;
+//import android.location.Location;
+import edu.fiu.cs.seniorproject.data.Location;
 
 import edu.fiu.cs.seniorproject.data.Event;
 import edu.fiu.cs.seniorproject.data.Place;
