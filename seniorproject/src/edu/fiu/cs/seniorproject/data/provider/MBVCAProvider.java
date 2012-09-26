@@ -8,12 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-<<<<<<< HEAD
-
-//import android.provider.ContactsContract.CommonDataKinds.Event;
-
-=======
->>>>>>> refs/remotes/origin/master
 import edu.fiu.cs.seniorproject.client.MBVCAClient;
 import edu.fiu.cs.seniorproject.config.AppConfig;
 import edu.fiu.cs.seniorproject.data.Event;

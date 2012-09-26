@@ -2,11 +2,6 @@ package edu.fiu.cs.seniorproject.data.provider;
 
 import java.util.List;
 
-<<<<<<< HEAD
-import edu.fiu.cs.seniorproject.data.Location;
-
-=======
->>>>>>> refs/remotes/origin/master
 import edu.fiu.cs.seniorproject.data.Event;
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.Place;

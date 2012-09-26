@@ -4,14 +4,10 @@ import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
 
-<<<<<<< HEAD
-//import android.location.Location;
-import edu.fiu.cs.seniorproject.data.Location;
-=======
+
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.widget.ImageView;
->>>>>>> refs/remotes/origin/master
 
 import edu.fiu.cs.seniorproject.client.RestClient;
 import edu.fiu.cs.seniorproject.data.Event;
