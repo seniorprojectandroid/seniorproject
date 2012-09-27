@@ -26,6 +26,7 @@ public class DataManager {
 		// register all the providers
 		mProviderList.add(new MBVCAProvider());
 		//mProviderList.add(new GPProvider());
+		//mProviderList.add(new EventFullProvider());
 	}
 	
 	public List<Event> getEventList(Location location, String category, String radius, String query) {
@@ -80,7 +81,7 @@ public class DataManager {
 		for( int i = 0; i < mProviderList.size(); i++ ) {
 			DataProvider provider = mProviderList.get(i);
 			if ( provider.supportEvents() && provider.getSource() == source ) {
-				result = provider.getEventDetails(eventId);
+				result = provider.getEventDetails(eventId,null);
 				break;
 			}
 		}
@@ -92,7 +93,7 @@ public class DataManager {
 		for( int i = 0; i < mProviderList.size(); i++ ) {
 			DataProvider provider = mProviderList.get(i);
 			if ( provider.supportPlaces() && provider.getSource() == source ) {
-				result = provider.getPlaceDetails(placeId, reference);
+				result = provider.getPlaceDetails(placeId);
 				break;
 			}
 		}
