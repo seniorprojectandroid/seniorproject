@@ -16,6 +16,7 @@ import edu.fiu.cs.seniorproject.data.Place;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.data.provider.DataProvider;
 import edu.fiu.cs.seniorproject.data.provider.MBVCAProvider;
+import edu.fiu.cs.seniorproject.data.provider.EventFullProvider;
 
 public class DataManager {
 
