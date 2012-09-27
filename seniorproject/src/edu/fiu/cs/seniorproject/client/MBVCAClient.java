@@ -2,6 +2,7 @@ package edu.fiu.cs.seniorproject.client;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Calendar;
 
 import edu.fiu.cs.seniorproject.config.AppConfig;
 import edu.fiu.cs.seniorproject.utils.Logger;
@@ -21,7 +22,12 @@ public class MBVCAClient extends RestClient{
 		Bundle params = getBundle();
 		
 		// read today events by default
-		long unixtimestamp = System.currentTimeMillis() / 1000L;
+		Calendar calendar = Calendar.getInstance();
+		calendar.clear(Calendar.SECOND);
+		calendar.clear(Calendar.MINUTE);
+		calendar.clear(Calendar.HOUR_OF_DAY);
+		
+		long unixtimestamp = calendar.getTimeInMillis() / 1000L;
 		String query = String.format("{\"start_time\":{\"$gt\":%d,\"$lt\":%d},\"datatable_category_id\":{\"$exists\":true},\"calendar_id\":1}", unixtimestamp, unixtimestamp + (24 * 60 * 60 ) );
 		Logger.Debug("Query string in MBVCA = " + query);
 		params.putString("qry", query);
