@@ -52,9 +52,9 @@ public class EventfulRestClient extends RestClient {
 		
 		if ( location != null ) {
 			if ( location.getLatitude() != null && location.getLongitude() != null ) {
-				params.putString("location", location.getLatitude() + "," + location.getLongitude());
+				params.putString("where", location.getLatitude() + "," + location.getLongitude());
 			} else if ( location.getAddress() != null ) {
-				params.putString("location", location.getAddress());
+				params.putString("where", location.getAddress());
 			}
 		}
 		
