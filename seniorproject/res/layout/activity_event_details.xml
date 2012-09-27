@@ -79,6 +79,6 @@
 	        android:layout_height="200dp"
 	        android:layout_margin="8dp"        
 	        android:apiKey="0f7bvw0dRHCH9_Amp0WBvAXmnY95nxeUVef3zHg"
-	        android:clickable="true" />
+	        android:clickable="false" />
 	</LinearLayout>
 </ScrollView>
