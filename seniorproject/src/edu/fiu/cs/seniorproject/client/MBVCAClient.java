@@ -25,6 +25,7 @@ public class MBVCAClient extends RestClient{
 		Calendar calendar = Calendar.getInstance();
 		calendar.clear(Calendar.SECOND);
 		calendar.clear(Calendar.MINUTE);
+		calendar.clear(Calendar.HOUR);
 		calendar.clear(Calendar.HOUR_OF_DAY);
 		
 		long unixtimestamp = calendar.getTimeInMillis() / 1000L;
