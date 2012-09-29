@@ -32,18 +32,20 @@ public class EventFullProvider extends DataProvider
 	private final static String IMAGE_BASE_URL = "http://www.eventful.com";	
 	
 	private final Hashtable<String, Event> mEventMap;
+	private final Hashtable<String, Place> mPlaceMap;
 		
 	 public EventFullProvider()
 	 {
 		 this.myRestClient = new EventfulRestClient(AppConfig.EVENTFUL_APP_ID);
 		 this.mEventMap = new Hashtable<String, Event>();
+		 this.mPlaceMap = new Hashtable<String, Place>();
 	 }// EventFullProvider
 	 
 	 public List<Event> getEventList(Location location, String category, String radius, String query ) 
 	 {
 		 
 		 List<Event> myEventList = null;
-		 String myListRequestClient = this.myRestClient.getEventList(query, new Location("32.746682","-117.162741"), null, category,10); // ojo con el signature
+		 String myListRequestClient = this.myRestClient.getEventList(query, new Location("32.746682","-117.162741"), null, category,10); 
 		 if ( myListRequestClient != null && !myListRequestClient.isEmpty() )
 		 {
 				try {
@@ -111,8 +113,7 @@ public class EventFullProvider extends DataProvider
 											event.setTime(String.valueOf(date.getTime()/1000L));
 										} catch (ParseException e) {											
 											e.printStackTrace();
-										}
-										
+										}										
 										
 									}
 									
@@ -137,7 +138,9 @@ public class EventFullProvider extends DataProvider
 							}
 						}
 					}
-				} catch (JSONException e) {
+				}
+				catch (JSONException e)
+				{
 					Logger.Error("Exception decoding json object in MBVCA " );
 					e.printStackTrace();
 				}
@@ -160,15 +163,84 @@ public class EventFullProvider extends DataProvider
 	 }// getEventDetails 
 	 
 	 public List<Place> getPlaceList(Location location, String category, String radius, String query)
-	 {
+	 {	
 		
-		Place myPlace = null;   
-		List<Place> myListPlace = new LinkedList<Place>();
-		String myListRequestClient = this.myRestClient.getPlaceList(query, location, 10, 10, 10);
-		
-		
+		List<Place> myPlaceList = null;
+		String myListRequestClient = this.myRestClient.getPlaceList(query, new Location("32.746682","-117.162741"), 10, 10,150);
+		 if ( myListRequestClient != null && !myListRequestClient.isEmpty() )
+		 {
+				try {
+					JSONObject placesObject = new JSONObject(myListRequestClient);
+					if ( placesObject != null && placesObject.has("venues"))
+					{
+						JSONObject venues = placesObject.getJSONObject("venues");
+						JSONArray jsonPlaceList = venues.getJSONArray("venue");
+						
+						if ( jsonPlaceList != null && jsonPlaceList.length() > 0 )
+						{
+							
+							myPlaceList = new LinkedList<Place>();
+							
+							mPlaceMap.clear();
+							for( int i = 0; i < jsonPlaceList.length(); i++ )
+							{
+								JSONObject iter = jsonPlaceList.getJSONObject(i);
+								
+								if ( iter.has("id") && iter.has("name"))
+								{
+									Place place = new Place();
+									place.setId(iter.getString("id"));
+									place.setName(iter.getString("name"));	
+									
+									// Process the location
+									if ( iter.has("latitude") && iter.has("longitude"))
+									{
+										Location placeLocation = new Location(iter.getString("latitude"),iter.getString("longitude") );
+										
+										StringBuilder myAddress = new StringBuilder(110);	
+										
+										if ( iter.has("venue_address") )
+										{
+											myAddress.append(iter.getString("venue_address")+",");
+										}
+										else if ( iter.has("city_name"))
+										{
+											myAddress.append(iter.getString("city_name")+",");
+										}
+										else if( iter.has("region_abbr"))
+										{
+											myAddress.append(iter.getString("region_abbr")+",");
+										}
+										else if( iter.has("postal_code"))
+										{
+											myAddress.append(iter.getString("postal_code")+",");
+										}
+										
+										placeLocation.setAddress(myAddress.toString());
+										place.setLocation(placeLocation);										
+									}//set the location
+
+									
+									if ( iter.has("description") && iter.isNull("description"))
+									{
+										place.setDescription(iter.getString("description"));
+									}
+									
+									myPlaceList.add(place);
+									mPlaceMap.put(place.getId(), place);
+								}
+							}
+						}
+					}
+				}
+				catch (JSONException e)
+				{
+					Logger.Error("Exception decoding json object in MBVCA " );
+					e.printStackTrace();
+				}
+		 }		
 		 
-		 return myListPlace;
+		 return myPlaceList;
 	 }// getPlaceList
 	 
 	 
