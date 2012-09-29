@@ -2,44 +2,147 @@ package edu.fiu.cs.seniorproject.data.provider;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.util.Xml;
 import edu.fiu.cs.seniorproject.client.EventfulRestClient;
+import edu.fiu.cs.seniorproject.client.MBVCAClient;
 import edu.fiu.cs.seniorproject.config.AppConfig;
 import edu.fiu.cs.seniorproject.data.Event;
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.Place;
 import edu.fiu.cs.seniorproject.data.SourceType;
+import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class EventFullProvider extends DataProvider
 {
-	private EventfulRestClient myRestClient = null;
+	private EventfulRestClient myRestClient;
+	
+	private final static String IMAGE_BASE_URL = "http://www.eventful.com";	
+	
+	private final Hashtable<String, Event> mEventMap;
 		
 	 public EventFullProvider()
 	 {
 		 this.myRestClient = new EventfulRestClient(AppConfig.EVENTFUL_APP_ID);
+		 this.mEventMap = new Hashtable<String, Event>();
 	 }// EventFullProvider
 	 
 	 public List<Event> getEventList(Location location, String category, String radius, String query ) 
 	 {
 		 
-		 List<Event> myEventList = new LinkedList<Event>();
+		 List<Event> myEventList = null;
 		 String myListRequestClient = this.myRestClient.getEventList(query, new Location("32.746682","-117.162741"), null, category,10); // ojo con el signature
-		 XmlParser myparce = new XmlParser();
-		 try {
-			myEventList = myparce.parse(myListRequestClient);
-		} catch (XmlPullParserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		 if ( myListRequestClient != null && !myListRequestClient.isEmpty() )
+		 {
+				try {
+					JSONObject eventsObject = new JSONObject(myListRequestClient);
+					if ( eventsObject != null && eventsObject.has("events"))
+					{
+						JSONObject events = eventsObject.getJSONObject("events");
+						JSONArray jsonEventList = events.getJSONArray("event");
+						
+						if ( jsonEventList != null && jsonEventList.length() > 0 )
+						{
+							
+							myEventList = new LinkedList<Event>();
+							
+							mEventMap.clear();
+							for( int i = 0; i < jsonEventList.length(); i++ )
+							{
+								JSONObject iter = jsonEventList.getJSONObject(i);
+								
+								if ( iter.has("id") && iter.has("title"))
+								{
+									Event event = new Event();
+									event.setId(iter.getString("id"));
+									event.setName(iter.getString("title"));
+									
+									if ( iter.has("description"))
+									{
+										event.setDescription(iter.getString("description"));
+									}
+									
+									// Process the location
+									if ( iter.has("latitude") && iter.has("longitude"))
+									{
+										Location eventLocation = new Location(iter.getString("latitude"),iter.getString("longitude") );
+										
+										StringBuilder myAddress = new StringBuilder(110);	
+										
+										if ( iter.has("venue_address") )
+										{
+											myAddress.append(iter.getString("venue_address")+",");
+										}
+										else if ( iter.has("city_name"))
+										{
+											myAddress.append(iter.getString("city_name")+",");
+										}
+										else if( iter.has("region_abbr"))
+										{
+											myAddress.append(iter.getString("region_abbr")+",");
+										}
+										else if( iter.has("postal_code"))
+										{
+											myAddress.append(iter.getString("postal_code")+",");
+										}
+										
+										eventLocation.setAddress(myAddress.toString());
+										event.setLocation(eventLocation);										
+									}//set the location
+
+									if ( iter.has("start_time"))
+									{
+										SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+										Date date;
+										try {
+											date = sdf.parse(iter.getString("start_time"));
+											event.setTime(String.valueOf(date.getTime()/1000L));
+										} catch (ParseException e) {											
+											e.printStackTrace();
+										}
+										
+										
+									}
+									
+									if ( iter.has("image") && !iter.isNull("image"))
+									{
+										JSONObject imageObject = iter.getJSONObject("image");								
+										if(imageObject != null && imageObject.has("small"))
+										{
+											JSONObject small = imageObject.getJSONObject("small");
+											if (small != null && small.has("url") && !small.getString("url").isEmpty() && !small.getString("url").equals("null"))
+											{
+												event.setImage( IMAGE_BASE_URL + small.getString("url"));
+											}
+										}										
+										
+									}
+									
+									event.setSource(SourceType.EVENTFUL);
+									myEventList.add(event);
+									mEventMap.put(event.getId(), event);
+								}
+							}
+						}
+					}
+				} catch (JSONException e) {
+					Logger.Error("Exception decoding json object in MBVCA " );
+					e.printStackTrace();
+				}
+		 }
+		
 		 return myEventList;
 		 
 	 }// getEventList 
@@ -91,149 +194,17 @@ public class EventFullProvider extends DataProvider
 		return SourceType.EVENTFUL;
 	}
 	
-	// private class
-	private class XmlParser
-	{
-		    private final String ns = null;
-		   
-		    public List<Event> parse(String xmlData) throws XmlPullParserException, IOException
-		    {
-		       
-		            XmlPullParser parser = Xml.newPullParser();
-		            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-		            parser.setInput(new StringReader(xmlData));
-		            parser.nextTag();
-		            return readFeed(parser, xmlData,"events");		       
-		    }
-		    
-		    private List<Event> readFeed(XmlPullParser parser, String xmlData, String object) throws XmlPullParserException, IOException
-		    {		        
-		    	
-		    	List<Event> myEventList = new LinkedList<Event>();		    	
-	
-		        parser.require(XmlPullParser.START_TAG, ns, xmlData);// xmlData this is the name of the xml document
-		        
-		        while (parser.next() != XmlPullParser.END_TAG)
-		        {
-		            if (parser.getEventType() != XmlPullParser.START_TAG)
-		            {
-		                continue;
-		            }
-		            String name = parser.getName();
-		            // Starts by looking for the entry tag
-		            if (name.equals(object))// put the object name event in this case (events or avenues)
-		            {
-		            	myEventList.add(readEntry(parser,"events"));
-		            }
-		            else
-		            {
-		                skip(parser);
-		            }
-		        }  
-		        return myEventList;
-		    }// end readFeed
-		    
-		    private Event readEntry(XmlPullParser parser, String object) throws XmlPullParserException, IOException
-		    {
-		        parser.require(XmlPullParser.START_TAG, ns, object);// put the object name event in this case
-	
-		        Event myEvent = new Event();        
-		        String data = ""; 		    	
-		    	
-		        while (parser.next() != XmlPullParser.END_TAG)
-		        {
-		            if (parser.getEventType() != XmlPullParser.START_TAG)
-		            {
-		                continue;
-		            }
-		            String name = parser.getName();
-		            if (name.equals("title"))
-		            {
-		            	// set the event name
-		                data = readTitle(parser,"title");
-		                myEvent.setName(data);
-		            } 
-		            else if (name.equals("start_time"))
-		            {
-		            	// set the event time
-		                data = readTitle(parser,"start_time"); // process the time 
-		                myEvent.setTime(data);
-		            } 
-		            else if (name.equals("description"))
-		            {
-		            	data = readTitle(parser,"description");
-		            	myEvent.setDescription(data);
-		            } 
-		            else
-		            {
-		                skip(parser);
-		            }
-		        }// end while
-		        
-		        return myEvent;
-		        
-		    }// end Entry
-		    
-		    // For the tags extracts their text values.
-		    private String readText(XmlPullParser parser) throws IOException, XmlPullParserException 
-		    {
-		        String result = "";
-		        if (parser.next() == XmlPullParser.TEXT) {
-		            result = parser.getText();
-		            parser.nextTag();
-		        }
-		        return result;
-		    }// end readText
-		    
-		   // Processes tags in the feed.
-		    private String readTitle(XmlPullParser parser, String value) throws IOException, XmlPullParserException 
-		    {
-		        parser.require(XmlPullParser.START_TAG, ns, value);
-		        String title = readText(parser);
-		        parser.require(XmlPullParser.END_TAG, ns, value);
-		        return title;
-		    }// end readTitle
-		    
-		    
-		    private void skip(XmlPullParser parser) throws XmlPullParserException, IOException
-		    {
-		        if (parser.getEventType() != XmlPullParser.START_TAG)
-		        {
-		            throw new IllegalStateException();
-		        }// end if
-		        
-		        int depth = 1;
-		        while (depth != 0)
-		        {
-		            switch (parser.next())
-		            {
-		            case XmlPullParser.END_TAG:
-		                depth--;
-		                break;
-		            case XmlPullParser.START_TAG:
-		                depth++;
-		                break;
-		            }// end switch
-		        }// end while
-		     }// end skip
-	
-		 
-		}// StackOverflowXmlParser
-	 
-	 
+	@Override
+	public Event getEventDetails(String eventId, String reference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }// EventFullProvider
 
 
- 
-//// duda sobre el InputStream notes
-//
 
-
-
-
-
-
+/////// http://api.evdb.com/json/events/get?app_key=HrsPRcW3W49b6hZq&id=E0-001-000278174-6
 
 
 //public class EventFullProvider extends DataProvider

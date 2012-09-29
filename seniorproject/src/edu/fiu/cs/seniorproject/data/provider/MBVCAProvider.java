@@ -88,7 +88,7 @@ public class MBVCAProvider extends DataProvider
 	}
 
 	@Override
-	public Event getEventDetails(String eventId) {
+	public Event getEventDetails(String eventId, String reference) {
 		Event event = null;
 		String eventStr = this.mMBVCAClient.getEventDetails(eventId);
 		

@@ -23,20 +23,15 @@ public class GPClient extends RestClient{
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	public String getPlaceDetails(String reference, String eventId) throws MalformedURLException, IOException
+	public String getPlaceDetails(String reference) throws MalformedURLException, IOException
 	{
-		/*
-		 * 	https://maps.googleapis.com/maps/api/place/event/details/format?sensor=true_or_false
-  		 *	&key=api_key
-  		 *	&reference=CnRkAAAAGnBVNFDeQoOQHzgdOpOqJNV7K9-etc
-  		 *	&event_id=weafgerg1234235
-		 */
-		Bundle params = this.getBundle();
+		Bundle params;
+			
+		params = this.getBundle();
 		
 		if(reference != null)
 			params.putString("reference", reference);
-		if(eventId != null)
-			params.putString("event_id", eventId);
+
 		
 		String result = null;
 		String url = "https://maps.googleapis.com/maps/api/place/details/json";
@@ -102,10 +97,39 @@ public class GPClient extends RestClient{
 		return result;
 	}
 	
+	public String getEventDet(String eventId, String reference)
+	{
+		Bundle params = this.getBundle();
+		
+		if(reference != null)
+			params.putString("reference", reference);
+		if(eventId != null)
+			params.putString("event_id", eventId);
+		
+		String result = null;
+		String url = "https://maps.googleapis.com/maps/api/place/event/details/json";
+		String method = "GET";
+		
+		try
+		{
+			result = this.openUrl(url, method, params);
+		
+		}catch(MalformedURLException e)
+		{
+			Logger.Error("GPClient getEvents MalformedURLException");
+		}catch(IOException e)
+		{
+			Logger.Error("GPClient getEvents IOException");
+		}
+		
+		return result;
+	}
+	
 	public Bundle getBundle()
 	{
 		Bundle bundle = new Bundle();
 		bundle.putString("key", this.appId);
+		bundle.putString("sensor", "false");
 		return bundle;
 	}
 	

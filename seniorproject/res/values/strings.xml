@@ -20,5 +20,6 @@
     <string name="loading">Loading..</string>
     <string name="title_activity_event_details">Event Details</string>
     <string name="event_image">Event Image</string>
+    <string name="title_activity_google_places">GooglePlaces</string>
 
 </resources>
