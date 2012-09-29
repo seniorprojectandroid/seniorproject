@@ -13,7 +13,7 @@ public abstract class DataProvider {
 	 
 	 public abstract List<Place> getPlaceList(Location location, String category, String radius, String query);
 	 
-	 public abstract Event getEventDetails(String eventId);
+	 public abstract Event getEventDetails(String eventId, String reference);
 	 
 	 public abstract Place getPlaceDetails(String placeId, String reference);
 

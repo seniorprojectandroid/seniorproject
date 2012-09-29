@@ -43,4 +43,14 @@
         android:onClick="onShowEventsClick"
         android:text="@string/events" />
 
+    <Button
+        android:id="@+id/places_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/events_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="21dp"
+        android:onClick="onShowPlacesClick"
+        android:text="Get Places" />
+
 </RelativeLayout>

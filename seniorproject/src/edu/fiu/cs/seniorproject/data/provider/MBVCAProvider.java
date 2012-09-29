@@ -34,7 +34,7 @@ public class MBVCAProvider extends DataProvider
 			String radius, String query) {
 		List<Event> result = null;
 		
-		String events = mMBVCAClient.getEventList();
+		String events = mMBVCAClient.getEventList(location, category, radius, 0, 0);
 		if ( events != null && !events.isEmpty() ) {
 			try {
 				JSONObject eventsObject = new JSONObject(events);
@@ -104,7 +104,7 @@ public class MBVCAProvider extends DataProvider
 	}
 
 	@Override
-	public Event getEventDetails(String eventId) {
+	public Event getEventDetails(String eventId, String reference) {
 		return mEventMap.get(eventId);
 	}
 

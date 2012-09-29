@@ -194,6 +194,11 @@ public class EventFullProvider extends DataProvider
 		return SourceType.EVENTFUL;
 	}
 	
+	@Override
+	public Event getEventDetails(String eventId, String reference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }// EventFullProvider
 
