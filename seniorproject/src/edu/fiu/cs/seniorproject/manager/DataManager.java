@@ -81,7 +81,7 @@ public class DataManager {
 		for( int i = 0; i < mProviderList.size(); i++ ) {
 			DataProvider provider = mProviderList.get(i);
 			if ( provider.supportEvents() && provider.getSource() == source ) {
-				result = provider.getEventDetails(eventId);
+				result = provider.getEventDetails(eventId,null);
 				break;
 			}
 		}
