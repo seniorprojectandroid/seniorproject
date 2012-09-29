@@ -22,7 +22,7 @@ public class MBVCAClient extends RestClient{
 		super(appId);
 	}
 
-	public String getEventList(Location location, String category,String radius, long startTime, long endTime) {
+	public String getEventList(Location location, String category,String radiusStr, long startTime, long endTime) {
 		String response = null;
 
 		try {
@@ -44,9 +44,17 @@ public class MBVCAClient extends RestClient{
 				query.put("datatable_category_id", Integer.valueOf( category ) );
 			} else {
 				JSONObject existObject = new JSONObject();
-				existObject.put("exist", true);
+				existObject.put("$exists", true);
 				query.put("datatable_category_id", existObject );
 			}
+			
+			if ( location != null ) {
+				float radius = Float.valueOf(radiusStr);
+				if ( radius > 0 ) {
+					this.addLocationFilter(query, location, radius);
+				}
+			}
+			
 			String queryStr = query.toString();
 
 			Logger.Debug("Query string in MBVCA = " + query);
@@ -184,6 +192,37 @@ public class MBVCAClient extends RestClient{
 		return result;
 	}
 
+	private void addLocationFilter(JSONObject query, Location location, float radius ) {
+		// At 25 degree north
+		// Length Of A Degree Of Latitude In Meters => 110772.87 meters => 68.8311 miles
+		// Length Of A Degree Of Longitude In Meters => 100950.06 meters => 62.7275 miles
+		// offset = ( 1 / distance ) * radius
+		if ( location != null && radius > 0 ) {
+			try {
+				
+				double range = radius / 68.8311;
+				double center = Double.valueOf(location.getLatitude());
+			
+				JSONObject latitudeFilter = new JSONObject();
+				latitudeFilter.put("$gt", center - range);
+				latitudeFilter.put("$lt", center + range);
+				
+				range = radius / 62.7275;
+				center = Double.valueOf(location.getLongitude());
+				
+				JSONObject longitudeFilter = new JSONObject();
+				longitudeFilter.put("$gt", center - range);
+				longitudeFilter.put("$lt", center + range);
+				
+				query.put("lat", latitudeFilter);
+				query.put("lng", longitudeFilter);
+				
+			} catch (JSONException e) {
+				Logger.Warning("Exception encoding lat and lng filters " + e.getMessage() );
+			}
+		}
+	}
+	
 	public Bundle getBundle()
 	{
 		Bundle bundle = new Bundle();

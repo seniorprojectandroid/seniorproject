@@ -9,7 +9,7 @@ public class Place {
 	private String description;
 	private String website;
 	private String reference;
-	
+	private String image;
 
 	public Place()
 	{		
@@ -62,6 +62,14 @@ public class Place {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 
 }

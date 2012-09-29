@@ -69,7 +69,6 @@ public class EventsActivity extends Activity {
         getMenuInflater().inflate(R.menu.items_list, menu);
         return true;
     }
-
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -1,3 +1,7 @@
+/*
+ * Miami Beach location Coordinates: 25'48'46.89'N 80'8'2.63'W or 25.813025, -80.134064
+ */
+
 package edu.fiu.cs.seniorproject.manager;
 
 import java.io.IOException;
@@ -18,6 +22,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 public class AppLocationManager {
+	
+	public static final String MIAMI_BEACH_LATITUDE = "25.813025";
+	public static final String MIAMI_BEACH_LONGITUDE = "-80.134064";
 	
 	public interface ILocationUpdateListener {
 		void onLocationUpdate(Location newLocation);

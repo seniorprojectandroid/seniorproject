@@ -10,7 +10,7 @@ import android.os.Bundle;
 
 public class EventfulRestClient extends RestClient {
 	
-	private static final String BASE_URL = "http://api.eventful.com/rest/";
+	private static final String BASE_URL = "http://api.eventful.com/json/";
 	
 	public EventfulRestClient(String appID) {
 		super(appID);

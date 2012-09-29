@@ -35,8 +35,4 @@ public class MainActivity extends Activity {
     	this.startActivity(intent);
     }
     
-    public void onShowPlacesClick(View view) {
-    	Intent intent = new Intent(this, GooglePlaces.class);
-    	this.startActivity(intent);
-    }
 }
