@@ -291,10 +291,9 @@ public class GPProvider extends DataProvider {
 		{
 			try {
 				data = new JSONObject(result);
-				jsonArray = data.getJSONArray("result");
+				jsonArray = data.getJSONArray("results");
 
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			if(jsonArray != null && jsonArray.length() > 0)

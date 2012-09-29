@@ -16,6 +16,7 @@ import edu.fiu.cs.seniorproject.data.Place;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.data.provider.DataProvider;
 import edu.fiu.cs.seniorproject.data.provider.EventFullProvider;
+import edu.fiu.cs.seniorproject.data.provider.GPProvider;
 import edu.fiu.cs.seniorproject.data.provider.MBVCAProvider;
 
 public class DataManager {
@@ -25,9 +26,9 @@ public class DataManager {
 	
 	private DataManager() {
 		// register all the providers
-		mProviderList.add(new MBVCAProvider());
-		//mProviderList.add(new GPProvider());
-		mProviderList.add(new EventFullProvider());
+		//mProviderList.add(new MBVCAProvider());
+		mProviderList.add(new GPProvider());
+		//mProviderList.add(new EventFullProvider());
 	}
 	
 	public List<Event> getEventList(Location location, String category, String radius, String query) {

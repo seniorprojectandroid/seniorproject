@@ -21,5 +21,7 @@
     <string name="title_activity_event_details">Event Details</string>
     <string name="event_image">Event Image</string>
     <string name="title_activity_google_places">GooglePlaces</string>
+    <string name="get_places">Get Places</string>
+    <string name="title_activity_places">Places</string>
 
 </resources>

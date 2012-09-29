@@ -65,12 +65,15 @@ public class AppLocationManager {
 			mLocationManager = (LocationManager)currentActivity.getSystemService(Context.LOCATION_SERVICE);
 			
 			if ( mLocationManager != null ) {
-				currentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-				Location networkLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+				//currentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+				//Location networkLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 				
-				if ( networkLocation != null && isBetterLocation(networkLocation, currentLocation)) {
-					currentLocation = networkLocation;
-				}
+				//if ( networkLocation != null && isBetterLocation(networkLocation, currentLocation)) {
+				//	currentLocation = networkLocation;
+				//}	
+				currentLocation = new Location(LocationManager.GPS_PROVIDER);
+				currentLocation.setLatitude(Double.valueOf(MIAMI_BEACH_LATITUDE));
+				currentLocation.setLongitude(Double.valueOf(MIAMI_BEACH_LONGITUDE));
 			}
 		}
 	}

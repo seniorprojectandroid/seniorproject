@@ -51,6 +51,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="21dp"
         android:onClick="onShowPlacesClick"
-        android:text="Get Places" />
+        android:text="@string/get_places" />
 
 </RelativeLayout>

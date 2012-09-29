@@ -61,15 +61,13 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.fiu.cs.seniorproject.EventsActivity" />
-        </activity>
+        </activity>        
         <activity
-            android:name=".GooglePlaces"
-            android:label="@string/title_activity_google_places" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:name=".PlacesActivity"
+            android:label="@string/title_activity_places" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.EventsActivity" />
         </activity>
     </application>
 
