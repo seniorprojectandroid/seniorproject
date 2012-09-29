@@ -219,6 +219,12 @@ public class EventFullProvider extends DataProvider
 	
 		 
 		}// StackOverflowXmlParser
+
+	@Override
+	public Event getEventDetails(String eventId, String reference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	 
 	 
 	

@@ -104,7 +104,7 @@ public class MBVCAProvider extends DataProvider
 	}
 
 	@Override
-	public Event getEventDetails(String eventId) {
+	public Event getEventDetails(String eventId, String reference) {
 		return mEventMap.get(eventId);
 	}
 
