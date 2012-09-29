@@ -42,14 +42,28 @@ public class GPProvider extends DataProvider {
 			try {
 				data = new JSONObject(result);
 
-				if (data != null && data.has("result")) {
+				if (data != null && data.has("result")) 
+				{
 					event = new Event();
 					results = data.getJSONObject("result");
 					
-					event.setTime(results.getString("start_time"));
-					event.setDescription(results.getString("summary"));
-					event.setSource(this.getSource());
-
+					if(results != null)
+					{
+						String startTime = results.getString("start_time");
+						
+						if(startTime != null)
+						{
+							event.setTime(startTime);
+						}
+						
+						String summary = results.getString("summary");
+						
+						if(summary != null)
+						{
+							event.setDescription(summary);
+						}
+						event.setSource(this.getSource());
+					}
 				} else {
 					Logger.Error("parseEvent: invalid data.");
 				}
@@ -98,22 +112,61 @@ public class GPProvider extends DataProvider {
 				try {
 					eachPlace = jsonArray.getJSONObject(i);
 					
-					if (eachPlace != null) {
-						
+					if (eachPlace != null && eachPlace.has("events"))
+					{
 						singleEvent = eachPlace.getJSONArray("events").getJSONObject(0);
 						
 						if(singleEvent != null)
 						{
-							event.setId(singleEvent.getString("event_id"));
-							event.setDescription(singleEvent.getString("summary"));
+							String eventId = singleEvent.getString("event_id"); 
+							
+							if(eventId != null)
+							{
+								event.setId(eventId);
+							}
+							
+							String summary = singleEvent.getString("summary");
+							
+							if(summary != null)
+							{
+								event.setDescription(summary);
+							}
 							//singleEvent.getString("url");
 							
-							event.setName(eachPlace.getString("name"));
-							event.setImage(eachPlace.getString("icon"));
+							String name = eachPlace.getString("name");
 							
-							loc.setLatitude(eachPlace.getJSONObject("geometry").getJSONObject("location").getString("lat"));
-							loc.setLongitude(eachPlace.getJSONObject("geometry").getJSONObject("location").getString("lng"));
-							loc.setAddress(eachPlace.getString("formatted_address"));
+							if(name != null)
+							{
+								event.setName(name);
+							}
+							
+							String icon = eachPlace.getString("icon");
+							
+							if(icon != null )
+							{
+								event.setImage(icon);
+							}
+							
+							JSONObject geometry = eachPlace.getJSONObject("geometry");
+							
+							if(geometry != null && geometry.has("location"))
+							{
+								JSONObject ltn = geometry.getJSONObject("location");
+								
+								if(ltn != null && ltn.has("lat") && ltn.has("lng"))
+								{
+									loc.setLatitude(ltn.getString("lat"));
+									loc.setLongitude(ltn.getString("lng"));
+								}
+							}
+							
+							String formattedAddress = eachPlace.getString("formatted_address");
+							
+							if(formattedAddress != null)
+							{
+								loc.setAddress(formattedAddress);
+							}
+							
 							event.setLocation(loc);
 							//event.setTime(time)
 							event.setSource(this.getSource());
@@ -156,29 +209,56 @@ public class GPProvider extends DataProvider {
 				if (data != null && data.has("result")) {
 					place = new Place();
 					results = data.getJSONObject("result");
+					
+					if(results != null)
+					{
+						//results.getString("formatted_address");
+						//results.getString("formatted_phone_number");
+	
+						String name = results.getString("name");
+						
+						if(name != null)
+						{
+							place.setName(name);
+						}
+						// rating
+						// results.getString("rating");
+	
+						JSONObject geometry = results.getJSONObject("geometry");
+						
+						if(geometry != null && geometry.has("location"))
+						{
+							resultLocation = geometry.getJSONObject("location");
+							
+							if(resultLocation != null && resultLocation.has("lng") && resultLocation.has("lat"))
+							{
+								locat = new Location();
+								
+								String longitude = resultLocation.getString("lng");
+								
+								if(longitude != null)
+								{
+									locat.setLongitude(longitude);
+								}
+								
+								String latitude = resultLocation.getString("lat");
+								
+								if(latitude != null)
+								{
+									locat.setLatitude(latitude);
+								}
+								
+								place.setLocation(locat);
+							}
+						}
 
-					// results.getString("formatted_address");
-					// results.getString("formatted_phone_number");
-
-					// name
-					place.setName(results.getString("name"));
-
-					// rating
-					// results.getString("rating");
-
-					resultLocation = results.getJSONObject("geometry")
-							.getJSONObject("location");
-
-					locat = new Location();
-
-					locat.setLongitude(resultLocation.getString("lng"));
-					locat.setLatitude(resultLocation.getString("lat"));
-
-					place.setLocation(locat);
-
-					// website
-					place.setWebsite(results.getString("website"));
-
+						String web = results.getString("website");
+						
+						if(web != null)
+						{
+							place.setWebsite(web);
+						}
+					}
 				} else {
 					Logger.Error("parseEvent: invalid data.");
 				}
@@ -207,7 +287,8 @@ public class GPProvider extends DataProvider {
 
 		result = getPlaces(location, category, radius, query);
 
-		if (result != null && result.length() > 0) {
+		if (result != null && result.length() > 0) 
+		{
 			try {
 				data = new JSONObject(result);
 				jsonArray = data.getJSONArray("result");
@@ -216,35 +297,78 @@ public class GPProvider extends DataProvider {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-			for (int i = 0; i < jsonArray.length(); i++) {
-				place = new Place();
-				loc = new Location();
-
-				try {
-					eachPlace = jsonArray.getJSONObject(i);
-
-					if (eachPlace != null) {
-						loc.setLatitude(eachPlace.getJSONObject("geometry")
-								.getJSONObject("location").getString("lat"));
-						loc.setLongitude(eachPlace.getJSONObject("geometry")
-								.getJSONObject("location").getString("lng"));
-						place.setName(eachPlace.getString("name"));
-						place.setReference(eachPlace.getString("reference"));
-						place.setLocation(loc);
-						place.setId(eachPlace.getString("id"));
-
-						placeList.add(place);
-					} else {
-						Logger.Error("");
+			if(jsonArray != null && jsonArray.length() > 0)
+			{
+				for (int i = 0; i < jsonArray.length(); i++) 
+				{
+					place = new Place();
+					loc = new Location();
+	
+					try {
+						eachPlace = jsonArray.getJSONObject(i);
+	
+						if (eachPlace != null) 
+						{
+							
+							JSONObject geometry = eachPlace.getJSONObject("geometry");
+							
+							if(geometry != null && geometry.has("location"))
+							{
+								JSONObject ltn = geometry.getJSONObject("location");
+								
+								if(ltn != null && ltn.has("lat") && ltn.has("lng"))
+								{
+									String latitude = ltn.getString("lat");
+									
+									if(latitude != null)
+									{
+										loc.setLatitude(latitude);
+									}
+									
+									String longitude = ltn.getString("lng");
+									
+									if(longitude != null)
+									{
+										loc.setLongitude(longitude);
+									}
+								}
+								
+							}
+							
+							String name = eachPlace.getString("name");	
+							
+							if(name != null)
+							{
+								place.setName(name);
+							}
+							
+							String reference = eachPlace.getString("reference");
+							
+							if(reference != null)
+							{
+								place.setReference(reference);
+							}
+							
+							String id = eachPlace.getString("id");
+							
+							if(id != null)
+							{
+								place.setId(id);
+							}
+						
+							place.setLocation(loc);
+							placeList.add(place);
+							
+						} else {
+							Logger.Error("");
+						}
+	
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 			}
-
 		} else {
 			Logger.Error("");
 		}
