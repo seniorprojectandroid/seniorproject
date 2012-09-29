@@ -16,7 +16,6 @@ import edu.fiu.cs.seniorproject.data.Place;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.data.provider.DataProvider;
 import edu.fiu.cs.seniorproject.data.provider.MBVCAProvider;
-import edu.fiu.cs.seniorproject.data.provider.EventFullProvider;
 
 public class DataManager {
 
@@ -94,7 +93,7 @@ public class DataManager {
 		for( int i = 0; i < mProviderList.size(); i++ ) {
 			DataProvider provider = mProviderList.get(i);
 			if ( provider.supportPlaces() && provider.getSource() == source ) {
-				result = provider.getPlaceDetails(placeId, reference);
+				result = provider.getPlaceDetails(placeId,reference);
 				break;
 			}
 		}
