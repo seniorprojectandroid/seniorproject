@@ -93,7 +93,7 @@ public class DataManager {
 		for( int i = 0; i < mProviderList.size(); i++ ) {
 			DataProvider provider = mProviderList.get(i);
 			if ( provider.supportPlaces() && provider.getSource() == source ) {
-				result = provider.getPlaceDetails(placeId,null);
+				result = provider.getPlaceDetails(placeId,reference);
 				break;
 			}
 		}
