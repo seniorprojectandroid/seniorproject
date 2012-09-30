@@ -26,7 +26,7 @@ public class DataManager {
 	private static DataManager mSingleton = null;
 	
 	private DataManager() {
-		// register all the providers
+		// register all the provider
 		mProviderList.add(new MBVCAProvider());
 		mProviderList.add(new GPProvider());
 		mProviderList.add(new EventFullProvider());
