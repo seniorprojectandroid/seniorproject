@@ -61,6 +61,11 @@ public class MBVCAProvider extends DataProvider
 	@Override
 	public List<Place> getPlaceList(Location location, String category, String radius, String query) {
 		List<Place> result = null;
+		
+		if ( category == null ) {
+			category = "361";	// default to restaurant and bars
+		}
+		
 		String places = this.mMBVCAClient.getPlaceList(location, category, radius);
 		
 		if ( places != null && !places.isEmpty() ) {

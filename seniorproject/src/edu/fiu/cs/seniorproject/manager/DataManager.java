@@ -18,6 +18,7 @@ import edu.fiu.cs.seniorproject.data.provider.DataProvider;
 import edu.fiu.cs.seniorproject.data.provider.EventFullProvider;
 import edu.fiu.cs.seniorproject.data.provider.GPProvider;
 import edu.fiu.cs.seniorproject.data.provider.MBVCAProvider;
+import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class DataManager {
 
@@ -26,9 +27,9 @@ public class DataManager {
 	
 	private DataManager() {
 		// register all the providers
-		//mProviderList.add(new MBVCAProvider());
+		mProviderList.add(new MBVCAProvider());
 		mProviderList.add(new GPProvider());
-		//mProviderList.add(new EventFullProvider());
+		mProviderList.add(new EventFullProvider());
 	}
 	
 	public List<Event> getEventList(Location location, String category, String radius, String query) {
@@ -39,7 +40,14 @@ public class DataManager {
 				DataProvider provider = mProviderList.get(i);
 				
 				if ( provider.supportEvents() ) {
-					List<Event> providerList = provider.getEventList(location, category, radius, query);
+					
+					List<Event> providerList = null;
+					try {
+						providerList = provider.getEventList(location, category, radius, query);
+					} catch ( Exception e ) {
+						providerList = null;
+						Logger.Error("Exception getting event list " + e.getMessage());
+					}
 					
 					if ( providerList != null && providerList.size() > 0 ) {
 						if ( result == null ) {
@@ -51,9 +59,9 @@ public class DataManager {
 				}
 			}
 		}
+		
 		return result;
 	}
-	
 	
 	public List<Place> getPlaceList(Location location, String category, String radius, String query) {
 		List<Place> result = null;
@@ -63,7 +71,13 @@ public class DataManager {
 				DataProvider provider = mProviderList.get(i);
 				
 				if ( provider.supportPlaces() ) {
-					List<Place> providerList = provider.getPlaceList(location, category, radius, query);
+					List<Place> providerList = null;
+					try {
+						providerList = provider.getPlaceList(location, category, radius, query);
+					} catch (Exception e) {
+						providerList = null;
+						Logger.Error("Exception getting place list " + e.getMessage() );
+					}
 					
 					if ( providerList != null && providerList.size() > 0 )					{
 						if ( result == null ) {
@@ -80,30 +94,44 @@ public class DataManager {
 	
 	public Event getEventDetails( String eventId, SourceType source ) {
 		Event result = null;
-		for( int i = 0; i < mProviderList.size(); i++ ) {
-			DataProvider provider = mProviderList.get(i);
-			if ( provider.supportEvents() && provider.getSource() == source ) {
-				result = provider.getEventDetails(eventId,null);
-				break;
+		
+		try {
+			for( int i = 0; i < mProviderList.size(); i++ ) {
+				DataProvider provider = mProviderList.get(i);
+				if ( provider.supportEvents() && provider.getSource() == source ) {
+					result = provider.getEventDetails(eventId,null);
+					break;
+				}
 			}
+		} catch (Exception e) {
+			Logger.Error("Exception getting event details " + e.getMessage() );
 		}
 		return result;
 	}
 	
 	public Place getPlaceDetails( String placeId, String reference, SourceType source ) {
 		Place result = null;
-		for( int i = 0; i < mProviderList.size(); i++ ) {
-			DataProvider provider = mProviderList.get(i);
-			if ( provider.supportPlaces() && provider.getSource() == source ) {
-				result = provider.getPlaceDetails(placeId,reference);
-				break;
+		
+		try {
+			for( int i = 0; i < mProviderList.size(); i++ ) {
+				DataProvider provider = mProviderList.get(i);
+				if ( provider.supportPlaces() && provider.getSource() == source ) {
+					result = provider.getPlaceDetails(placeId,reference);
+					break;
+				}
 			}
+		} catch (Exception e ) {
+			Logger.Error("Exception getting place details " + e.getMessage());
 		}
 		return result;
 	}
 	
 	public void downloadBitmap( String url, ImageView target ) {
-		(new BitmapDownloader(target)).execute(url);
+		try {
+			(new BitmapDownloader(target)).execute(url);
+		} catch (Exception e) {
+			Logger.Error("exception downloading bitmap " + e.getMessage());
+		}
 	}
 	
 	public static DataManager getSingleton() {

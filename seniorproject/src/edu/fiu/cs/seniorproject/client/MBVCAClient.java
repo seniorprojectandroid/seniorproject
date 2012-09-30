@@ -98,7 +98,7 @@ public class MBVCAClient extends RestClient{
 		return response;
 	}
 
-	public String getPlaceList(Location location, String category,String radius) {
+	public String getPlaceList(Location location, String category,String radiusStr) {
 		String result = null;
 
 		try {
@@ -110,6 +110,14 @@ public class MBVCAClient extends RestClient{
 			} else {
 				return null;	// need a category to query
 			}
+			
+			if ( location != null ) {
+				float radius = Float.valueOf(radiusStr);
+				if ( radius > 0 ) {
+					this.addLocationFilter(query, location, radius);
+				}
+			}
+			
 			String queryStr = query.toString();
 
 			Logger.Debug("Query string in MBVCA = " + query);
