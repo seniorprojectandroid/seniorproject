@@ -16,7 +16,6 @@ public class GPClient extends RestClient{
 	}
 	
 	/**
-	 * 
 	 * @param reference
 	 * @param eventId
 	 * @return String
