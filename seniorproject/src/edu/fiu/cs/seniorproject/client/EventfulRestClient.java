@@ -47,7 +47,7 @@ public class EventfulRestClient extends RestClient {
 		}
 		
 		if ( within > 0 ) {
-			params.putInt("within", within);
+			params.putString("within", String.valueOf(within) );
 		}
 		
 		if ( location != null ) {
@@ -93,15 +93,15 @@ public class EventfulRestClient extends RestClient {
 		}
 		
 		if ( pageSize > 0 ) {
-			params.putInt("page_size", pageSize);
+			params.putString("page_size", String.valueOf(pageSize));
 		}
 		
 		if ( pageNumber > 0 ) {
-			params.putInt( "page_number", pageNumber);
+			params.putString( "page_number", String.valueOf(pageNumber));
 		}
 		
 		if ( within > 0 ) {
-			params.putInt("within", within);
+			params.putString("within", String.valueOf(within));
 		}
 		
 		if ( location != null ) {

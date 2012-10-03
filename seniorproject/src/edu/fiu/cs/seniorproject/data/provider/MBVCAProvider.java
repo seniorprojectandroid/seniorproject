@@ -23,7 +23,7 @@ public class MBVCAProvider extends DataProvider
 	
 	public MBVCAProvider()
 	{
-		this.mMBVCAClient  = new MBVCAClient(AppConfig.MBVCA_APP_ID);
+		this.mMBVCAClient  = new MBVCAClient(AppConfig.MBVCA_TOKEN);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class MBVCAProvider extends DataProvider
 			category = "361";	// default to restaurant and bars
 		}
 		
-		String places = this.mMBVCAClient.getPlaceList(location, category, radius);
+		String places = this.mMBVCAClient.getPlaceList(location, category, "0.5");
 		
 		if ( places != null && !places.isEmpty() ) {
 			try {

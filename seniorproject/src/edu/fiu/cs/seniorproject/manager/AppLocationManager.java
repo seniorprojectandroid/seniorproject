@@ -35,6 +35,7 @@ public class AppLocationManager {
 	}
 	
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
+	private static final Object currentLocationLock = new Object();
 	
 	private static LocationManager mLocationManager = null;
 	private final static LocationListener mGeoLocationListener = new LocationListener() {
@@ -71,9 +72,12 @@ public class AppLocationManager {
 				//if ( networkLocation != null && isBetterLocation(networkLocation, currentLocation)) {
 				//	currentLocation = networkLocation;
 				//}	
-				currentLocation = new Location(LocationManager.GPS_PROVIDER);
-				currentLocation.setLatitude(Double.valueOf(MIAMI_BEACH_LATITUDE));
-				currentLocation.setLongitude(Double.valueOf(MIAMI_BEACH_LONGITUDE));
+				
+				synchronized (currentLocationLock) {
+					currentLocation = new Location(LocationManager.GPS_PROVIDER);
+					currentLocation.setLatitude(Double.valueOf(MIAMI_BEACH_LATITUDE));
+					currentLocation.setLongitude(Double.valueOf(MIAMI_BEACH_LONGITUDE));
+				}				
 			}
 		}
 	}
@@ -82,8 +86,9 @@ public class AppLocationManager {
 		mListenerList.add(listener);
 		enableUpdades(true);
 		
-		if ( currentLocation != null ) {
-			listener.onLocationUpdate(currentLocation);
+		Location location = getCurrentLocation();
+		if ( location != null ) {
+			listener.onLocationUpdate(location);
 		}
 	}
 	
@@ -127,12 +132,17 @@ public class AppLocationManager {
 	}
 	
 	public static Location getCurrentLocation() {
-		return currentLocation;
+		Location location = null;
+		synchronized (currentLocationLock) {
+			location = currentLocation;
+		}
+		return location;
 	}
 	
 	public static void getCurrentAddress(Context context, IReverseGeoLocationListener listener) {
-		if ( currentLocation != null && context != null && listener != null ) {
-			(new AppLocationManager.ReverseGeocodingTask(context, listener)).execute(currentLocation);
+		Location location = getCurrentLocation();
+		if ( location != null && context != null && listener != null ) {
+			(new AppLocationManager.ReverseGeocodingTask(context, listener)).execute(location);
 		}
 	}
 	
@@ -147,7 +157,10 @@ public class AppLocationManager {
 	private static void checkLocation(Location newLocation ) {
 		
 		if ( newLocation != null && isBetterLocation(newLocation, currentLocation)) {
-			currentLocation = newLocation;
+			
+			synchronized (currentLocationLock) {
+				currentLocation = newLocation;
+			}
 			dispathLocationUpdate(newLocation);
 		}
 	}

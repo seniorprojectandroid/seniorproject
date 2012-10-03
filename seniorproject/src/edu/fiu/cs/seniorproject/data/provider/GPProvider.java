@@ -92,7 +92,8 @@ public class GPProvider extends DataProvider {
 		Event event = null;
 		Location loc = null;
 
-		result = getPlaces(location, category, radius, query);
+		String radiusInMeters = String.valueOf( Double.valueOf(radius) * 1609.34 );
+		result = getPlaces(location, category, radiusInMeters, query);
 
 		if (result != null && result.length() > 0) {
 			try {
@@ -285,7 +286,8 @@ public class GPProvider extends DataProvider {
 		Place place = null;
 		Location loc = null;
 
-		result = getPlaces(location, category, radius, query);
+		String radiusInMeters = String.valueOf( Double.valueOf(radius) * 1609.34 );
+		result = getPlaces(location, category, radiusInMeters, query);
 
 		if (result != null && result.length() > 0) 
 		{
@@ -380,7 +382,8 @@ public class GPProvider extends DataProvider {
 		String result = null;
 
 		try {
-			result = this.gpClient.getPlaces(location, category, radius, query);
+			String radiusInMeters = String.valueOf( Double.valueOf(radius) * 1609.34 );
+			result = this.gpClient.getPlaces(location, category, radiusInMeters, query);
 		} catch (MalformedURLException e) {
 			Logger.Error("MalformedURLException in parseEvent");
 		} catch (IOException e) {
