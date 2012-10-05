@@ -1,5 +1,6 @@
 package edu.fiu.cs.seniorproject;
 
+import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -26,6 +27,8 @@ import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
 
+import android.os.AsyncTask;
+
 public class EventDetailsActivity extends MapActivity {
 
     @Override
@@ -39,9 +42,8 @@ public class EventDetailsActivity extends MapActivity {
         Intent intent = getIntent();
         if ( intent.hasExtra("event_id") && intent.hasExtra("source")) {
         	String eventId = intent.getStringExtra("event_id");
-        	SourceType source = (SourceType)intent.getSerializableExtra("source");
-        	
-        	showEvent( DataManager.getSingleton().getEventDetails(eventId, source) );
+        	SourceType source = (SourceType)intent.getSerializableExtra("source");        	
+        	(new EventDownloader(this)).execute(new EventSearchData(eventId, source));
         }
     }
 
@@ -173,5 +175,35 @@ public class EventDetailsActivity extends MapActivity {
 				}
 			}
 		}
+	}
+
+	private class EventSearchData {
+		public EventSearchData(String id, SourceType sourceType) {
+			this.eventId = id;
+			this.source = sourceType;
+		}
+		public String eventId;
+		public SourceType source;
+	}
+	
+	private class EventDownloader extends AsyncTask<EventSearchData, Void, Event>
+	{
+		private WeakReference<EventDetailsActivity> mActivityReference;
+		
+		public EventDownloader( EventDetailsActivity activity ) {
+			mActivityReference = new WeakReference<EventDetailsActivity>(activity);
+		}
+		
+		@Override
+		protected Event doInBackground(EventSearchData... params) {
+			return DataManager.getSingleton().getEventDetails(params[0].eventId, params[0].source);
+		}
+		
+		@Override
+		protected void onPostExecute(Event result) {
+			if ( mActivityReference != null && mActivityReference.get() != null ) {
+				mActivityReference.get().showEvent(result);
+			}
+	    }
 	}
 }

@@ -10,7 +10,7 @@ import android.os.Bundle;
 
 public class EventfulRestClient extends RestClient {
 	
-	private static final String BASE_URL = "http://api.eventful.com/rest/";
+	private static final String BASE_URL = "http://api.eventful.com/json/";
 	
 	public EventfulRestClient(String appID) {
 		super(appID);
@@ -47,14 +47,14 @@ public class EventfulRestClient extends RestClient {
 		}
 		
 		if ( within > 0 ) {
-			params.putInt("within", within);
+			params.putString("within", String.valueOf(within) );
 		}
 		
 		if ( location != null ) {
 			if ( location.getLatitude() != null && location.getLongitude() != null ) {
-				params.putString("location", location.getLatitude() + "," + location.getLongitude());
+				params.putString("where", location.getLatitude() + "," + location.getLongitude());
 			} else if ( location.getAddress() != null ) {
-				params.putString("location", location.getAddress());
+				params.putString("where", location.getAddress());
 			}
 		}
 		
@@ -93,15 +93,15 @@ public class EventfulRestClient extends RestClient {
 		}
 		
 		if ( pageSize > 0 ) {
-			params.putInt("page_size", pageSize);
+			params.putString("page_size", String.valueOf(pageSize));
 		}
 		
 		if ( pageNumber > 0 ) {
-			params.putInt( "page_number", pageNumber);
+			params.putString( "page_number", String.valueOf(pageNumber));
 		}
 		
 		if ( within > 0 ) {
-			params.putInt("within", within);
+			params.putString("within", String.valueOf(within));
 		}
 		
 		if ( location != null ) {

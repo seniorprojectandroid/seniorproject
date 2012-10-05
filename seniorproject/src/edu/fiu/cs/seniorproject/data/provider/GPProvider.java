@@ -11,7 +11,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
 //import android.provider.ContactsContract.CommonDataKinds.Event;
 
 import edu.fiu.cs.seniorproject.client.GPClient;
@@ -22,15 +21,178 @@ import edu.fiu.cs.seniorproject.data.Place;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
-public class  GPProvider extends DataProvider {
-	
+public class GPProvider extends DataProvider {
+
 	private GPClient gpClient;
 
 	public GPProvider() {
 		this.gpClient = new GPClient(AppConfig.GOOGLE_PLACE_APP_ID);
 	}
 
-	public Place getPlaceDetails(String reference, String eventId) {
+	@Override
+	public Event getEventDetails(String eventId, String reference) {
+		JSONObject data = null;
+		JSONObject results;
+		String result = null;
+		Event event = null;
+
+		result = this.getEventDet(eventId, reference);
+
+		if (result != null && result.length() > 0) {
+			try {
+				data = new JSONObject(result);
+
+				if (data != null && data.has("result")) 
+				{
+					event = new Event();
+					results = data.getJSONObject("result");
+					
+					if(results != null)
+					{
+						String startTime = results.getString("start_time");
+						
+						if(startTime != null)
+						{
+							event.setTime(startTime);
+						}
+						
+						String summary = results.getString("summary");
+						
+						if(summary != null)
+						{
+							event.setDescription(summary);
+						}
+						event.setSource(this.getSource());
+					}
+				} else {
+					Logger.Error("parseEvent: invalid data.");
+				}
+
+			} catch (JSONException e) {
+				Logger.Error("JSONException in parseEvent");
+			}
+		} else {
+			Logger.Error("parseEvent: invalid result.");
+		}
+		return event;
+
+	}
+
+
+
+	@Override
+	public List<Event> getEventList(Location location, String category,
+			String radius, String query) {
+		
+		String result = null;
+		JSONObject data = null;
+		JSONArray jsonArray = null;
+		LinkedList<Event> eventList = new LinkedList<Event>();
+		JSONObject eachPlace = null;
+		Event event = null;
+		Location loc = null;
+
+		String radiusInMeters = String.valueOf( Double.valueOf(radius) * 1609.34 );
+		result = getPlaces(location, category, radiusInMeters, query);
+
+		if (result != null && result.length() > 0) {
+			try {
+				data = new JSONObject(result);
+				jsonArray = data.getJSONArray("result");
+
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			for (int i = 0; i < jsonArray.length(); i++) {
+				event = new Event();
+				loc = new Location();
+				JSONObject singleEvent;
+
+				try {
+					eachPlace = jsonArray.getJSONObject(i);
+					
+					if (eachPlace != null && eachPlace.has("events"))
+					{
+						singleEvent = eachPlace.getJSONArray("events").getJSONObject(0);
+						
+						if(singleEvent != null)
+						{
+							String eventId = singleEvent.getString("event_id"); 
+							
+							if(eventId != null)
+							{
+								event.setId(eventId);
+							}
+							
+							String summary = singleEvent.getString("summary");
+							
+							if(summary != null)
+							{
+								event.setDescription(summary);
+							}
+							//singleEvent.getString("url");
+							
+							String name = eachPlace.getString("name");
+							
+							if(name != null)
+							{
+								event.setName(name);
+							}
+							
+							String icon = eachPlace.getString("icon");
+							
+							if(icon != null )
+							{
+								event.setImage(icon);
+							}
+							
+							JSONObject geometry = eachPlace.getJSONObject("geometry");
+							
+							if(geometry != null && geometry.has("location"))
+							{
+								JSONObject ltn = geometry.getJSONObject("location");
+								
+								if(ltn != null && ltn.has("lat") && ltn.has("lng"))
+								{
+									loc.setLatitude(ltn.getString("lat"));
+									loc.setLongitude(ltn.getString("lng"));
+								}
+							}
+							
+							String formattedAddress = eachPlace.getString("formatted_address");
+							
+							if(formattedAddress != null)
+							{
+								loc.setAddress(formattedAddress);
+							}
+							
+							event.setLocation(loc);
+							//event.setTime(time)
+							event.setSource(this.getSource());
+							
+							eventList.add(event);
+						}
+					} else {
+						Logger.Error("empty place");
+					}
+
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		} else {
+			Logger.Error("");
+		}
+
+		return eventList;
+	}
+	
+	@Override
+	public Place getPlaceDetails(String placeId, String reference) {
 
 		JSONObject data = null;
 		JSONObject results;
@@ -38,62 +200,83 @@ public class  GPProvider extends DataProvider {
 		String result = null;
 		Place place = null;
 		Location locat;
-		
-		result = this.getPlaceDet(reference, eventId);
-		
-		if(result != null && result.length() > 0)
-		{
+
+		result = this.getPlaceDet(reference);
+
+		if (result != null && result.length() > 0) {
 			try {
-					data = new JSONObject(result);
-					
-				if(data != null && data.has("result"))
-				{
+				data = new JSONObject(result);
+
+				if (data != null && data.has("result")) {
 					place = new Place();
 					results = data.getJSONObject("result");
 					
-					
-					//results.getString("formatted_address");
-					//results.getString("formatted_phone_number");
-					
-					//name
-					place.setName(results.getString("name"));
-					
-					//rating
-					//results.getString("rating");
-					
-					resultLocation = results.getJSONObject("geometry").getJSONObject("location");
+					if(results != null)
+					{
+						//results.getString("formatted_address");
+						//results.getString("formatted_phone_number");
+	
+						String name = results.getString("name");
+						
+						if(name != null)
+						{
+							place.setName(name);
+						}
+						// rating
+						// results.getString("rating");
+	
+						JSONObject geometry = results.getJSONObject("geometry");
+						
+						if(geometry != null && geometry.has("location"))
+						{
+							resultLocation = geometry.getJSONObject("location");
+							
+							if(resultLocation != null && resultLocation.has("lng") && resultLocation.has("lat"))
+							{
+								locat = new Location();
+								
+								String longitude = resultLocation.getString("lng");
+								
+								if(longitude != null)
+								{
+									locat.setLongitude(longitude);
+								}
+								
+								String latitude = resultLocation.getString("lat");
+								
+								if(latitude != null)
+								{
+									locat.setLatitude(latitude);
+								}
+								
+								place.setLocation(locat);
+							}
+						}
 
-					locat = new Location();
-					
-					locat.setLongitude(resultLocation.getString("lng"));
-					locat.setLatitude(resultLocation.getString("lat"));
-					
-					place.setLocation(locat);
-					
-					//website
-					place.setWebsite(results.getString("website"));
-					
-				}
-				else
-				{
+						String web = results.getString("website");
+						
+						if(web != null)
+						{
+							place.setWebsite(web);
+						}
+					}
+				} else {
 					Logger.Error("parseEvent: invalid data.");
 				}
-				
+
 			} catch (JSONException e) {
 				Logger.Error("JSONException in parseEvent");
-			}	
-		}
-		else
-		{
+			}
+		} else {
 			Logger.Error("parseEvent: invalid result.");
 		}
 		return place;
 
 	}
 
-	
 	@Override
-	public List<Place> getPlaceList(Location location, String category, String radius, String query) {
+	public List<Place> getPlaceList(Location location, String category,
+			String radius, String query) {
 
 		String result = null;
 		JSONObject data = null;
@@ -102,113 +285,143 @@ public class  GPProvider extends DataProvider {
 		JSONObject eachPlace = null;
 		Place place = null;
 		Location loc = null;
-		
-		result = getPlaces(location,category,radius,query);
-		
-	
-		if(result !=null && result.length() > 0)
+
+		String radiusInMeters = String.valueOf( Double.valueOf(radius) * 1609.34 );
+		result = getPlaces(location, category, radiusInMeters, query);
+
+		if (result != null && result.length() > 0) 
 		{
-			try 
-			{
-				data = new JSONObject(result);	
-				jsonArray = data.getJSONArray("result");
-					
-			} catch (JSONException e) 
-			{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			try {
+				data = new JSONObject(result);
+				jsonArray = data.getJSONArray("results");
+
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
-			
-			for(int i = 0; i < jsonArray.length(); i++)
+			if(jsonArray != null && jsonArray.length() > 0)
 			{
-				place = new Place();
-				loc = new Location();
-				
-				try {
-					eachPlace = jsonArray.getJSONObject(i);
-					
-					if(eachPlace != null)
-					{
-						loc.setLatitude(eachPlace.getJSONObject("geometry").getJSONObject("location").getString("lat"));
-						loc.setLongitude(eachPlace.getJSONObject("geometry").getJSONObject("location").getString("lng"));
-						place.setName(eachPlace.getString("name"));
-						place.setReference(eachPlace.getString("reference"));
-						place.setLocation(loc);
-						place.setId(eachPlace.getString("id"));
+				for (int i = 0; i < jsonArray.length(); i++) 
+				{
+					place = new Place();
+					loc = new Location();
+	
+					try {
+						eachPlace = jsonArray.getJSONObject(i);
+	
+						if (eachPlace != null) 
+						{
+							
+							JSONObject geometry = eachPlace.getJSONObject("geometry");
+							
+							if(geometry != null && geometry.has("location"))
+							{
+								JSONObject ltn = geometry.getJSONObject("location");
+								
+								if(ltn != null && ltn.has("lat") && ltn.has("lng"))
+								{
+									String latitude = ltn.getString("lat");
+									
+									if(latitude != null)
+									{
+										loc.setLatitude(latitude);
+									}
+									
+									String longitude = ltn.getString("lng");
+									
+									if(longitude != null)
+									{
+										loc.setLongitude(longitude);
+									}
+								}
+								
+							}
+							
+							String name = eachPlace.getString("name");	
+							
+							if(name != null)
+							{
+								place.setName(name);
+							}
+							
+							String reference = eachPlace.getString("reference");
+							
+							if(reference != null)
+							{
+								place.setReference(reference);
+							}
+							
+							String id = eachPlace.getString("id");
+							
+							if(id != null)
+							{
+								place.setId(id);
+							}
 						
-						placeList.add(place);
+							place.setLocation(loc);
+							placeList.add(place);
+							
+						} else {
+							Logger.Error("");
+						}
+	
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-					else
-					{
-						Logger.Error("");
-					}
-					
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 			}
-					
-		}
-		else
-		{
+		} else {
 			Logger.Error("");
 		}
 
 		return placeList;
 	}
 
-
-
-	private String getPlaces(Location location, String category, String radius, String query) {
+	private String getPlaces(Location location, String category, String radius,
+			String query) {
 		String result = null;
-		
+
 		try {
-			result = this.gpClient.getPlaces(location, category, radius, query);
+			String radiusInMeters = String.valueOf( Double.valueOf(radius) * 1609.34 );
+			result = this.gpClient.getPlaces(location, category, radiusInMeters, query);
 		} catch (MalformedURLException e) {
 			Logger.Error("MalformedURLException in parseEvent");
 		} catch (IOException e) {
 			Logger.Error("IOException in parseEvent");
 		}
-		
+
 		return result;
-		
+
+	}
+
+	private String getPlaceDet(String reference) {
+		String result = null;
+
+		try {
+			result = this.gpClient.getPlaceDetails(reference);
+		} catch (MalformedURLException e) {
+			Logger.Error("MalformedURLException in parseEvent");
+		} catch (IOException e) {
+			Logger.Error("IOException in parseEvent");
+		}
+
+		return result;
 	}
 	
-	private String getPlaceDet(String reference, String eventId)
+	private String getEventDet(String eventId , String reference)
 	{
 		String result = null;
 		
-		try {
-			result = this.gpClient.getPlaceDetails(reference, eventId);
-		} catch (MalformedURLException e) {
-			Logger.Error("MalformedURLException in parseEvent");
-		} catch (IOException e) {
-			Logger.Error("IOException in parseEvent");
-		}
-		
+		result = this.gpClient.getEventDet(eventId, reference);
+
 		return result;
-	}
-
-	@Override
-	public Event getEventDetails(String eventId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public List<Event> getEventList(Location location, String category,
-			String radius, String query) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
 	public boolean supportEvents() {
-		return false;
+		return true;
 	}
-	
+
 	@Override
 	public SourceType getSource() {
 		return SourceType.GOOGLE_PLACE;

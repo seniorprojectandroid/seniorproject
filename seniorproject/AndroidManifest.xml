@@ -20,7 +20,6 @@
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -62,8 +61,24 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.fiu.cs.seniorproject.EventsActivity" />
         </activity>
+
         <activity android:name="EventsMapViewActivity"></activity>
         <activity android:name="LoginActivity"></activity>
+
+        <activity
+            android:name=".PlacesActivity"
+            android:label="@string/title_activity_places" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.EventsActivity" />
+        </activity>
+        <activity
+            android:name=".PlaceDetailsActivity"
+            android:label="@string/title_activity_place_details" >
+           <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.PlacesActivity" />
+        </activity>
     </application>
 
 </manifest>
