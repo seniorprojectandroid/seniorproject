@@ -2,26 +2,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/LoginButton"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-
-    <Button
-        android:id="@+id/login_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="52dp"
-        android:onClick="onLoginButtonClick"
-        android:text="@string/login_button_text" />
+    android:layout_height="match_parent"
+    android:background="@drawable/blue_bkg" >
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/login_button"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="26dp"
         android:text="@string/login_wfacebook"
+        android:textColor="#FFFF"
         tools:context=".MainActivity" />
 
     <Button
@@ -29,18 +21,47 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/textView2"
-        android:layout_below="@+id/textView2"
-        android:layout_marginTop="59dp"
+        android:layout_centerVertical="true"
         android:onClick="onShowGeoLocationClick"
         android:text="@string/show_geolocation" />
+
+    <Button
+        android:id="@+id/events_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/show_geolocation"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:onClick="onEventMapButtonClick"
+        android:text="@string/events_map_button" />
 
     <Button
         android:id="@+id/events_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/show_geolocation"
-        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/show_geolocation"
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_marginBottom="26dp"
         android:onClick="onShowEventsClick"
         android:text="@string/events" />
+
+    <Button
+        android:id="@+id/placesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/events_button"
+        android:layout_alignBottom="@+id/events_button"
+        android:layout_alignRight="@+id/show_geolocation"
+         android:onClick="onPlacesButtonClick"
+        android:text="@string/places_Button" />
+
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:onClick="onLoginButtonClick"
+        android:text="@string/login_button_text" />
 
 </RelativeLayout>

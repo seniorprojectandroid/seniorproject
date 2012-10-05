@@ -62,6 +62,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.fiu.cs.seniorproject.EventsActivity" />
         </activity>
+        <activity android:name="EventsMapViewActivity"></activity>
+        <activity android:name="LoginActivity"></activity>
     </application>
 
 </manifest>
