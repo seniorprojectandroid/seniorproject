@@ -8,6 +8,7 @@ import java.util.List;
 
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.Place;
+import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
 import edu.fiu.cs.seniorproject.manager.DataManager.ConcurrentPlaceListLoader;
@@ -17,17 +18,39 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.AsyncTask.Status;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class PlacesActivity extends Activity {
 
 	private PlacesLoader mPlacesLoader = null;
 	private List<Hashtable<String, String>> mPlaceList = null;
+
+	private final OnItemClickListener mClickListener = new OnItemClickListener() {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			if ( mPlaceList != null && mPlaceList.size() > position ) {
+				Hashtable<String, String> map = mPlaceList.get(position);
+				
+				if ( map != null ) {
+					Intent intent = new Intent(PlacesActivity.this, PlaceDetailsActivity.class);
+					if(map.get("reference") != null)
+					{
+						intent.putExtra("reference", map.get("reference"));
+						intent.putExtra("source", SourceType.valueOf(map.get("source")));
+					}
+					PlacesActivity.this.startActivity(intent);
+				}
+			}
+		}
+	};
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,7 +78,7 @@ public class PlacesActivity extends Activity {
         return true;
     }
     
-    private void showPlaceList( List<Place> places ) {
+    public void showPlaceList( List<Place> places ) {
     	
     	if ( this.mPlaceList == null ) {
 	    	if ( places != null && places.size() > 0 ) {
@@ -71,6 +94,7 @@ public class PlacesActivity extends Activity {
 					SimpleAdapter adapter = new SimpleAdapter(this, this.mPlaceList, R.layout.place_row, from, to);
 					lv.setAdapter(adapter);
 	    			lv.setVisibility(View.VISIBLE);
+	    			lv.setOnItemClickListener(mClickListener);
 	    		}
 	    	} else {
 	    		TextView tv = (TextView)findViewById(android.R.id.empty);
