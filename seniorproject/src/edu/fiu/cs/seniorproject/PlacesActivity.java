@@ -1,5 +1,9 @@
 package edu.fiu.cs.seniorproject;
 
+import android.app.Activity;
+import android.os.Bundle;
+
+
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.util.ArrayList;

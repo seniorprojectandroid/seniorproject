@@ -2,11 +2,24 @@ package edu.fiu.cs.seniorproject;
 
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
+import java.util.List;
+
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.text.format.DateFormat;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
+import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
 
 import edu.fiu.cs.seniorproject.data.Event;
 import edu.fiu.cs.seniorproject.data.Location;
@@ -14,15 +27,7 @@ import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
 
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.support.v4.app.NavUtils;
-import android.text.format.DateFormat;
 
 public class EventDetailsActivity extends MapActivity {
 
@@ -111,12 +116,61 @@ public class EventDetailsActivity extends MapActivity {
 					}
 				}
 				
+				
+				
+				
+			 
+			    
+			    
+			   
+			    
+			    
+			    // Add the overlay to the itemized overlay and 
+			    // Add the Overlay to the overlay list
+			    
+			    
+				
+				
 				MapView map = (MapView)findViewById(R.id.mapview);
+				List<Overlay> mapOverlays = map.getOverlays();
+				
+				Drawable drawable = this.getResources().getDrawable(R.drawable.facebook_icon_small);
+			    ItemizedOverlayActivity itemizedoverlay = new ItemizedOverlayActivity(drawable, this);
+				
+			    
+			    
+			   
+			    
 				if ( map != null ) {
 					MapController mc = map.getController();
 		    		if ( mc != null ) {
-		    			mc.setCenter(new GeoPoint( (int)(Double.valueOf( location.getLatitude() ) * 1E6),(int)(Double.valueOf( location.getLongitude() ) * 1E6 )));
+		    			
+		    			GeoPoint geoPoint =  new GeoPoint( (int)(Double.valueOf( location.getLatitude() ) * 1E6),
+		    			  (int)(Double.valueOf( location.getLongitude() ) * 1E6 ));
+		    			 OverlayItem overlayitem = new OverlayItem(geoPoint, "Hi, I am in !", event.getName());
+		    			 
+		    			// Add the overlay to the itemized overlay and 
+		    			    // Add the Overlay to the overlay list
+		    			    itemizedoverlay.addOverlay(overlayitem);
+
+		    			    mapOverlays.add(itemizedoverlay);
+		    			    
+		    			    itemizedoverlay.addOverlay(overlayitem);
+		    				
+		    			    mapOverlays.add(itemizedoverlay);
+		    			
+		    			mc.setCenter(geoPoint);
 		    			mc.setZoom(17);
+		    			
+		    			    
+		    			   
+		    			    
+		    			    
+		    			    
+		    			
+		    			
+		    			//mc.setCenter(new GeoPoint( (int)(Double.valueOf( location.getLatitude() ) * 1E6),(int)(Double.valueOf( location.getLongitude() ) * 1E6 )));
+		    			
 		    		}
 				}
 			}

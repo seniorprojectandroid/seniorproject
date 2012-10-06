@@ -20,11 +20,19 @@
     <string name="loading">Loading..</string>
     <string name="title_activity_event_details">Event Details</string>
     <string name="event_image">Event Image</string>
+    <string name="events_map_button">Events Map</string>
+    <string name="facebook_login_text">Login using your Facebook account</string>
+    <string name="face_text">Login using Facebook a facebook account:</string>
+    <string name="facebook_loginB">Login</string>
+    <string name="login_text1">Login using MB Guide credentials:</string>
+    <string name="mb_login">Login</string>
+    <string name="places_Button">Places</string>
     <string name="title_activity_google_places">GooglePlaces</string>
     <string name="get_places">Get Places</string>
     <string name="title_activity_places">Places</string>
     <string name="title_activity_place_details">PlaceDetailsActivity</string>
     <string name= "place_image">PlaceImage</string>
 	<string name="places">Places</string>
-    
+
+
 </resources>
