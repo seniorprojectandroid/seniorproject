@@ -157,8 +157,34 @@ public class PlaceDetailsActivity extends MapActivity {
 		public SourceType source;
 		
 		public PlaceSearchData(String id, SourceType sourceType) {
-			this.reference = id;
-			this.source = sourceType;
+			
+			
+			this.setReference(id);
+			this.setSourceType(sourceType);
+		}
+		
+		public void setReference(String reference)
+		{
+			if(reference != null)
+			{
+				this.reference = reference;
+			}
+			else
+			{
+				Logger.Error("PlaceSearchData: reference is: " + reference);
+			}
+		}
+		
+		public void setSourceType( SourceType sourceType )
+		{
+			if(sourceType != null)
+			{
+				this.source = sourceType;
+			}
+			else
+			{
+				Logger.Error("PlaceSearchData: source is: "+ sourceType); 
+			}
 		}
 	}
 	
@@ -172,7 +198,8 @@ public class PlaceDetailsActivity extends MapActivity {
 		
 		@Override
 		protected Place doInBackground(PlaceSearchData... params) {
-			return DataManager.getSingleton().getPlaceDetails(params[0].reference,null, params[0].source);
+
+			return DataManager.getSingleton().getPlaceDetails(null,params[0].reference, params[0].source);
 		}
 		
 		@Override

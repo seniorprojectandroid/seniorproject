@@ -29,12 +29,12 @@
     <string name="title_activity_google_places">GooglePlaces</string>
     <string name="get_places">Get Places</string>
     <string name="title_activity_places">Places</string>
-    <string name="title_activity_place_details">PlaceDetailsActivity</string>
 	<string name="menu_search">Search</string>
 	<string name="category">Category</string>
 	<string name="dates">Dates</string>
 	<string name="search_radius">Search Radius</string>
 	<string name="ok">OK</string>
+    <string name="title_activity_place_details">Place Details</string>
     <string name= "place_image">PlaceImage</string>
 	<string name="places">Places</string>
 </resources>

@@ -35,14 +35,19 @@ public class PlacesActivity extends Activity {
 	private PlacesLoader mPlacesLoader = null;
 	private List<Hashtable<String, String>> mPlaceList = null;
 
-	private final OnItemClickListener mClickListener = new OnItemClickListener() {
+	private final OnItemClickListener mClickListener = new OnItemClickListener() 
+	{
 		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			if ( mPlaceList != null && mPlaceList.size() > position ) {
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) 
+		{
+			if ( mPlaceList != null && mPlaceList.size() > position ) 
+			{
 				Hashtable<String, String> map = mPlaceList.get(position);
 				
-				if ( map != null ) {
+				if ( map != null ) 
+				{
 					Intent intent = new Intent(PlacesActivity.this, PlaceDetailsActivity.class);
+					
 					if(map.get("reference") != null)
 					{
 						intent.putExtra("reference", map.get("reference"));

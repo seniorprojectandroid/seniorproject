@@ -213,7 +213,7 @@ public class GPProvider extends DataProvider {
 		}
 		else
 		{
-			Logger.Error("getPlaceDetails: reference not being passed in.");
+			Logger.Error("getPlaceDetails: reference not being passed in:"+ reference +"placeID: " + placeId );
 		}
 
 		if (result != null && result.length() > 0) {
