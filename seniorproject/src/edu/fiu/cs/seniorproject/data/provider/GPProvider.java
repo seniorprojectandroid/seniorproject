@@ -74,6 +74,9 @@ public class GPProvider extends DataProvider {
 		} else {
 			Logger.Error("parseEvent: invalid result.");
 		}
+		
+		event.setSource(SourceType.GOOGLE_PLACE);
+		
 		return event;
 
 	}
@@ -98,7 +101,7 @@ public class GPProvider extends DataProvider {
 		if (result != null && result.length() > 0) {
 			try {
 				data = new JSONObject(result);
-				jsonArray = data.getJSONArray("result");
+				jsonArray = data.getJSONArray("results");
 
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -172,6 +175,8 @@ public class GPProvider extends DataProvider {
 							//event.setTime(time)
 							event.setSource(this.getSource());
 							
+							event.setSource(SourceType.GOOGLE_PLACE);
+							
 							eventList.add(event);
 						}
 					} else {
@@ -188,6 +193,7 @@ public class GPProvider extends DataProvider {
 			Logger.Error("");
 		}
 
+		
 		return eventList;
 	}
 	
@@ -199,9 +205,16 @@ public class GPProvider extends DataProvider {
 		JSONObject resultLocation;
 		String result = null;
 		Place place = null;
-		Location locat;
+		Location locat = new Location();;
 
-		result = this.getPlaceDet(reference);
+		if(reference != null)
+		{
+			result = this.getPlaceDet(reference);
+		}
+		else
+		{
+			Logger.Error("getPlaceDetails: reference not being passed in.");
+		}
 
 		if (result != null && result.length() > 0) {
 			try {
@@ -213,63 +226,87 @@ public class GPProvider extends DataProvider {
 					
 					if(results != null)
 					{
-						//results.getString("formatted_address");
+						if(results.has("formatted_address"))
+						{
+							String address = results.getString("formatted_address");
+						
+							if(address != null)
+							{
+								locat.setAddress(address);
+							}
+						}
+						
+						if(results.has("icon") && results.getString("icon") != null)
+						{
+							place.setImage(results.getString("icon"));
+						}
+						
 						//results.getString("formatted_phone_number");
 	
-						String name = results.getString("name");
-						
-						if(name != null)
+						if(results.has("name"))
 						{
-							place.setName(name);
+							String name = results.getString("name");
+							
+							if(name != null)
+							{
+								place.setName(name);
+							}
 						}
 						// rating
 						// results.getString("rating");
 	
-						JSONObject geometry = results.getJSONObject("geometry");
-						
-						if(geometry != null && geometry.has("location"))
+						if(results.has("geometry"))
 						{
-							resultLocation = geometry.getJSONObject("location");
+							JSONObject geometry = results.getJSONObject("geometry");
 							
-							if(resultLocation != null && resultLocation.has("lng") && resultLocation.has("lat"))
+							if(geometry != null && geometry.has("location"))
 							{
-								locat = new Location();
+								resultLocation = geometry.getJSONObject("location");
 								
-								String longitude = resultLocation.getString("lng");
-								
-								if(longitude != null)
+								if(resultLocation != null && resultLocation.has("lng") && resultLocation.has("lat"))
 								{
-									locat.setLongitude(longitude);
+									String longitude = resultLocation.getString("lng");
+									
+									if(longitude != null)
+									{
+										locat.setLongitude(longitude);
+									}
+									
+									String latitude = resultLocation.getString("lat");
+									
+									if(latitude != null)
+									{
+										locat.setLatitude(latitude);
+									}
+									
+									place.setLocation(locat);
 								}
-								
-								String latitude = resultLocation.getString("lat");
-								
-								if(latitude != null)
-								{
-									locat.setLatitude(latitude);
-								}
-								
-								place.setLocation(locat);
 							}
 						}
-
-						String web = results.getString("website");
 						
-						if(web != null)
+						if(results.has("website"))
 						{
-							place.setWebsite(web);
+							String web = results.getString("website");
+							
+							if(web != null)
+							{
+								place.setWebsite(web);
+							}
 						}
 					}
 				} else {
-					Logger.Error("parseEvent: invalid data.");
+					Logger.Error("parsePlaceDetails: invalid data.");
 				}
 
 			} catch (JSONException e) {
-				Logger.Error("JSONException in parseEvent");
+				Logger.Error("JSONException in parsePlaceDet");
 			}
 		} else {
-			Logger.Error("parseEvent: invalid result.");
+			Logger.Error("parsePlaceDet: invalid result.");
 		}
+		
+		place.setSource(SourceType.GOOGLE_PLACE);
+		
 		return place;
 
 	}
@@ -311,6 +348,12 @@ public class GPProvider extends DataProvider {
 						if (eachPlace != null) 
 						{
 							
+							if(eachPlace.has("vicinity") && eachPlace.getString("vicinity") != null)
+							{
+								loc.setAddress(eachPlace.getString("vicinity"));	
+							}
+							
+
 							JSONObject geometry = eachPlace.getJSONObject("geometry");
 							
 							if(geometry != null && geometry.has("location"))
@@ -336,28 +379,25 @@ public class GPProvider extends DataProvider {
 								
 							}
 							
-							String name = eachPlace.getString("name");	
-							
-							if(name != null)
+							if(eachPlace.has("name") && eachPlace.getString("name") != null)
 							{
-								place.setName(name);
+								place.setName(eachPlace.getString("name"));
 							}
 							
-							String reference = eachPlace.getString("reference");
-							
-							if(reference != null)
+							if(eachPlace.has("reference") && eachPlace.getString("reference") != null)
 							{
-								place.setReference(reference);
+								place.setReference(eachPlace.getString("reference"));
 							}
 							
-							String id = eachPlace.getString("id");
-							
-							if(id != null)
-							{
-								place.setId(id);
-							}
+//							String id = eachPlace.getString("id");
+//							
+//							if(id != null)
+//							{
+//								place.setId(id);
+//							}
 						
 							place.setLocation(loc);
+							place.setSource(SourceType.GOOGLE_PLACE);
 							placeList.add(place);
 							
 						} else {
@@ -382,8 +422,7 @@ public class GPProvider extends DataProvider {
 		String result = null;
 
 		try {
-			String radiusInMeters = String.valueOf( Double.valueOf(radius) * 1609.34 );
-			result = this.gpClient.getPlaces(location, category, radiusInMeters, query);
+			result = this.gpClient.getPlaces(location, category, radius, query);
 		} catch (MalformedURLException e) {
 			Logger.Error("MalformedURLException in parseEvent");
 		} catch (IOException e) {

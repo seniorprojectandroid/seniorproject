@@ -11,6 +11,7 @@ import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
+import edu.fiu.cs.seniorproject.utils.Logger;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,11 +32,41 @@ public class PlaceDetailsActivity extends MapActivity {
         AppLocationManager.init(this);
         
         Intent intent = getIntent();
-        if ( intent.hasExtra("reference") && intent.hasExtra("source")) {
-        	String eventId = intent.getStringExtra("reference");
-        	SourceType source = (SourceType)intent.getSerializableExtra("source");        	
-        	(new PlaceDownloader(this)).execute(new PlaceSearchData(eventId, source));
+        String eventId = null;
+        if ( intent.hasExtra("reference")) {
+    
+        	String reference = intent.getStringExtra("reference");
+        	
+        	if( reference != null)
+        	{
+        		eventId = reference;
+        	}
+        	else
+        	{
+        		Logger.Error("PlaceDetailsA: getStringExtra(reference) ");
+        	}
+        
         }
+        else
+        {
+        	Logger.Error("PlaceActivityDetails: Does not have a reference.");
+        }
+        
+        SourceType source = null;
+        
+        if(intent.hasExtra("source"))
+        {
+        	source =  (SourceType)intent.getSerializableExtra("source");
+        	
+        	if(source == null)
+        	{
+        		Logger.Error("Source not being retrieve");
+        	}
+        }
+            	
+    	(new PlaceDownloader(this)).execute(new PlaceSearchData(eventId, source));
+        
+        
     }
 
     @Override

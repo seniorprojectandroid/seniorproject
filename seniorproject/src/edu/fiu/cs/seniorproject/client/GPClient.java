@@ -31,7 +31,6 @@ public class GPClient extends RestClient{
 		if(reference != null)
 			params.putString("reference", reference);
 
-		
 		String result = null;
 		String url = "https://maps.googleapis.com/maps/api/place/details/json";
 		String method = "GET";

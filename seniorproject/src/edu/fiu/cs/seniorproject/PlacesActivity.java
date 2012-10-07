@@ -48,7 +48,19 @@ public class PlacesActivity extends Activity {
 					if(map.get("reference") != null)
 					{
 						intent.putExtra("reference", map.get("reference"));
-						intent.putExtra("source", SourceType.valueOf(map.get("source")));
+						
+						if(map.get("source") != null)
+						{
+							intent.putExtra("source", SourceType.valueOf(map.get("source")));
+						}
+						else
+						{
+							Logger.Error("PlacesActivity: Source, Line: 54.");
+						}
+					}
+					else
+					{
+						Logger.Error("PlaceActvity map.get(\"reference\") error.");
 					}
 					PlacesActivity.this.startActivity(intent);
 				}
@@ -135,17 +147,49 @@ public class PlacesActivity extends Activity {
 			Hashtable<String, String> map = new Hashtable<String, String>();
 			
 			Place place = places.get(i);
-			map.put("name", place.getName());
 			
-			Location location = place.getLocation();
-			if ( location != null && currentLocation != null ) {
-				map.put("address", location.getAddress() != null ? location.getAddress() : "No Address");
+			if(place != null)
+			{
+				map.put("source", place.getSource().toString());
 				
-				android.location.Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()), distanceResults);
-				double miles = distanceResults[0] / 1609.34;	// i mile = 1.60934km								
-				map.put("distance", df.format(miles) + "mi" );
+				if(place.getName() !=null)
+				{
+					map.put("name", place.getName());
+				}
+				else
+				{
+					Logger.Error("Place name not being retrieve from place.getName()");
+				}
+				
+				
+				if(place.getReference() != null)
+				{
+					map.put("reference", place.getReference());
+				}
+				else
+				{
+					Logger.Error("reference no being retrieve from place.getReference().");
+				}
+				
+				
+				
+				if(place.getLocation() != null)
+				{
+					Location location = place.getLocation();
+					if ( location != null && currentLocation != null ) {
+						map.put("address", location.getAddress() != null ? location.getAddress() : "No Address");
+						
+						android.location.Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()), distanceResults);
+						double miles = distanceResults[0] / 1609.34;	// i mile = 1.60934km								
+						map.put("distance", df.format(miles) + "mi" );
+					}
+				}
+				else
+				{
+					Logger.Error("Location not being retrieve from place.getLocation()");
+				}
+				placeList.add(map);
 			}
-			placeList.add(map);
 		}
 		return placeList;
     }
@@ -171,7 +215,7 @@ public class PlacesActivity extends Activity {
 			Location location = new Location( String.valueOf( currentLocation.getLatitude() ), String.valueOf(currentLocation.getLongitude()) );
 			
 			Integer total = 0;
-			mLoader = DataManager.getSingleton().getConcurrentPlaceList(location, null, "500", null);
+			mLoader = DataManager.getSingleton().getConcurrentPlaceList(location, null, "1", null);
 			
 			if ( mLoader != null ) {
 				List<Place> iter = null;
