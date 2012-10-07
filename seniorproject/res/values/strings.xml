@@ -1,5 +1,4 @@
 <resources>
-
     <string name="app_name">Miami Beach Guide</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
@@ -36,4 +35,6 @@
 	<string name="dates">Dates</string>
 	<string name="search_radius">Search Radius</string>
 	<string name="ok">OK</string>
+    <string name= "place_image">PlaceImage</string>
+	<string name="places">Places</string>
 </resources>

@@ -10,6 +10,7 @@ public class Place {
 	private String website;
 	private String reference;
 	private String image;
+	private SourceType source;
 
 	public Place()
 	{		
@@ -70,6 +71,16 @@ public class Place {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+	
+	public void setSource(SourceType source)
+	{
+		this.source = source;
+	}
+	
+	public SourceType getSource()
+	{
+		return this.source;
 	}
 
 }

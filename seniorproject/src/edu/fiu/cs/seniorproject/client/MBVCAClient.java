@@ -8,12 +8,10 @@ import java.net.MalformedURLException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import edu.fiu.cs.seniorproject.config.AppConfig;
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.utils.DateUtils;
 import edu.fiu.cs.seniorproject.utils.Logger;
 import android.os.Bundle;
-import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class MBVCAClient extends RestClient{
 

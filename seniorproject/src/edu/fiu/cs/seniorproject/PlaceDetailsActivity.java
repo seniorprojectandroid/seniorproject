@@ -11,6 +11,7 @@ import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
+import edu.fiu.cs.seniorproject.utils.Logger;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,11 +32,41 @@ public class PlaceDetailsActivity extends MapActivity {
         AppLocationManager.init(this);
         
         Intent intent = getIntent();
-        if ( intent.hasExtra("event_id") && intent.hasExtra("source")) {
-        	String eventId = intent.getStringExtra("event_id");
-        	SourceType source = (SourceType)intent.getSerializableExtra("source");        	
-        	(new PlaceDownloader(this)).execute(new PlaceSearchData(eventId, source));
+        String eventId = null;
+        if ( intent.hasExtra("reference")) {
+    
+        	String reference = intent.getStringExtra("reference");
+        	
+        	if( reference != null)
+        	{
+        		eventId = reference;
+        	}
+        	else
+        	{
+        		Logger.Error("PlaceDetailsA: getStringExtra(reference) ");
+        	}
+        
         }
+        else
+        {
+        	Logger.Error("PlaceActivityDetails: Does not have a reference.");
+        }
+        
+        SourceType source = null;
+        
+        if(intent.hasExtra("source"))
+        {
+        	source =  (SourceType)intent.getSerializableExtra("source");
+        	
+        	if(source == null)
+        	{
+        		Logger.Error("Source not being retrieve");
+        	}
+        }
+            	
+    	(new PlaceDownloader(this)).execute(new PlaceSearchData(eventId, source));
+        
+        
     }
 
     @Override
@@ -63,20 +94,22 @@ public class PlaceDetailsActivity extends MapActivity {
 	private void showPlace(Place place) {
 		
 		if ( place != null ) {
+			//create place name.
 			TextView name = (TextView)findViewById(R.id.place_name);
 			if ( name != null ) {
 				name.setText(place.getName());
 			}
 			
 			//create PLACE description.
-			TextView description = (TextView)findViewById(R.id.event_description);
+			TextView description = (TextView)findViewById(R.id.place_description);
 			if ( description != null ) {
 				description.setText(place.getDescription());
 			}
 			
 			 
 			if ( place.getImage() != null && !place.getImage().isEmpty() ) {
-				ImageView image = (ImageView)findViewById(R.id.image);
+				//place image
+				ImageView image = (ImageView)findViewById(R.id.place_image);
 				if ( image != null ) {
 					DataManager.getSingleton().downloadBitmap(place.getImage(), image);
 				}
@@ -85,12 +118,13 @@ public class PlaceDetailsActivity extends MapActivity {
 			//place location 
 			Location location = place.getLocation();
 			if ( location != null ) {
-				TextView placeLocation = (TextView)findViewById(R.id.event_place);
+				TextView placeLocation = (TextView)findViewById(R.id.place_location);
 				if ( placeLocation != null ) {
 					placeLocation.setText(location.getAddress());
 				}
 				
-				TextView distance = (TextView)findViewById(R.id.event_distance);
+				//place distance.
+				TextView distance = (TextView)findViewById(R.id.place_distance);
 				if ( distance != null ) {
 					float[] distanceResults = new float[1];
 					android.location.Location currentLocation = AppLocationManager.getCurrentLocation();
@@ -119,11 +153,11 @@ public class PlaceDetailsActivity extends MapActivity {
 
 	private class PlaceSearchData {
 		
-		public String placeId;
+		public String reference;
 		public SourceType source;
 		
 		public PlaceSearchData(String id, SourceType sourceType) {
-			this.placeId = id;
+			this.reference = id;
 			this.source = sourceType;
 		}
 	}
@@ -138,7 +172,7 @@ public class PlaceDetailsActivity extends MapActivity {
 		
 		@Override
 		protected Place doInBackground(PlaceSearchData... params) {
-			return DataManager.getSingleton().getPlaceDetails(params[0].placeId,null, params[0].source);
+			return DataManager.getSingleton().getPlaceDetails(params[0].reference,null, params[0].source);
 		}
 		
 		@Override
