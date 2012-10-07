@@ -34,9 +34,9 @@ public class DataManager {
 	
 	private DataManager() {
 		// register all the provider
-		mProviderList.add(new MBVCAProvider());
-		//mProviderList.add(new GPProvider());
-		mProviderList.add(new EventFullProvider());
+		//mProviderList.add(new MBVCAProvider());
+		mProviderList.add(new GPProvider());
+		//mProviderList.add(new EventFullProvider());
 	}
 	
 	public List<Event> getEventList(Location location, String category, String radius, String query) {
