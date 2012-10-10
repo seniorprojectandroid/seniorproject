@@ -22,6 +22,7 @@ import com.facebook.android.FacebookError;
 import edu.fiu.cs.seniorproject.config.AppConfig;
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.Place;
+import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class FacebookManager {
@@ -124,6 +125,7 @@ public class FacebookManager {
 								JSONObject placeIter = placeList.getJSONObject(i);
 								if ( placeIter != null && placeIter.has("id") && placeIter.has("name")) {
 									Place place = new Place();
+									place.setSource(SourceType.FACEBOOK);
 									place.setId(placeIter.getString("id"));
 									place.setName(placeIter.getString("name"));
 									result.add(place);

@@ -10,7 +10,7 @@ public class Place {
 	private String website;
 	private String reference;
 	private String image;
-	private SourceType source;
+	private SourceType source = SourceType.MBVCA;	// default source to Miami beach api
 
 	public Place()
 	{		

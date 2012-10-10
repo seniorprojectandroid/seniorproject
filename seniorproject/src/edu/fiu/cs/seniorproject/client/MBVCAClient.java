@@ -3,7 +3,14 @@ package edu.fiu.cs.seniorproject.client;
 import edu.fiu.cs.seniorproject.config.AppConfig;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+
+import oauth.signpost.OAuthConsumer;
+import oauth.signpost.basic.DefaultOAuthConsumer;
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,11 +22,17 @@ import android.os.Bundle;
 
 public class MBVCAClient extends RestClient{
 
-	private static final String BASE_API = "http://www.miamibeachapi.com/api/index.php/";
+	private static final String BASE_API = "http://www.miamibeachapi.com/api/api.php/";
 
+	private final String OAUTH_CONSUMER_KEY  = "anonymous";
+	private final String OAUTH_CONSUMER_SECRET  = "anonymous";
+	
+	private final OAuthConsumer mConsumer = new DefaultOAuthConsumer(OAUTH_CONSUMER_KEY, OAUTH_CONSUMER_SECRET);
+	
 	public MBVCAClient(String appId)
 	{
 		super(appId);
+		mConsumer.setTokenWithSecret(AppConfig.MBVCA_TOKEN, AppConfig.MBVCA_TOKEN_SECRET);
 	}
 
 	public String getEventList(Location location, String category,String radiusStr, long startTime, long endTime) {
@@ -234,9 +247,23 @@ public class MBVCAClient extends RestClient{
 	public Bundle getBundle()
 	{
 		Bundle bundle = new Bundle();
-		bundle.putString("token", AppConfig.MBVCA_TOKEN);
-		bundle.putString("token_secret", AppConfig.MBVCA_TOKEN_SECRET);
+		//bundle.putString("token", AppConfig.MBVCA_TOKEN);
+		//bundle.putString("token_secret", AppConfig.MBVCA_TOKEN_SECRET);
 		return bundle;
 	}
 
+	@Override
+	protected void signRequest(HttpURLConnection conn) {
+		if ( conn != null ) {
+			try {
+				mConsumer.sign(conn);
+			} catch (OAuthMessageSignerException e) {
+				Logger.Error("OAuthMessageSignerException signing request in MBVCA " + e.getMessage() );
+			} catch (OAuthExpectationFailedException e) {
+				Logger.Error("OAuthExpectationFailedException signing request in MBVCA " + e.getMessage() );
+			} catch (OAuthCommunicationException e) {
+				Logger.Error("OAuthCommunicationException signing request in MBVCA " + e.getMessage() );
+			}
+		}
+	}
 }

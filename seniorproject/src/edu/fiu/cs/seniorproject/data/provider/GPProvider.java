@@ -222,6 +222,7 @@ public class GPProvider extends DataProvider {
 
 				if (data != null && data.has("result")) {
 					place = new Place();
+					place.setSource(SourceType.GOOGLE_PLACE);
 					results = data.getJSONObject("result");
 					
 					if(results != null)
