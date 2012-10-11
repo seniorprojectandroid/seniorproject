@@ -72,6 +72,12 @@ public class EventsActivity extends Activity {
     	super.onDestroy();
     }
     
+    //settings click
+    public void onSettingsClick(MenuItem view) {
+    	Intent intent = new Intent(this, SettingsActivity.class);
+    	this.startActivity(intent);
+    }    
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.items_list, menu);
@@ -87,6 +93,8 @@ public class EventsActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+    
+    
 
     private List<Hashtable<String, String>> buildEventMap(List<Event> eventList ) {
     	List<Hashtable<String, String>> fillMaps = new ArrayList<Hashtable<String, String>>(eventList.size());

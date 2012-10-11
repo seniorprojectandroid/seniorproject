@@ -1,5 +1,7 @@
 package edu.fiu.cs.seniorproject.client;
 
+import edu.fiu.cs.seniorproject.config.AppConfig;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 
@@ -10,8 +12,8 @@ import edu.fiu.cs.seniorproject.config.AppConfig;
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.utils.DateUtils;
 import edu.fiu.cs.seniorproject.utils.Logger;
-
 import android.os.Bundle;
+import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class MBVCAClient extends RestClient{
 
