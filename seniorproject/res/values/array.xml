@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <resources>
+   <string-array name="distanceradius">
+     <item>1 Mile</item>
+     <item>5 Miles</item>
+     <item>10 Miles</item>
+     </string-array>
+
+   <string-array name="listValues">
+     <item>1</item>
+     <item>5</item>
+     <item>10</item>
+   </string-array>
+   
+   <string-array name="placescategories">
+     <item>Bars</item>
+     <item>Restaurants</item>
+     <item>Clubs</item>
+     </string-array>
+
+   <string-array name="PlacesValues">
+     <item>1</item>
+     <item>2</item>
+     <item>3</item>
+   </string-array>
+   
+   <string-array name="eventscategories">
+     <item>Art</item>
+     <item>Food</item>
+     <item>Party</item>
+     </string-array>
+
+   <string-array name="EventsValues">
+     <item>1</item>
+     <item>2</item>
+     <item>3</item>
+   </string-array>   
+   
+   
+ </resources>
