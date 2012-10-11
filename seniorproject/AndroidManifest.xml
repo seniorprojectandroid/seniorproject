@@ -79,7 +79,23 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.fiu.cs.seniorproject.PlacesActivity" />
         </activity>
-        <activity android:name="PlacesMapViewActivity"></activity>
+        
+        <activity android:name=".PlacesMapViewActivity"
+             android:label="@string/title_activity_place_details" >
+           	<meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.PlacesActivity" />
+            
+        </activity>
+        
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
+

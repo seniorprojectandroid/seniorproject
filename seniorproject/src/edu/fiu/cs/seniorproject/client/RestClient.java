@@ -102,6 +102,7 @@ public class RestClient {
 
         String response = "";
         try {
+        	signRequest(conn);	// sign the request if is needed
             response = read(conn.getInputStream());
         } catch (FileNotFoundException e) {
             // Error Stream contains JSON that we can parse to a FB error
@@ -170,6 +171,10 @@ public class RestClient {
         }
         return sb.toString();
     }
+	
+	protected void signRequest(HttpURLConnection conn) {
+		// override in derived classes
+	}
 	
 	public static Bitmap downloadBitmap( String url ) {
 		Logger.Debug("download bitmap from " + url );

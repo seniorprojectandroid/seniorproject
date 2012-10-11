@@ -124,7 +124,7 @@ public class MBVCAProvider extends DataProvider
 		if ( places != null && !places.isEmpty() ) {
 			try {
 				JSONObject placeObject = new JSONObject(places);
-				if ( placeObject != null && placeObject.has("solodev_view") ) {
+				if ( placeObject != null && placeObject.has("solodev_view") && !placeObject.isNull("solodev_view") ) {
 					JSONArray placeList = placeObject.getJSONArray("solodev_view");
 					if ( placeList != null && placeList.length() > 0 ) {
 						place = this.parsePlace(placeList.getJSONObject(0));
@@ -193,6 +193,7 @@ public class MBVCAProvider extends DataProvider
 			place = new Place();
 			try {
 				place.setId( String.valueOf( iter.getInt("datatable_entry_id")));
+				place.setSource(SourceType.MBVCA);
 				
 				if ( iter.has("name")) {
 					place.setName(iter.getString("name"));
