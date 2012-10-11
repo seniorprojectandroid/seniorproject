@@ -9,10 +9,14 @@ import org.json.JSONObject;
 
 import edu.fiu.cs.seniorproject.client.MBVCAClient;
 import edu.fiu.cs.seniorproject.config.AppConfig;
+import edu.fiu.cs.seniorproject.data.DateFilter;
 import edu.fiu.cs.seniorproject.data.Event;
+import edu.fiu.cs.seniorproject.data.EventCategoryFilter;
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.Place;
+import edu.fiu.cs.seniorproject.data.PlaceCategoryFilter;
 import edu.fiu.cs.seniorproject.data.SourceType;
+import edu.fiu.cs.seniorproject.utils.DateUtils;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class MBVCAProvider extends DataProvider 
@@ -27,10 +31,12 @@ public class MBVCAProvider extends DataProvider
 	}
 
 	@Override
-	public List<Event> getEventList(Location location, String category,	String radius, String query) {
+	public List<Event> getEventList(Location location, EventCategoryFilter category, String radius, String query, DateFilter date) {
 		List<Event> result = null;
 		
-		String events = mMBVCAClient.getEventList(location, category, radius, 0, 0);
+		long[] times = new long[]{0,0};
+		this.getTimeByDateFilter(date, times);
+		String events = mMBVCAClient.getEventList(location, getEventCategory(category), radius, times[0], times[1] );
 		if ( events != null && !events.isEmpty() ) {
 			try {
 				JSONObject eventsObject = new JSONObject(events);
@@ -59,14 +65,10 @@ public class MBVCAProvider extends DataProvider
 	}
 
 	@Override
-	public List<Place> getPlaceList(Location location, String category, String radius, String query) {
+	public List<Place> getPlaceList(Location location, PlaceCategoryFilter category, String radius, String query) {
 		List<Place> result = null;
 		
-		if ( category == null ) {
-			category = "361";	// default to restaurant and bars
-		}
-		
-		String places = this.mMBVCAClient.getPlaceList(location, category, "0.5");
+		String places = this.mMBVCAClient.getPlaceList(location, getPlaceCategory(category), "0.5");
 		
 		if ( places != null && !places.isEmpty() ) {
 			try {
@@ -142,6 +144,31 @@ public class MBVCAProvider extends DataProvider
 		return SourceType.MBVCA;
 	}
 	
+	private void getTimeByDateFilter(DateFilter filter, long[] times ) {
+		times[0] = DateUtils.getTodayTimeInMiliseconds();
+		
+		switch (filter) {
+			case TODAY:
+				times[1] = times[0] + DateUtils.ONE_DAY; 
+				break;
+	
+			case THIS_WEEK:
+				times[1] = times[0] + DateUtils.SEVEN_DAYS;
+				break;
+				
+			case THIS_WEEKEND:
+				times[1] = times[0] + 2 * DateUtils.ONE_DAY; 
+				break;
+				
+			case NEXT_30_DAYS:
+				times[1] = times[0] + DateUtils.ONE_MONTH; 
+				break;
+			default:
+				times[1] = times[0] + DateUtils.ONE_DAY; 
+				break;
+		}
+	}
+	
 	private Event parseEvent(JSONObject iter) {
 		Event event = null;
 		try {
@@ -176,7 +203,7 @@ public class MBVCAProvider extends DataProvider
 					if ( !image.isEmpty() && !image.equals("null")) {
 						event.setImage( IMAGE_BASE_URL + iter.getString("image"));
 					}
-				}
+				}				
 				
 				event.setSource(SourceType.MBVCA);
 			} 
@@ -220,8 +247,8 @@ public class MBVCAProvider extends DataProvider
 					}
 				}
 				
-				if ( iter.has("objectid")) {
-					place.setReference(String.valueOf(iter.getInt("objectid")));
+				if ( iter.has("id")) {
+					place.setReference(iter.getString("id") );
 				}
 				
 				if ( iter.has("url")) {
@@ -235,4 +262,9 @@ public class MBVCAProvider extends DataProvider
 		}
 		return place;
 	}
+	
+	@Override
+	protected String getEventCategory( EventCategoryFilter filter ) {
+		 return filter == EventCategoryFilter.NONE ? null : String.valueOf(filter.Value());
+	 }
 }

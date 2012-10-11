@@ -12,9 +12,12 @@ import org.json.JSONObject;
 
 import edu.fiu.cs.seniorproject.client.EventfulRestClient;
 import edu.fiu.cs.seniorproject.config.AppConfig;
+import edu.fiu.cs.seniorproject.data.DateFilter;
 import edu.fiu.cs.seniorproject.data.Event;
+import edu.fiu.cs.seniorproject.data.EventCategoryFilter;
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.Place;
+import edu.fiu.cs.seniorproject.data.PlaceCategoryFilter;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
@@ -30,10 +33,10 @@ public class EventFullProvider extends DataProvider
 		 this.myRestClient = new EventfulRestClient(AppConfig.EVENTFUL_APP_ID);
 	 }// EventFullProvider
 	 
-	 public List<Event> getEventList(Location location, String category, String radius, String query ) 
+	 public List<Event> getEventList(Location location, EventCategoryFilter category, String radius, String query, DateFilter date ) 
 	 {
 		 List<Event> myEventList = null;
-		 String myListRequestClient = this.myRestClient.getEventList(query, location, null, category, (int)Math.ceil(Double.valueOf(radius))); 
+		 String myListRequestClient = this.myRestClient.getEventList(query, location, null, getEventCategory(category), (int)Math.ceil(Double.valueOf(radius))); 
 		 if ( myListRequestClient != null && !myListRequestClient.isEmpty() )
 		 {
 				try {
@@ -91,7 +94,7 @@ public class EventFullProvider extends DataProvider
 		return event;
 	}
 	 
-	 public List<Place> getPlaceList(Location location, String category, String radius, String query)
+	 public List<Place> getPlaceList(Location location, PlaceCategoryFilter category, String radius, String query)
 	 {	
 		
 		List<Place> myPlaceList = null;
@@ -281,6 +284,12 @@ public class EventFullProvider extends DataProvider
 			Logger.Error("Exception decoding place from eventful " + e.getMessage() );
 		}
 		return place;
+	}
+	
+	@Override
+	protected String getEventCategory(EventCategoryFilter filter) {
+		// FIXME Should match general categories into Eventfull categories
+		return null;
 	}
 }// EventFullProvider
 

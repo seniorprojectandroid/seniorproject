@@ -162,7 +162,7 @@ public class MBVCAClient extends RestClient{
 			if ( placeId != null && !placeId.isEmpty() ) {
 				query.put("datatable_entry_id", Integer.valueOf(placeId));
 			} else if ( reference != null && !reference.isEmpty() ) {
-				query.put("last_name", reference);
+				query.put("id", reference);
 			} else {
 				Logger.Warning("Both params are null or empty. Unable to make request!!!");
 				return null;

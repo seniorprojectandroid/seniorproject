@@ -15,9 +15,12 @@ import org.json.JSONObject;
 
 import edu.fiu.cs.seniorproject.client.GPClient;
 import edu.fiu.cs.seniorproject.config.AppConfig;
+import edu.fiu.cs.seniorproject.data.DateFilter;
 import edu.fiu.cs.seniorproject.data.Event;
+import edu.fiu.cs.seniorproject.data.EventCategoryFilter;
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.Place;
+import edu.fiu.cs.seniorproject.data.PlaceCategoryFilter;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
@@ -84,8 +87,8 @@ public class GPProvider extends DataProvider {
 
 
 	@Override
-	public List<Event> getEventList(Location location, String category,
-			String radius, String query) {
+	public List<Event> getEventList(Location location, EventCategoryFilter category,
+			String radius, String query, DateFilter date) {
 		
 		String result = null;
 		JSONObject data = null;
@@ -96,7 +99,7 @@ public class GPProvider extends DataProvider {
 		Location loc = null;
 
 		String radiusInMeters = String.valueOf( Double.valueOf(radius) * 1609.34 );
-		result = getPlaces(location, category, radiusInMeters, query);
+		result = getPlaces(location, null, radiusInMeters, query);
 
 		if (result != null && result.length() > 0) {
 			try {
@@ -313,7 +316,7 @@ public class GPProvider extends DataProvider {
 	}
 
 	@Override
-	public List<Place> getPlaceList(Location location, String category,
+	public List<Place> getPlaceList(Location location, PlaceCategoryFilter category,
 			String radius, String query) {
 
 		String result = null;
@@ -325,7 +328,7 @@ public class GPProvider extends DataProvider {
 		Location loc = null;
 
 		String radiusInMeters = String.valueOf( Double.valueOf(radius) * 1609.34 );
-		result = getPlaces(location, category, radiusInMeters, query);
+		result = getPlaces(location, getPlaceCategory(category), radiusInMeters, query);
 
 		if (result != null && result.length() > 0) 
 		{

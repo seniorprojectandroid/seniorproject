@@ -1,5 +1,38 @@
 package edu.fiu.cs.seniorproject.data;
 
+public enum PlaceCategoryFilter {
+	BAKERY(447),
+	DENTISTS(367),
+	FOOD_SALES(383),
+	GALLERY_ART(466),
+	HOTEL(360),
+	LIQUOR_SALES(470),
+	LOCKSMITH(504),
+	PARKING_GARAGE(472),
+	PARKING_LOT(401),
+	PARKING_LOT_PROVISIONAL(445),
+	PARKING_LOT_SELF_PARKING(394),
+	PARKING_LOT_TEMPORARY(396),
+	PARKING_LOT_UNDERUTILIZED(441),
+	PARKING_LOT_VALET(516),
+	PHARMACY(450),
+	RESTAURANT_BARS(361);
+	
+	private final int _value;
+	
+	PlaceCategoryFilter(int value) {
+		_value = value;
+	}
+	
+	public int Value() {
+		return _value;
+	}
+	
+	public static PlaceCategoryFilter getValueAtIndex(int index) {
+		return PlaceCategoryFilter.values()[ index ];
+	}
+}
+/*
 public class PlaceCategoryFilter {
 
 	public static final int	BAKERY 						=	447;
@@ -19,4 +52,4 @@ public class PlaceCategoryFilter {
 	public static final int	PHARMACY 					=	450;
 	public static final int	RESTAURANT_BARS 			=	361;
 
-}
+}*/

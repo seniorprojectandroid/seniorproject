@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import edu.fiu.cs.seniorproject.data.DateFilter;
 import edu.fiu.cs.seniorproject.data.Event;
+import edu.fiu.cs.seniorproject.data.EventCategoryFilter;
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
@@ -31,6 +33,7 @@ import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.support.v4.app.NavUtils;
@@ -43,6 +46,7 @@ public class EventsActivity extends Activity {
 	
 	private boolean filterExpanded = false;
 	private Animation animation = null;
+	private MenuItem mExpandMenuItem = null;
 	
 	private final OnItemClickListener mClickListener = new OnItemClickListener() {
 		@Override
@@ -75,15 +79,12 @@ public class EventsActivity extends Activity {
         }
         
         mEventLoader = new EventLoader(this);
-        mEventLoader.execute();
+        this.loadEvents();
     }
 
     @Override
     protected void onDestroy() {
-    	if ( mEventLoader != null && mEventLoader.getStatus() != Status.FINISHED ) {
-    		mEventLoader.cancelLoader();
-    		mEventLoader.cancel(true);
-    	}
+    	this.cancelEventLoader();
     	super.onDestroy();
     }
     
@@ -137,6 +138,7 @@ public class EventsActivity extends Activity {
     		
     		this.animation = AnimationUtils.loadAnimation(this, R.anim.slide_from_top);
     		findViewById(R.id.filter_form).startAnimation(animation);
+    		mExpandMenuItem = item;
     	} else {
     		item.setIcon(R.drawable.navigation_expand_dark);
     		
@@ -146,6 +148,30 @@ public class EventsActivity extends Activity {
     		
     		this.animation = AnimationUtils.loadAnimation(this, R.anim.slide_to_top);
     		findViewById(R.id.filter_form).startAnimation(animation);
+    		mExpandMenuItem = null;
+    	}
+    }
+    
+    private void cancelEventLoader() {
+    	if ( mEventLoader != null ) {
+	    	if (  mEventLoader.getStatus() != Status.FINISHED ) {
+	    		mEventLoader.cancelLoader();
+	    		mEventLoader.cancel(true);
+	    	}
+	    	mEventLoader = null;
+    	}
+    }
+    
+    private void loadEvents() {
+    	if ( mEventLoader != null ) {
+    		
+    		findViewById(android.R.id.list).setVisibility(View.GONE);
+    		findViewById(android.R.id.empty).setVisibility(View.GONE);
+    		findViewById(R.id.filter_form).setVisibility(View.GONE);
+    		findViewById(android.R.id.progress).setVisibility(View.VISIBLE);
+    		
+    		mEventList = null;
+    		mEventLoader.execute();
     	}
     }
     
@@ -184,33 +210,35 @@ public class EventsActivity extends Activity {
     private void showEventList( List<Event> eventList ) {
     	if (this.mEventList == null ) {
     		
-    		if ( eventList != null && eventList.size() > 0 ) {
-	    		ListView lv = (ListView)findViewById(android.R.id.list);
-	    		if ( lv != null ) {
-	    			
-	    			// create the grid item mapping
-	    			String[] from = new String[] {"name", "place", "time", "distance" };
-					int[] to = new int[] { R.id.event_name, R.id.event_place, R.id.event_time, R.id.event_distance };
-
-					this.mEventList = this.buildEventMap(eventList);
-					
-					SimpleAdapter adapter = new SimpleAdapter(this, this.mEventList, R.layout.event_row, from, to);
-					lv.setAdapter(adapter);
-	    			lv.setVisibility(View.VISIBLE);
-	    			lv.setOnItemClickListener(mClickListener);
-	    		}
-	    	} else {
-	    		TextView tv = (TextView)findViewById(android.R.id.empty);
-	    		if ( tv != null ) {
-	    			tv.setVisibility(View.VISIBLE);
-	    		}
-	    	}
-    		
-    		// Hide progress bar
-	    	ProgressBar pb = (ProgressBar)findViewById(android.R.id.progress);
-	    	if ( pb!= null ) {
-	    		pb.setVisibility(View.GONE);
-	    	}
+    		if (  eventList != null ) {
+	    		if ( eventList.size() > 0 ) {
+		    		ListView lv = (ListView)findViewById(android.R.id.list);
+		    		if ( lv != null ) {
+		    			
+		    			// create the grid item mapping
+		    			String[] from = new String[] {"name", "place", "time", "distance" };
+						int[] to = new int[] { R.id.event_name, R.id.event_place, R.id.event_time, R.id.event_distance };
+	
+						this.mEventList = this.buildEventMap(eventList);
+						
+						SimpleAdapter adapter = new SimpleAdapter(this, this.mEventList, R.layout.event_row, from, to);
+						lv.setAdapter(adapter);
+		    			lv.setVisibility(View.VISIBLE);
+		    			lv.setOnItemClickListener(mClickListener);
+		    		}
+		    	} else {
+		    		TextView tv = (TextView)findViewById(android.R.id.empty);
+		    		if ( tv != null ) {
+		    			tv.setVisibility(View.VISIBLE);
+		    		}
+		    	}
+	    		
+	    		// Hide progress bar
+		    	ProgressBar pb = (ProgressBar)findViewById(android.R.id.progress);
+		    	if ( pb!= null ) {
+		    		pb.setVisibility(View.GONE);
+		    	}
+    		}
     	} else {
     		ListView lv = (ListView)findViewById(android.R.id.list);
     		if ( lv != null && lv.getAdapter() != null ) {
@@ -223,10 +251,44 @@ public class EventsActivity extends Activity {
     	}
     }
     
+    private void getSearchFilters() {
+    	if ( mEventLoader != null ) {
+	    	Spinner spinner = (Spinner)findViewById(R.id.category_spinner);
+	    	if ( spinner != null ) {
+	    		mEventLoader.mCategoryFilter = EventCategoryFilter.getValueAtIndex( spinner.getSelectedItemPosition() );
+	    	}
+	    	
+	    	spinner = (Spinner)findViewById(R.id.dates_spinner);
+	    	if ( spinner != null ) {
+	    		mEventLoader.mDataFilter = DateFilter.getValueAtIndex( spinner.getSelectedItemPosition() );
+	    	}
+	    	
+	    	NumberPicker picker = (NumberPicker)findViewById(R.id.radius_picker);
+	    	if ( picker != null ) {
+	    		mEventLoader.mSearchRadius = String.valueOf( picker.getValue() );
+	    	}
+    	}
+    }
+    
+    public void onFilterClick(View view) {
+    	this.cancelEventLoader();
+    	mEventLoader = new EventLoader(this);
+    	this.getSearchFilters();
+    	this.loadEvents();
+    	
+    	if ( mExpandMenuItem != null ) {
+    		this.switchFilterView(mExpandMenuItem);
+    	}
+    }
+    
     private class EventLoader extends AsyncTask<Void, List<Event>, Integer> {
 
     	private final WeakReference<EventsActivity> mActivityReference;
     	private ConcurrentEventListLoader mLoader = null;
+    	
+    	protected EventCategoryFilter mCategoryFilter = EventCategoryFilter.NONE;
+    	protected DateFilter mDataFilter = DateFilter.TODAY;
+    	protected String mSearchRadius = "1";	// one mile by default
     	
     	public EventLoader(EventsActivity activity) {
     		mActivityReference = new WeakReference<EventsActivity>(activity);
@@ -245,15 +307,21 @@ public class EventsActivity extends Activity {
 			Location location = new Location( String.valueOf( currentLocation.getLatitude() ), String.valueOf(currentLocation.getLongitude()) );
 			
 			Integer total = 0;
-			this.mLoader = DataManager.getSingleton().getConcurrentEventList(location, null, "2", null);
+			this.mLoader = DataManager.getSingleton().getConcurrentEventList(location, mCategoryFilter, mSearchRadius, null, mDataFilter );
 			
 			if ( this.mLoader != null ) {
 				List<Event> iter = null;
 				while ( (iter = this.mLoader.getNext()) != null ) {
 					total += iter.size();
 					Logger.Debug("Add new set of data size = " + iter.size());
-					this.publishProgress(iter);
+					
+					if ( iter.size() > 0 ) {
+						this.publishProgress(iter);
+					}
 				}
+				
+				iter = new ArrayList<Event>();
+				this.publishProgress(iter);
 			}
 			return total;
 		}

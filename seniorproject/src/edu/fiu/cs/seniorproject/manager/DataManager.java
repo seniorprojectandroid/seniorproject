@@ -17,9 +17,12 @@ import android.os.AsyncTask;
 import android.widget.ImageView;
 
 import edu.fiu.cs.seniorproject.client.RestClient;
+import edu.fiu.cs.seniorproject.data.DateFilter;
 import edu.fiu.cs.seniorproject.data.Event;
+import edu.fiu.cs.seniorproject.data.EventCategoryFilter;
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.Place;
+import edu.fiu.cs.seniorproject.data.PlaceCategoryFilter;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.data.provider.DataProvider;
 import edu.fiu.cs.seniorproject.data.provider.EventFullProvider;
@@ -39,7 +42,7 @@ public class DataManager {
 		mProviderList.add(new EventFullProvider());
 	}
 	
-	public List<Event> getEventList(Location location, String category, String radius, String query) {
+	public List<Event> getEventList(Location location, EventCategoryFilter category, String radius, String query, DateFilter date) {
 		List<Event> result = null;
 		
 		if ( mProviderList.size() > 0 ) {
@@ -50,7 +53,7 @@ public class DataManager {
 					
 					List<Event> providerList = null;
 					try {
-						providerList = provider.getEventList(location, category, radius, query);
+						providerList = provider.getEventList(location, category, radius, query, date);
 					} catch ( Exception e ) {
 						providerList = null;
 						Logger.Error("Exception getting event list " + e.getMessage());
@@ -70,13 +73,13 @@ public class DataManager {
 		return result;
 	}
 	
-	public ConcurrentEventListLoader getConcurrentEventList(Location location, String category, String radius, String query) {
+	public ConcurrentEventListLoader getConcurrentEventList(Location location, EventCategoryFilter category, String radius, String query, DateFilter date) {
 		ConcurrentEventListLoader loader = new ConcurrentEventListLoader();
-		loader.execute(location, category, radius, query);
+		loader.execute(location, category, radius, query, date);
 		return loader;
 	}
 	
-	public List<Place> getPlaceList(Location location, String category, String radius, String query) {
+	public List<Place> getPlaceList(Location location, PlaceCategoryFilter category, String radius, String query) {
 		List<Place> result = null;
 		
 		if ( mProviderList.size() > 0 ) {
@@ -105,7 +108,8 @@ public class DataManager {
 		return result;
 	}
 	
-	public ConcurrentPlaceListLoader getConcurrentPlaceList(Location location, String category, String radius, String query) {
+	public ConcurrentPlaceListLoader getConcurrentPlaceList(Location location, PlaceCategoryFilter category, String radius, String query) {
+		Logger.Debug("get concurrent place list");
 		ConcurrentPlaceListLoader loader = new ConcurrentPlaceListLoader();
 		loader.execute(location, category, radius, query);
 		return loader;
@@ -188,7 +192,7 @@ public class DataManager {
 		private ConcurrentPlaceListLoader() {
 		}
 		
-		protected void execute(final Location location, final String category, final String radius, final String query) {
+		protected void execute(final Location location, final PlaceCategoryFilter category, final String radius, final String query) {
 			
 			if ( mProviderList.size() > 0 ) {
 				for( int i = 0; i < mProviderList.size(); i++ ) {
@@ -271,7 +275,7 @@ public class DataManager {
 		private ConcurrentEventListLoader() {			
 		}
 		
-		protected void execute(final Location location, final String category, final String radius, final String query) {
+		protected void execute(final Location location, final EventCategoryFilter category, final String radius, final String query, final DateFilter date) {
 			
 			if ( mProviderList.size() > 0 ) {
 				for( int i = 0; i < mProviderList.size(); i++ ) {
@@ -283,7 +287,7 @@ public class DataManager {
 							public List<Event> call() throws Exception {
 								List<Event> list = null;
 								try {
-									list = provider.getEventList(location, category, radius, query);
+									list = provider.getEventList(location, category, radius, query, date);
 								} catch (Exception e) {
 									list = null;
 									Logger.Error("Exception getting event list from provider " + e.getMessage());
