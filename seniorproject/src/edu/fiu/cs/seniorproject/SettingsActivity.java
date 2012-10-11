@@ -2,10 +2,7 @@ package edu.fiu.cs.seniorproject;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-import android.app.Activity;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.NumberPicker;
 import android.support.v4.app.NavUtils;
 
 

@@ -20,7 +20,6 @@ import edu.fiu.cs.seniorproject.utils.Logger;
 
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
-import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
