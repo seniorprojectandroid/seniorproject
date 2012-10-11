@@ -22,9 +22,14 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
+import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -36,10 +41,13 @@ public class EventsActivity extends Activity {
 	private EventLoader mEventLoader = null;
 	private List<Hashtable<String, String>> mEventList = null;
 	
+	private boolean filterExpanded = false;
+	private Animation animation = null;
+	
 	private final OnItemClickListener mClickListener = new OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			if ( mEventList != null && mEventList.size() > position ) {
+			if ( !filterExpanded && mEventList != null && mEventList.size() > position ) {
 				Hashtable<String, String> map = mEventList.get(position);
 				
 				if ( map != null ) {
@@ -55,9 +63,16 @@ public class EventsActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.items_list);
+        setContentView(R.layout.activity_events);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         AppLocationManager.init(this);
+        
+        NumberPicker picker = (NumberPicker)findViewById(R.id.radius_picker);
+        if ( picker != null ) {
+        	picker.setMinValue(1);
+        	picker.setMaxValue(10);
+        	picker.setWrapSelectorWheel(false);
+        }
         
         mEventLoader = new EventLoader(this);
         mEventLoader.execute();
@@ -80,22 +95,68 @@ public class EventsActivity extends Activity {
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.items_list, menu);
+        getMenuInflater().inflate(R.menu.activity_events, menu);
+        SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        
+        if ( searchView != null ) {
+        	searchView.setOnQueryTextListener(new OnQueryTextListener() {
+				
+				@Override
+				public boolean onQueryTextSubmit(String query) {
+					Logger.Debug("process query = " + query);
+					return true;
+				}
+				
+				@Override
+				public boolean onQueryTextChange(String newText) {
+					Logger.Debug("query changed " + newText);
+					return false;
+				}
+			});
+        }
         return true;
     }
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+    	Logger.Debug("click on menu item = " + item.getItemId());
         switch (item.getItemId()) {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
+            case R.id.expand_collapse:
+            	this.switchFilterView(item);
+            	break;
         }
         return super.onOptionsItemSelected(item);
     }
     
     
 
+    private void switchFilterView(MenuItem item) {
+    	findViewById(R.id.filter_form).setVisibility(View.VISIBLE);
+    	filterExpanded = !filterExpanded;
+    	if ( filterExpanded ) {
+    		item.setIcon(R.drawable.navigation_collapse_dark);    	
+    		
+    		if ( animation != null ) {
+    			animation.cancel();
+    		}
+    		
+    		this.animation = AnimationUtils.loadAnimation(this, R.anim.slide_from_top);
+    		findViewById(R.id.filter_form).startAnimation(animation);
+    	} else {
+    		item.setIcon(R.drawable.navigation_expand_dark);
+    		
+    		if ( animation != null ) {
+    			animation.cancel();
+    		}
+    		
+    		this.animation = AnimationUtils.loadAnimation(this, R.anim.slide_to_top);
+    		findViewById(R.id.filter_form).startAnimation(animation);
+    	}
+    }
+    
     private List<Hashtable<String, String>> buildEventMap(List<Event> eventList ) {
     	List<Hashtable<String, String>> fillMaps = new ArrayList<Hashtable<String, String>>(eventList.size());
 		float[] distanceResults = new float[1];

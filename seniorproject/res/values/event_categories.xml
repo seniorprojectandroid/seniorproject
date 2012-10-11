@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="event_categories">
+        <item>Arts Crafts</item>
+        <item>Business Tech</item>
+        <item>Comedy</item>
+        <item>Community</item>
+        <item>Dance</item>
+        <item>Education Campus</item>
+        <item>Fairs Festivals</item>
+        <item>Food Dining</item>
+        <item>Music</item>
+        <item>Other</item>
+        <item>Performing Arts</item>
+        <item>Shopping</item>
+        <item>Sports Outdoors</item>
+        <item>Visual Arts</item>
+    </string-array>
+</resources>

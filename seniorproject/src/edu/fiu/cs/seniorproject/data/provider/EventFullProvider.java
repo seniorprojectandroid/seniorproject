@@ -239,6 +239,7 @@ public class EventFullProvider extends DataProvider
 			{
 				place = new Place();
 				place.setId(iter.getString("id"));
+				place.setSource(SourceType.EVENTFUL);
 				place.setName(iter.getString("name"));	
 				
 				// Process the location
