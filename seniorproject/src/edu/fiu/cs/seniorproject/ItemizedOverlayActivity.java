@@ -26,7 +26,7 @@ private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
 		}
 	
 	//method to add overlay objects to the mOverlays list
-	//and populate it
+	//so we can use them in a map
 	public void addOverlay(OverlayItem overlay) {
 	    mOverlays.add(overlay);
 	    populate();

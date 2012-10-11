@@ -21,7 +21,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.AsyncTask.Status;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -52,12 +55,34 @@ public class PlacesActivity extends Activity {
     	mPlaceList = null;	// release memory
     	super.onDestroy();
     }
+//    
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.places_activity, menu);
+//        return true;
+//    }
     
+    
+    
+    // This creates an Action bar with options in EventsActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.places_activity, menu);
+        //getMenuInflater().inflate(R.menu.items_list, menu);
+    	
+    	
+    	MenuInflater inflater = getMenuInflater();
+    	inflater.inflate(R.menu.places_actionbar, menu);
+     
+        
         return true;
     }
+    
+    public void onPlacesMapClick( MenuItem menuItem)
+    {
+    	this.showPlacesInMapView();
+    }
+    
+    
     
     private void showPlaceList( List<Place> places ) {
     	
@@ -114,12 +139,26 @@ public class PlacesActivity extends Activity {
 			map.put("name", place.getName());
 			
 			Location location = place.getLocation();
-			if ( location != null && currentLocation != null ) {
+			if ( location != null && currentLocation != null ) {		
+				
+				
+
+				// Adding the location to the Hashtable List map so it can be used to show all
+				// places in PlacesMapView Activity
+				map.put("latitude", location.getLatitude());
+				map.put("longitude",location.getLongitude());
+				
 				map.put("address", location.getAddress() != null ? location.getAddress() : "No Address");
+				
+				
+			    
 				
 				android.location.Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()), distanceResults);
 				double miles = distanceResults[0] / 1609.34;	// i mile = 1.60934km								
 				map.put("distance", df.format(miles) + "mi" );
+				
+				
+				
 			}
 			placeList.add(map);
 		}
@@ -174,5 +213,12 @@ public class PlacesActivity extends Activity {
 		protected void onPostExecute(Integer total) {
 			Logger.Debug("Total records = " + total );			
 		}
+    }
+    
+    public void showPlacesInMapView()
+    {
+    	PlacesMapViewActivity.placesLocationsList = mPlaceList;
+    	Intent intent = new Intent(this, PlacesMapViewActivity.class);
+		PlacesActivity.this.startActivity(intent);
     }
 }

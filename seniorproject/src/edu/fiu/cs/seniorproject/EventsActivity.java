@@ -6,6 +6,23 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
+import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.text.format.DateFormat;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import edu.fiu.cs.seniorproject.data.Event;
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.SourceType;
@@ -13,23 +30,6 @@ import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
 import edu.fiu.cs.seniorproject.manager.DataManager.ConcurrentEventListLoader;
 import edu.fiu.cs.seniorproject.utils.Logger;
-
-import android.os.AsyncTask;
-import android.os.AsyncTask.Status;
-import android.os.Bundle;
-import android.app.Activity;
-import android.content.Intent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.support.v4.app.NavUtils;
-import android.text.format.DateFormat;
 
 public class EventsActivity extends Activity {
 
@@ -72,10 +72,23 @@ public class EventsActivity extends Activity {
     	super.onDestroy();
     }
     
+    
+    // This creates an Action bar with options in EventsActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.items_list, menu);
+        //getMenuInflater().inflate(R.menu.items_list, menu);
+    	
+    	
+    	MenuInflater inflater = getMenuInflater();
+    	inflater.inflate(R.menu.events_actionbar, menu);
+     
+        
         return true;
+    }
+    
+    public void onEventsMapClick( MenuItem menuItem)
+    {
+    	this.showEventsInMapView();
     }
     
     @Override
@@ -107,6 +120,9 @@ public class EventsActivity extends Activity {
 			
 			if ( location != null ) {
 				entry.put("place", location.getAddress() );
+				entry.put("latitude", location.getLatitude());
+				entry.put("longitude", location.getLongitude());
+				
 				if ( currentLocation != null ) {
 					android.location.Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()), distanceResults);
 					double miles = distanceResults[0] / 1609.34;	// i mile = 1.60934km								
@@ -162,6 +178,15 @@ public class EventsActivity extends Activity {
     	}
     }
     
+    
+    // Method to show all events in a MapView 
+    // It populates the static field locationsList
+    public void showEventsInMapView(){
+    	EventsMapViewActivity.locationsList = mEventList;
+    	Intent intent = new Intent(this, EventsMapViewActivity.class);
+		EventsActivity.this.startActivity(intent);
+    }
+    
     private class EventLoader extends AsyncTask<Void, List<Event>, Integer> {
 
     	private final WeakReference<EventsActivity> mActivityReference;
@@ -213,5 +238,10 @@ public class EventsActivity extends Activity {
 		protected void onPostExecute(Integer total) {
 			Logger.Debug("Total events = " + total );
 		}
+		
+		
     }
+    
+    
+    
 }

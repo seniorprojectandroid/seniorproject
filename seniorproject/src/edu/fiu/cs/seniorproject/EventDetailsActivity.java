@@ -115,26 +115,19 @@ public class EventDetailsActivity extends MapActivity {
 						distance.setText("--");
 					}
 				}
-				
-				
-				
-				
-			 
-			    
-			    
-			   
-			    
-			    
-			    // Add the overlay to the itemized overlay and 
-			    // Add the Overlay to the overlay list
 			    
 			    
 				
 				
 				MapView map = (MapView)findViewById(R.id.mapview);
-				List<Overlay> mapOverlays = map.getOverlays();
+				
+				
+				List<Overlay> mapOverlaysList = map.getOverlays();
 				
 				Drawable drawable = this.getResources().getDrawable(R.drawable.facebook_icon_small);
+				
+				//creating an ItemizedOverlayActivity object so we can have multiple overlays
+				//added to a list to show them in a map
 			    ItemizedOverlayActivity itemizedoverlay = new ItemizedOverlayActivity(drawable, this);
 				
 			    
@@ -147,17 +140,18 @@ public class EventDetailsActivity extends MapActivity {
 		    			
 		    			GeoPoint geoPoint =  new GeoPoint( (int)(Double.valueOf( location.getLatitude() ) * 1E6),
 		    			  (int)(Double.valueOf( location.getLongitude() ) * 1E6 ));
+		    			
+		    			// Creates an overlay item with a geopoint to show in the map
 		    			 OverlayItem overlayitem = new OverlayItem(geoPoint, "Hi, I am in !", event.getName());
-		    			 
-		    			// Add the overlay to the itemized overlay and 
-		    			    // Add the Overlay to the overlay list
+		    			
+		    			 //
 		    			    itemizedoverlay.addOverlay(overlayitem);
 
-		    			    mapOverlays.add(itemizedoverlay);
+		    			    mapOverlaysList.add(itemizedoverlay);
 		    			    
 		    			    itemizedoverlay.addOverlay(overlayitem);
 		    				
-		    			    mapOverlays.add(itemizedoverlay);
+		    			    mapOverlaysList.add(itemizedoverlay);
 		    			
 		    			mc.setCenter(geoPoint);
 		    			mc.setZoom(17);
