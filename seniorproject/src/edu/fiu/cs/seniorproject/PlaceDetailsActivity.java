@@ -91,6 +91,12 @@ public class PlaceDetailsActivity extends MapActivity {
 		return false;
 	}
 
+	//settings click
+    public void onSettingsClick(MenuItem view) {
+    	Intent intent = new Intent(this, SettingsActivity.class);
+    	this.startActivity(intent);
+    } 
+    
 	private void showPlace(Place place) {
 		
 		if ( place != null ) {

@@ -12,9 +12,11 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
-public class EventsMapViewActivity extends MapActivity {
+public class PlacesMapViewActivity extends MapActivity {
 	
-	public static List<Hashtable<String,String>> locationsList = null;
+	
+	
+public static List<Hashtable<String,String>> placesLocationsList = null;
 	
 	
 	@Override
@@ -39,7 +41,7 @@ public class EventsMapViewActivity extends MapActivity {
 	    //Here is where the logic for getting the data of location for all events
 	    
 	    
-	    for (Hashtable<String, String> iter : locationsList) {
+	    for (Hashtable<String, String> iter : placesLocationsList) {
 	    	
 			int latitude = (int)(Double.valueOf(iter.get("latitude"))* 1E6);
 			int longitude = (int)(Double.valueOf(iter.get("longitude"))* 1E6);
@@ -50,7 +52,7 @@ public class EventsMapViewActivity extends MapActivity {
 			GeoPoint geoPoint = new GeoPoint(latitude, longitude);
 			
 			
-			OverlayItem overlayitem = new OverlayItem(geoPoint, "This is ", eventName);
+			OverlayItem overlayitem = new OverlayItem(geoPoint, "This is ", eventName );
 		
 			itemizedoverlay.addOverlay(overlayitem);
 			
@@ -65,7 +67,7 @@ public class EventsMapViewActivity extends MapActivity {
 	
 	@Override
 	public void onDestroy() {
-		locationsList = null;	// free memory
+		placesLocationsList = null;	// free memory
 		super.onDestroy();
 	}
 	
