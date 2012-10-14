@@ -11,7 +11,6 @@ import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
-import edu.fiu.cs.seniorproject.utils.Logger;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,41 +31,13 @@ public class PlaceDetailsActivity extends MapActivity {
         AppLocationManager.init(this);
         
         Intent intent = getIntent();
-        String eventId = null;
-        if ( intent.hasExtra("reference")) {
-    
-        	String reference = intent.getStringExtra("reference");
+        
+        if ( intent != null && intent.hasExtra("id") && intent.hasExtra("source")) {
+        	String placeId = intent.getStringExtra("id");
+        	SourceType source =  (SourceType)intent.getSerializableExtra("source");
         	
-        	if( reference != null)
-        	{
-        		eventId = reference;
-        	}
-        	else
-        	{
-        		Logger.Error("PlaceDetailsA: getStringExtra(reference) ");
-        	}
-        
+        	(new PlaceDownloader(this)).execute(new PlaceSearchData(placeId, source));
         }
-        else
-        {
-        	Logger.Error("PlaceActivityDetails: Does not have a reference.");
-        }
-        
-        SourceType source = null;
-        
-        if(intent.hasExtra("source"))
-        {
-        	source =  (SourceType)intent.getSerializableExtra("source");
-        	
-        	if(source == null)
-        	{
-        		Logger.Error("Source not being retrieve");
-        	}
-        }
-            	
-    	(new PlaceDownloader(this)).execute(new PlaceSearchData(eventId, source));
-        
-        
     }
 
     @Override
@@ -159,38 +130,13 @@ public class PlaceDetailsActivity extends MapActivity {
 
 	private class PlaceSearchData {
 		
-		public String reference;
+		public String id;
 		public SourceType source;
 		
 		public PlaceSearchData(String id, SourceType sourceType) {
 			
-			
-			this.setReference(id);
-			this.setSourceType(sourceType);
-		}
-		
-		public void setReference(String reference)
-		{
-			if(reference != null)
-			{
-				this.reference = reference;
-			}
-			else
-			{
-				Logger.Error("PlaceSearchData: reference is: " + reference);
-			}
-		}
-		
-		public void setSourceType( SourceType sourceType )
-		{
-			if(sourceType != null)
-			{
-				this.source = sourceType;
-			}
-			else
-			{
-				Logger.Error("PlaceSearchData: source is: "+ sourceType); 
-			}
+			this.id = id;
+			this.source = sourceType;
 		}
 	}
 	
@@ -205,7 +151,7 @@ public class PlaceDetailsActivity extends MapActivity {
 		@Override
 		protected Place doInBackground(PlaceSearchData... params) {
 
-			return DataManager.getSingleton().getPlaceDetails(null,params[0].reference, params[0].source);
+			return DataManager.getSingleton().getPlaceDetails(params[0].id, params[0].source);
 		}
 		
 		@Override

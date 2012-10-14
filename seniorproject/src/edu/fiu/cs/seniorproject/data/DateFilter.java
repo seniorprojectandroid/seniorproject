@@ -1,7 +1,7 @@
 package edu.fiu.cs.seniorproject.data;
 
 public enum DateFilter {
-	NOME(0),
+	NONE(0),
 	TODAY(24 * 60 * 60),
 	THIS_WEEK( 7 * 24 * 60 * 60),
 	THIS_WEEKEND(1),

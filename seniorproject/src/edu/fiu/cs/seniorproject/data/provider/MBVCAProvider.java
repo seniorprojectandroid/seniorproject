@@ -36,12 +36,12 @@ public class MBVCAProvider extends DataProvider
 		
 		long[] times = new long[]{0,0};
 		this.getTimeByDateFilter(date, times);
-		String events = mMBVCAClient.getEventList(location, getEventCategory(category), radius, times[0], times[1] );
+		String events = mMBVCAClient.getEventList(location, getEventCategory(category), radius, times[0], times[1], query );
 		if ( events != null && !events.isEmpty() ) {
 			try {
 				JSONObject eventsObject = new JSONObject(events);
 				
-				if ( eventsObject != null && eventsObject.has("solodev_view")) {
+				if ( eventsObject != null && eventsObject.has("solodev_view") && !eventsObject.isNull("solodev_view")) {
 					JSONArray eventList = eventsObject.getJSONArray("solodev_view");
 					
 					if ( eventList != null && eventList.length() > 0 ) {
@@ -58,6 +58,7 @@ public class MBVCAProvider extends DataProvider
 					}
 				}
 			} catch (JSONException e) {
+				Logger.Debug("events = " + events);
 				Logger.Error("Exception decoding json object in MBVCA " + e.getMessage());
 			}
 		}
@@ -118,10 +119,10 @@ public class MBVCAProvider extends DataProvider
 	}
 
 	@Override
-	public Place getPlaceDetails(String placeId, String reference) {
+	public Place getPlaceDetails(String placeId) {
 		Place place = null;
 		
-		String places = this.mMBVCAClient.getPlaceDetails(placeId, reference);
+		String places = this.mMBVCAClient.getPlaceDetails(placeId);
 		
 		if ( places != null && !places.isEmpty() ) {
 			try {
@@ -145,7 +146,7 @@ public class MBVCAProvider extends DataProvider
 	}
 	
 	private void getTimeByDateFilter(DateFilter filter, long[] times ) {
-		times[0] = DateUtils.getTodayTimeInMiliseconds();
+		times[0] = DateUtils.getTodayTimeInMiliseconds() / 1000L;
 		
 		switch (filter) {
 			case TODAY:
@@ -245,10 +246,6 @@ public class MBVCAProvider extends DataProvider
 					if ( !image.isEmpty() && !image.equals("null")) {
 						place.setImage( IMAGE_BASE_URL + iter.getString("image"));
 					}
-				}
-				
-				if ( iter.has("id")) {
-					place.setReference(iter.getString("id") );
 				}
 				
 				if ( iter.has("url")) {

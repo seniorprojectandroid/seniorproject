@@ -35,24 +35,14 @@ public class MBVCAClient extends RestClient{
 		mConsumer.setTokenWithSecret(AppConfig.MBVCA_TOKEN, AppConfig.MBVCA_TOKEN_SECRET);
 	}
 
-	public String getEventList(Location location, String category,String radiusStr, long startTime, long endTime) {
+	public String getEventList(Location location, String category,String radiusStr, long startTime, long endTime, String search) {
 		String response = null;
 
 		try {
 			Bundle params = getBundle();
 			JSONObject query = new JSONObject();
 			query.put("calendar_id", 1);
-			if ( startTime == 0 ) {
-				startTime = DateUtils.getTodayTimeInMiliseconds();
-				endTime = startTime + DateUtils.ONE_DAY;
-			}
-			JSONObject timeFilter = new JSONObject();
-			timeFilter.put("$gt", startTime);
-			if ( endTime != 0 ) {
-				timeFilter.put("$lt", endTime);
-			}
-			query.put("start_time", timeFilter);
-
+			
 			if ( category != null && !category.isEmpty() ) {
 				query.put("datatable_category_id", Integer.valueOf( category ) );
 			} else {
@@ -61,10 +51,25 @@ public class MBVCAClient extends RestClient{
 				query.put("datatable_category_id", existObject );
 			}
 			
-			if ( location != null ) {
-				float radius = Float.valueOf(radiusStr);
-				if ( radius > 0 ) {
-					this.addLocationFilter(query, location, radius);
+			if ( search != null && !search.isEmpty() ) {
+				query.put("name", "/" + search + "/i" );
+			} else {
+				if ( startTime == 0 ) {
+					startTime = DateUtils.getTodayTimeInMiliseconds();
+					endTime = startTime + DateUtils.ONE_DAY;
+				}
+				JSONObject timeFilter = new JSONObject();
+				timeFilter.put("$gt", startTime);
+				if ( endTime != 0 ) {
+					timeFilter.put("$lt", endTime);
+				}
+				query.put("start_time", timeFilter);
+				
+				if ( location != null ) {
+					float radius = Float.valueOf(radiusStr);
+					if ( radius > 0 ) {
+						this.addLocationFilter(query, location, radius);
+					}
 				}
 			}
 			
@@ -152,7 +157,7 @@ public class MBVCAClient extends RestClient{
 		return result;
 	}
 
-	public String getPlaceDetails(String placeId, String reference) {
+	public String getPlaceDetails(String placeId) {
 		String result = null;
 
 		try {
@@ -161,8 +166,6 @@ public class MBVCAClient extends RestClient{
 
 			if ( placeId != null && !placeId.isEmpty() ) {
 				query.put("datatable_entry_id", Integer.valueOf(placeId));
-			} else if ( reference != null && !reference.isEmpty() ) {
-				query.put("id", reference);
 			} else {
 				Logger.Warning("Both params are null or empty. Unable to make request!!!");
 				return null;

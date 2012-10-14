@@ -33,6 +33,7 @@ import edu.fiu.cs.seniorproject.manager.DataManager.ConcurrentEventListLoader;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.NumberPicker;
 import android.widget.SearchView;
@@ -45,7 +46,9 @@ public class EventsActivity extends Activity {
 	private List<Hashtable<String, String>> mEventList = null;
 	
 	private boolean filterExpanded = false;
-	private Animation animation = null;
+	private Animation showFilterAnimation = null;
+	private Animation hideFilterActivity = null;
+	
 	private MenuItem mExpandMenuItem = null;
 	
 	private final OnItemClickListener mClickListener = new OnItemClickListener() {
@@ -78,6 +81,25 @@ public class EventsActivity extends Activity {
         	picker.setWrapSelectorWheel(false);
         }
         
+        this.showFilterAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_from_top);
+        this.hideFilterActivity = AnimationUtils.loadAnimation(this, R.anim.slide_to_top);
+        
+        this.hideFilterActivity.setAnimationListener(new AnimationListener() {			
+			@Override
+			public void onAnimationStart(Animation animation) {
+				findViewById(R.id.filter_form).setVisibility(View.VISIBLE);
+			}
+			
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+			}
+			
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				findViewById(R.id.filter_form).setVisibility(View.GONE);
+			}
+		});
+        
         mEventLoader = new EventLoader(this);
         this.loadEvents();
     }
@@ -105,6 +127,7 @@ public class EventsActivity extends Activity {
 				@Override
 				public boolean onQueryTextSubmit(String query) {
 					Logger.Debug("process query = " + query);
+					EventsActivity.this.startNewSearch(query);
 					return true;
 				}
 				
@@ -143,24 +166,14 @@ public class EventsActivity extends Activity {
     	findViewById(R.id.filter_form).setVisibility(View.VISIBLE);
     	filterExpanded = !filterExpanded;
     	if ( filterExpanded ) {
-    		item.setIcon(R.drawable.navigation_collapse_dark);    	
-    		
-    		if ( animation != null ) {
-    			animation.cancel();
-    		}
-    		
-    		this.animation = AnimationUtils.loadAnimation(this, R.anim.slide_from_top);
-    		findViewById(R.id.filter_form).startAnimation(animation);
+    		item.setIcon(R.drawable.navigation_collapse_dark);    		
+    		this.hideFilterActivity.cancel();    		
+    		findViewById(R.id.filter_form).startAnimation(this.showFilterAnimation);
     		mExpandMenuItem = item;
     	} else {
-    		item.setIcon(R.drawable.navigation_expand_dark);
-    		
-    		if ( animation != null ) {
-    			animation.cancel();
-    		}
-    		
-    		this.animation = AnimationUtils.loadAnimation(this, R.anim.slide_to_top);
-    		findViewById(R.id.filter_form).startAnimation(animation);
+    		item.setIcon(R.drawable.navigation_expand_dark);    		
+    		this.showFilterAnimation.cancel();
+    		findViewById(R.id.filter_form).startAnimation(this.hideFilterActivity);
     		mExpandMenuItem = null;
     	}
     }
@@ -283,13 +296,19 @@ public class EventsActivity extends Activity {
 	    	if ( picker != null ) {
 	    		mEventLoader.mSearchRadius = String.valueOf( picker.getValue() );
 	    	}
+	    	
     	}
     }
     
     public void onFilterClick(View view) {
+    	this.startNewSearch(null);
+    }
+    
+    private void startNewSearch(String query) {
     	this.cancelEventLoader();
     	mEventLoader = new EventLoader(this);
     	this.getSearchFilters();
+    	this.mEventLoader.mQuery = query;
     	this.loadEvents();
     	
     	if ( mExpandMenuItem != null ) {
@@ -313,6 +332,7 @@ public class EventsActivity extends Activity {
     	protected EventCategoryFilter mCategoryFilter = EventCategoryFilter.NONE;
     	protected DateFilter mDataFilter = DateFilter.TODAY;
     	protected String mSearchRadius = "1";	// one mile by default
+    	protected String mQuery = null;
     	
     	public EventLoader(EventsActivity activity) {
     		mActivityReference = new WeakReference<EventsActivity>(activity);
@@ -331,7 +351,7 @@ public class EventsActivity extends Activity {
 			Location location = new Location( String.valueOf( currentLocation.getLatitude() ), String.valueOf(currentLocation.getLongitude()) );
 			
 			Integer total = 0;
-			this.mLoader = DataManager.getSingleton().getConcurrentEventList(location, mCategoryFilter, mSearchRadius, null, mDataFilter );
+			this.mLoader = DataManager.getSingleton().getConcurrentEventList(location, mCategoryFilter, mSearchRadius, mQuery, mDataFilter );
 			
 			if ( this.mLoader != null ) {
 				List<Event> iter = null;

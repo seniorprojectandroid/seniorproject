@@ -17,5 +17,9 @@
         android:orderInCategory="100"
         android:showAsAction="never" />
     
-    
+    <item android:id="@+id/events_map" 
+          android:title="Events Map"
+          android:showAsAction="ifRoom"
+          android:onClick="onEventsMapClick"
+          ></item>
 </menu>

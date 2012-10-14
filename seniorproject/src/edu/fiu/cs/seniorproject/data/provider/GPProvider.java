@@ -107,7 +107,6 @@ public class GPProvider extends DataProvider {
 				jsonArray = data.getJSONArray("results");
 
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -187,7 +186,6 @@ public class GPProvider extends DataProvider {
 					}
 
 				} catch (JSONException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -201,7 +199,7 @@ public class GPProvider extends DataProvider {
 	}
 	
 	@Override
-	public Place getPlaceDetails(String placeId, String reference) {
+	public Place getPlaceDetails(String reference) {
 
 		JSONObject data = null;
 		JSONObject results;
@@ -216,7 +214,7 @@ public class GPProvider extends DataProvider {
 		}
 		else
 		{
-			Logger.Error("getPlaceDetails: reference not being passed in:"+ reference +"placeID: " + placeId );
+			Logger.Error("getPlaceDetails: reference not being passed in:"+ reference );
 		}
 
 		if (result != null && result.length() > 0) {
@@ -349,7 +347,7 @@ public class GPProvider extends DataProvider {
 					try {
 						eachPlace = jsonArray.getJSONObject(i);
 	
-						if (eachPlace != null) 
+						if (eachPlace != null && eachPlace.has("reference") ) 
 						{
 							
 							if(eachPlace.has("vicinity") && eachPlace.getString("vicinity") != null)
@@ -388,9 +386,9 @@ public class GPProvider extends DataProvider {
 								place.setName(eachPlace.getString("name"));
 							}
 							
-							if(eachPlace.has("reference") && eachPlace.getString("reference") != null)
+							if( eachPlace.getString("reference") != null)
 							{
-								place.setReference(eachPlace.getString("reference"));
+								place.setId(eachPlace.getString("reference"));
 							}
 							
 //							String id = eachPlace.getString("id");
@@ -409,7 +407,6 @@ public class GPProvider extends DataProvider {
 						}
 	
 					} catch (JSONException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}

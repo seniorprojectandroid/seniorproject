@@ -8,7 +8,6 @@ public class Place {
 	private Location location;
 	private String description;
 	private String website;
-	private String reference;
 	private String image;
 	private SourceType source = SourceType.MBVCA;	// default source to Miami beach api
 
@@ -16,15 +15,6 @@ public class Place {
 	{		
 	}
 
-	public String getReference() {
-		return reference;
-	}
-
-
-	public void setReference(String reference) {
-		this.reference = reference;
-	}
-	
 	public String getWebsite() {
 		return website;
 	}

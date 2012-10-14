@@ -46,27 +46,13 @@ public class PlacesActivity extends Activity {
 			{
 				Hashtable<String, String> map = mPlaceList.get(position);
 				
-				if ( map != null ) 
+				if ( map != null && map.containsKey("id") && map.containsKey("source")) 
 				{
 					Intent intent = new Intent(PlacesActivity.this, PlaceDetailsActivity.class);
 					
-					if(map.get("reference") != null)
-					{
-						intent.putExtra("reference", map.get("reference"));
-						
-						if(map.get("source") != null)
-						{
-							intent.putExtra("source", SourceType.valueOf(map.get("source")));
-						}
-						else
-						{
-							Logger.Error("PlacesActivity: Source, Line: 54.");
-						}
-					}
-					else
-					{
-						Logger.Error("PlaceActvity map.get(\"reference\") error.");
-					}
+					intent.putExtra("id", map.get("id"));
+					intent.putExtra("source", SourceType.valueOf(map.get("source")));
+					
 					PlacesActivity.this.startActivity(intent);
 				}
 			}
@@ -174,12 +160,12 @@ public class PlacesActivity extends Activity {
 			Hashtable<String, String> map = new Hashtable<String, String>();
 			
 			Place place = places.get(i);
+			map.put("id", place.getId());
 			map.put("name", place.getName());
+			map.put("source", place.getSource().toString());
 			
 			Location location = place.getLocation();
 			if ( location != null && currentLocation != null ) {		
-				
-				
 
 				// Adding the location to the Hashtable List map so it can be used to show all
 				// places in PlacesMapView Activity
@@ -188,15 +174,9 @@ public class PlacesActivity extends Activity {
 				
 				map.put("address", location.getAddress() != null ? location.getAddress() : "No Address");
 				
-				
-			    
-				
 				android.location.Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()), distanceResults);
 				double miles = distanceResults[0] / 1609.34;	// i mile = 1.60934km								
 				map.put("distance", df.format(miles) + "mi" );
-				
-				map.put("reference", place.getReference());
-				map.put("source", place.getSource().toString());
 				
 				placeList.add(map);
 			}

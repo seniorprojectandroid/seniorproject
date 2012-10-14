@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="event_categories">
+        <item>All</item>
         <item>Arts Crafts</item>
         <item>Business Tech</item>
         <item>Comedy</item>

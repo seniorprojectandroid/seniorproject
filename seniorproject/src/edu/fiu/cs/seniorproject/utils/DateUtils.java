@@ -16,6 +16,20 @@ public class DateUtils {
 		calendar.clear(Calendar.HOUR_OF_DAY);
 		calendar.clear(Calendar.HOUR);
 		
-		return calendar.getTimeInMillis() / 1000L;
+		return calendar.getTimeInMillis();
+	}
+	
+	public static long getThisWeekendInMiliseconds() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.clear(Calendar.SECOND);
+		calendar.clear(Calendar.MINUTE);
+		calendar.clear(Calendar.HOUR_OF_DAY);
+		calendar.clear(Calendar.HOUR);
+		calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+		return calendar.getTimeInMillis();
+	}
+	
+	public static long getNextWeekendInMiliseconds() {
+		return getThisWeekendInMiliseconds() + SEVEN_DAYS * 1000;
 	}
 }

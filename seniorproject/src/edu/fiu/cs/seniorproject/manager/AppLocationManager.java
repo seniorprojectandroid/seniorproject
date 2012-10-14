@@ -74,9 +74,7 @@ public class AppLocationManager {
 				//}	
 				
 				synchronized (currentLocationLock) {
-					currentLocation = new Location(LocationManager.GPS_PROVIDER);
-					currentLocation.setLatitude(Double.valueOf(MIAMI_BEACH_LATITUDE));
-					currentLocation.setLongitude(Double.valueOf(MIAMI_BEACH_LONGITUDE));
+					currentLocation = getDefaultLocation();
 				}				
 			}
 		}
@@ -129,6 +127,13 @@ public class AppLocationManager {
 				}
 			}
 		}
+	}
+	
+	public static Location getDefaultLocation() {
+		Location location = new Location(LocationManager.GPS_PROVIDER);
+		location.setLatitude(Double.valueOf(MIAMI_BEACH_LATITUDE));
+		location.setLongitude(Double.valueOf(MIAMI_BEACH_LONGITUDE));
+		return location;
 	}
 	
 	public static Location getCurrentLocation() {

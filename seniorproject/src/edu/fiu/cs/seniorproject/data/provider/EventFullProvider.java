@@ -10,6 +10,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.text.format.DateFormat;
+
 import edu.fiu.cs.seniorproject.client.EventfulRestClient;
 import edu.fiu.cs.seniorproject.config.AppConfig;
 import edu.fiu.cs.seniorproject.data.DateFilter;
@@ -19,6 +21,7 @@ import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.Place;
 import edu.fiu.cs.seniorproject.data.PlaceCategoryFilter;
 import edu.fiu.cs.seniorproject.data.SourceType;
+import edu.fiu.cs.seniorproject.utils.DateUtils;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class EventFullProvider extends DataProvider
@@ -36,7 +39,7 @@ public class EventFullProvider extends DataProvider
 	 public List<Event> getEventList(Location location, EventCategoryFilter category, String radius, String query, DateFilter date ) 
 	 {
 		 List<Event> myEventList = null;
-		 String myListRequestClient = this.myRestClient.getEventList(query, location, null, getEventCategory(category), (int)Math.ceil(Double.valueOf(radius))); 
+		 String myListRequestClient = this.myRestClient.getEventList(query, location, getDatesFromFilter(date), getEventCategory(category), (int)Math.ceil(Double.valueOf(radius))); 
 		 if ( myListRequestClient != null && !myListRequestClient.isEmpty() )
 		 {
 				try {
@@ -136,7 +139,7 @@ public class EventFullProvider extends DataProvider
 	 }// getPlaceList
 	
 	 @Override
-	public Place getPlaceDetails(String placeId, String reference) {
+	public Place getPlaceDetails(String placeId) {
 		Place place = null;
 		String placeStr = this.myRestClient.getPlaceDetails(placeId);
 		
@@ -290,6 +293,44 @@ public class EventFullProvider extends DataProvider
 	protected String getEventCategory(EventCategoryFilter filter) {
 		// FIXME Should match general categories into Eventfull categories
 		return null;
+	}
+	
+	protected String getDatesFromFilter(DateFilter filter) {
+		String result = "All";
+		
+		switch ( filter ) {
+		case TODAY:
+			result = "Today";
+			break;
+		case THIS_WEEK:
+			result = "This Week";
+			break;
+			
+		case THIS_WEEKEND:
+			long thisWeekend = DateUtils.getThisWeekendInMiliseconds();
+			String start = DateFormat.format("yyyyMMMdd", thisWeekend ).toString();	
+			String end = DateFormat.format("yyyyMMMdd", thisWeekend + DateUtils.ONE_DAY * 1000 ).toString();	
+			result = start + "00-" + end + "23";
+			break;
+			
+		case NEXT_WEEKEND:
+			long nextWeekend = DateUtils.getNextWeekendInMiliseconds();
+			String nextStart = DateFormat.format("yyyyMMMdd", nextWeekend ).toString();	
+			String nextEnd = DateFormat.format("yyyyMMMdd", nextWeekend + DateUtils.ONE_DAY * 1000 ).toString();	
+			result = nextStart + "00-" + nextEnd + "23";
+			break;
+			
+		case NEXT_30_DAYS:
+			long today = DateUtils.getTodayTimeInMiliseconds();
+			String nextMonthStart = DateFormat.format("yyyyMMMdd", today ).toString();	
+			String nextMonthEnd = DateFormat.format("yyyyMMMdd", today + DateUtils.ONE_DAY * 1000 ).toString();	
+			result = nextMonthStart + "00-" + nextMonthEnd + "23";
+			break;
+			
+			default:
+				result="All";
+		}
+		return result;
 	}
 }// EventFullProvider
 
