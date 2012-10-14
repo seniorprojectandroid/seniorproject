@@ -104,92 +104,94 @@ public class GPProvider extends DataProvider {
 		if (result != null && result.length() > 0) {
 			try {
 				data = new JSONObject(result);
-				jsonArray = data.getJSONArray("results");
+				
+				if ( data != null && data.has("results") && !data.isNull("results")) {
+					jsonArray = data.getJSONArray("results");
+				}
 
 			} catch (JSONException e) {
-				e.printStackTrace();
+				Logger.Error("Exception decoding json on Gp get event list ");
 			}
 
-			for (int i = 0; i < jsonArray.length(); i++) {
-				event = new Event();
-				loc = new Location();
-				JSONObject singleEvent;
-
-				try {
-					eachPlace = jsonArray.getJSONObject(i);
-					
-					if (eachPlace != null && eachPlace.has("events"))
-					{
-						singleEvent = eachPlace.getJSONArray("events").getJSONObject(0);
+			if ( jsonArray != null && jsonArray.length() > 0 ) {
+				for (int i = 0; i < jsonArray.length(); i++) {
+					event = new Event();
+					loc = new Location();
+					JSONObject singleEvent;
+	
+					try {
+						eachPlace = jsonArray.getJSONObject(i);
 						
-						if(singleEvent != null)
+						if (eachPlace != null && eachPlace.has("events"))
 						{
-							String eventId = singleEvent.getString("event_id"); 
+							singleEvent = eachPlace.getJSONArray("events").getJSONObject(0);
 							
-							if(eventId != null)
+							if(singleEvent != null)
 							{
-								event.setId(eventId);
-							}
-							
-							String summary = singleEvent.getString("summary");
-							
-							if(summary != null)
-							{
-								event.setDescription(summary);
-							}
-							//singleEvent.getString("url");
-							
-							String name = eachPlace.getString("name");
-							
-							if(name != null)
-							{
-								event.setName(name);
-							}
-							
-							String icon = eachPlace.getString("icon");
-							
-							if(icon != null )
-							{
-								event.setImage(icon);
-							}
-							
-							JSONObject geometry = eachPlace.getJSONObject("geometry");
-							
-							if(geometry != null && geometry.has("location"))
-							{
-								JSONObject ltn = geometry.getJSONObject("location");
+								String eventId = singleEvent.getString("event_id"); 
 								
-								if(ltn != null && ltn.has("lat") && ltn.has("lng"))
+								if(eventId != null)
 								{
-									loc.setLatitude(ltn.getString("lat"));
-									loc.setLongitude(ltn.getString("lng"));
+									event.setId(eventId);
 								}
+								
+								String summary = singleEvent.getString("summary");
+								
+								if(summary != null)
+								{
+									event.setDescription(summary);
+								}
+								//singleEvent.getString("url");
+								
+								String name = eachPlace.getString("name");
+								
+								if(name != null)
+								{
+									event.setName(name);
+								}
+								
+								String icon = eachPlace.getString("icon");
+								
+								if(icon != null )
+								{
+									event.setImage(icon);
+								}
+								
+								JSONObject geometry = eachPlace.getJSONObject("geometry");
+								
+								if(geometry != null && geometry.has("location"))
+								{
+									JSONObject ltn = geometry.getJSONObject("location");
+									
+									if(ltn != null && ltn.has("lat") && ltn.has("lng"))
+									{
+										loc.setLatitude(ltn.getString("lat"));
+										loc.setLongitude(ltn.getString("lng"));
+									}
+								}
+								
+								String formattedAddress = eachPlace.getString("formatted_address");
+								
+								if(formattedAddress != null)
+								{
+									loc.setAddress(formattedAddress);
+								}
+								
+								event.setLocation(loc);
+								//event.setTime(time)
+								event.setSource(this.getSource());
+								
+								event.setSource(SourceType.GOOGLE_PLACE);
+								
+								eventList.add(event);
 							}
-							
-							String formattedAddress = eachPlace.getString("formatted_address");
-							
-							if(formattedAddress != null)
-							{
-								loc.setAddress(formattedAddress);
-							}
-							
-							event.setLocation(loc);
-							//event.setTime(time)
-							event.setSource(this.getSource());
-							
-							event.setSource(SourceType.GOOGLE_PLACE);
-							
-							eventList.add(event);
 						}
-					} else {
-						Logger.Error("empty place");
+	
+					} catch (JSONException e) {
+						e.printStackTrace();
 					}
-
-				} catch (JSONException e) {
-					e.printStackTrace();
 				}
 			}
-
 		} else {
 			Logger.Error("");
 		}

@@ -69,7 +69,7 @@ public class MBVCAProvider extends DataProvider
 	public List<Place> getPlaceList(Location location, PlaceCategoryFilter category, String radius, String query) {
 		List<Place> result = null;
 		
-		String places = this.mMBVCAClient.getPlaceList(location, getPlaceCategory(category), "0.5");
+		String places = this.mMBVCAClient.getPlaceList(location, getPlaceCategory(category), "1");
 		
 		if ( places != null && !places.isEmpty() ) {
 			try {
@@ -264,4 +264,9 @@ public class MBVCAProvider extends DataProvider
 	protected String getEventCategory( EventCategoryFilter filter ) {
 		 return filter == EventCategoryFilter.NONE ? null : String.valueOf(filter.Value());
 	 }
+	
+	@Override
+	protected String getPlaceCategory( PlaceCategoryFilter filter ) {
+		return filter != null ? super.getPlaceCategory(filter) : super.getPlaceCategory(PlaceCategoryFilter.RESTAURANT_BARS );
+	}
 }

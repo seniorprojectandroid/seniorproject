@@ -20,9 +20,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 import edu.fiu.cs.seniorproject.data.Event;
 import edu.fiu.cs.seniorproject.data.EventCategoryFilter;
 import edu.fiu.cs.seniorproject.data.Location;
@@ -44,6 +42,8 @@ public class EventsActivity extends Activity {
 
 	private EventLoader mEventLoader = null;
 	private List<Hashtable<String, String>> mEventList = null;
+	private boolean isInForeground = false;
+	private List<Event> mPendingEventList = null;
 	
 	private boolean filterExpanded = false;
 	private Animation showFilterAnimation = null;
@@ -80,14 +80,13 @@ public class EventsActivity extends Activity {
         	picker.setMaxValue(10);
         	picker.setWrapSelectorWheel(false);
         }
-        
+
         this.showFilterAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_from_top);
         this.hideFilterActivity = AnimationUtils.loadAnimation(this, R.anim.slide_to_top);
         
         this.hideFilterActivity.setAnimationListener(new AnimationListener() {			
 			@Override
 			public void onAnimationStart(Animation animation) {
-				findViewById(R.id.filter_form).setVisibility(View.VISIBLE);
 			}
 			
 			@Override
@@ -96,7 +95,9 @@ public class EventsActivity extends Activity {
 			
 			@Override
 			public void onAnimationEnd(Animation animation) {
+				Logger.Debug("Animation completed. Hiding..");
 				findViewById(R.id.filter_form).setVisibility(View.GONE);
+				findViewById(R.id.filter_ok).setVisibility(View.GONE);
 			}
 		});
         
@@ -108,6 +109,25 @@ public class EventsActivity extends Activity {
     protected void onDestroy() {
     	this.cancelEventLoader();
     	super.onDestroy();
+    }
+    
+    @Override
+    protected void onResume() {
+    	super.onResume();
+    	this.isInForeground = true;
+    	
+    	if ( this.mPendingEventList != null ) {
+    		this.showEventList(mPendingEventList);
+    		this.onDoneLoadingEvents();
+    		mPendingEventList = null;
+    	}
+    }
+    
+    @Override
+    protected void onPause() {
+    	mPendingEventList = null;
+    	this.isInForeground = false;
+    	super.onPause();
     }
     
     //settings click
@@ -163,6 +183,7 @@ public class EventsActivity extends Activity {
     
 
     private void switchFilterView(MenuItem item) {
+    	findViewById(R.id.filter_ok).setVisibility(View.VISIBLE);
     	findViewById(R.id.filter_form).setVisibility(View.VISIBLE);
     	filterExpanded = !filterExpanded;
     	if ( filterExpanded ) {
@@ -191,7 +212,12 @@ public class EventsActivity extends Activity {
     private void loadEvents() {
     	if ( mEventLoader != null ) {
     		
-    		findViewById(android.R.id.list).setVisibility(View.GONE);
+    		ListView lv = (ListView)findViewById(android.R.id.list);
+    		if ( lv != null ) {
+    			lv.setVisibility(View.GONE);
+    			lv.setAdapter(null);
+    		}
+    		
     		findViewById(android.R.id.empty).setVisibility(View.GONE);
     		findViewById(R.id.filter_form).setVisibility(View.GONE);
     		findViewById(android.R.id.progress).setVisibility(View.VISIBLE);
@@ -199,6 +225,12 @@ public class EventsActivity extends Activity {
     		mEventList = null;
     		mEventLoader.execute();
     	}
+    }
+    
+    private void onDoneLoadingEvents() {
+    	findViewById(android.R.id.list).setVisibility( mEventList != null ? View.VISIBLE : View.GONE);
+		findViewById(android.R.id.empty).setVisibility(mEventList == null ? View.VISIBLE : View.GONE);
+		findViewById(android.R.id.progress).setVisibility(View.GONE);
     }
     
     private List<Hashtable<String, String>> buildEventMap(List<Event> eventList ) {
@@ -237,10 +269,11 @@ public class EventsActivity extends Activity {
     }
     
     private void showEventList( List<Event> eventList ) {
-    	if (this.mEventList == null ) {
-    		
-    		if (  eventList != null ) {
-	    		if ( eventList.size() > 0 ) {
+    	if ( this.isInForeground ) {	// only update ui when in foreground
+	    	if (this.mEventList == null ) {
+	    		
+	    		if (  eventList != null && eventList.size() > 0) {
+	    			
 		    		ListView lv = (ListView)findViewById(android.R.id.list);
 		    		if ( lv != null ) {
 		    			
@@ -255,28 +288,26 @@ public class EventsActivity extends Activity {
 		    			lv.setVisibility(View.VISIBLE);
 		    			lv.setOnItemClickListener(mClickListener);
 		    		}
-		    	} else {
-		    		TextView tv = (TextView)findViewById(android.R.id.empty);
-		    		if ( tv != null ) {
-		    			tv.setVisibility(View.VISIBLE);
-		    		}
-		    	}
-	    		
-	    		// Hide progress bar
-		    	ProgressBar pb = (ProgressBar)findViewById(android.R.id.progress);
-		    	if ( pb!= null ) {
-		    		pb.setVisibility(View.GONE);
-		    	}
-    		}
+		    		
+		    		// Hide progress bar
+			    	findViewById(android.R.id.progress).setVisibility(View.GONE);
+	    		}
+	    	} else {
+	    		ListView lv = (ListView)findViewById(android.R.id.list);
+	    		if ( lv != null && lv.getAdapter() != null ) {
+	    			List<Hashtable<String, String>> eventMap = this.buildEventMap(eventList);
+	        		if ( eventMap != null ) {
+	        			this.mEventList.addAll(eventMap);
+	        			((SimpleAdapter)lv.getAdapter()).notifyDataSetChanged();
+	        		}
+	    		}    		
+	    	}
     	} else {
-    		ListView lv = (ListView)findViewById(android.R.id.list);
-    		if ( lv != null && lv.getAdapter() != null ) {
-    			List<Hashtable<String, String>> eventMap = this.buildEventMap(eventList);
-        		if ( eventMap != null ) {
-        			this.mEventList.addAll(eventMap);
-        			((SimpleAdapter)lv.getAdapter()).notifyDataSetChanged();
-        		}
-    		}    		
+    		if ( this.mPendingEventList == null ) {
+    			mPendingEventList = eventList;
+    		} else if ( eventList != null ) {
+    			mPendingEventList.addAll(eventList);
+    		}
     	}
     }
     
@@ -363,9 +394,6 @@ public class EventsActivity extends Activity {
 						this.publishProgress(iter);
 					}
 				}
-				
-				iter = new ArrayList<Event>();
-				this.publishProgress(iter);
 			}
 			return total;
 		}
@@ -384,6 +412,12 @@ public class EventsActivity extends Activity {
 		
 		@Override
 		protected void onPostExecute(Integer total) {
+			if ( mActivityReference != null ) {
+				EventsActivity activity = this.mActivityReference.get();
+				if ( activity != null ) {
+					activity.onDoneLoadingEvents();
+				}
+			}
 			Logger.Debug("Total events = " + total );
 		}		
     }    

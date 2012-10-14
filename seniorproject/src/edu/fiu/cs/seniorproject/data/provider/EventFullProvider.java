@@ -44,23 +44,26 @@ public class EventFullProvider extends DataProvider
 		 {
 				try {
 					JSONObject eventsObject = new JSONObject(myListRequestClient);
-					if ( eventsObject != null && eventsObject.has("events"))
+					if ( eventsObject != null && eventsObject.has("events") && !eventsObject.isNull("events") )
 					{
 						JSONObject events = eventsObject.getJSONObject("events");
-						JSONArray jsonEventList = events.getJSONArray("event");
 						
-						if ( jsonEventList != null && jsonEventList.length() > 0 )
-						{
+						if ( events != null && events.has("event") && !events.isNull("event")) {
+							JSONArray jsonEventList = events.getJSONArray("event");
 							
-							myEventList = new LinkedList<Event>();
-							
-							for( int i = 0; i < jsonEventList.length(); i++ )
+							if ( jsonEventList != null && jsonEventList.length() > 0 )
 							{
-								JSONObject iter = jsonEventList.getJSONObject(i);
 								
-								Event event = this.parseEvent(iter);
-								if ( event != null ) {
-									myEventList.add(event);
+								myEventList = new LinkedList<Event>();
+								
+								for( int i = 0; i < jsonEventList.length(); i++ )
+								{
+									JSONObject iter = jsonEventList.getJSONObject(i);
+									
+									Event event = this.parseEvent(iter);
+									if ( event != null ) {
+										myEventList.add(event);
+									}
 								}
 							}
 						}
@@ -101,8 +104,11 @@ public class EventFullProvider extends DataProvider
 	 {	
 		
 		List<Place> myPlaceList = null;
-		String myListRequestClient = this.myRestClient.getPlaceList(query, new Location("32.746682","-117.162741"), 10, 10,150);
-		 if ( myListRequestClient != null && !myListRequestClient.isEmpty() )
+		
+		String keywords = query != null ? query : this.getPlaceCategory(category);
+		String myListRequestClient = this.myRestClient.getPlaceList(keywords, location, 0, 0, Integer.valueOf(radius) );
+		
+		if ( myListRequestClient != null && !myListRequestClient.isEmpty() )
 		 {
 				try {
 					JSONObject placesObject = new JSONObject(myListRequestClient);
@@ -293,6 +299,11 @@ public class EventFullProvider extends DataProvider
 	protected String getEventCategory(EventCategoryFilter filter) {
 		// FIXME Should match general categories into Eventfull categories
 		return null;
+	}
+	
+	@Override
+	protected String getPlaceCategory( PlaceCategoryFilter filter ) {
+		 return filter != null ? filter.toString() : null;
 	}
 	
 	protected String getDatesFromFilter(DateFilter filter) {

@@ -126,6 +126,7 @@ public class MBVCAClient extends RestClient{
 			if ( category != null && !category.isEmpty() ) {
 				query.put("datatable_category_id", Integer.valueOf( category ) );
 			} else {
+				Logger.Warning("Calling get events from MBVCA with empty category!!!");
 				return null;	// need a category to query
 			}
 			
