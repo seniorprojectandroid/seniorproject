@@ -112,10 +112,23 @@ public class EventFullProvider extends DataProvider
 		 {
 				try {
 					JSONObject placesObject = new JSONObject(myListRequestClient);
-					if ( placesObject != null && placesObject.has("venues"))
+					if ( placesObject != null && placesObject.has("venues") && !placesObject.isNull("venues"))
 					{
 						JSONObject venues = placesObject.getJSONObject("venues");
-						JSONArray jsonPlaceList = venues.getJSONArray("venue");
+						JSONArray jsonPlaceList = null;// ? venues.getJSONArray("venue") : null;
+					
+						if (venues != null && venues.has("venue") && !venues.isNull("venue") ) {
+							try {
+								jsonPlaceList = venues.getJSONArray("venue");
+							} catch (JSONException e ) {
+								// try to get an object
+								JSONObject aux = venues.getJSONObject("venue");
+								if ( aux != null ) {
+									jsonPlaceList = new JSONArray();
+									jsonPlaceList.put(aux);
+								}
+							}
+						}
 						
 						if ( jsonPlaceList != null && jsonPlaceList.length() > 0 )
 						{
@@ -303,7 +316,12 @@ public class EventFullProvider extends DataProvider
 	
 	@Override
 	protected String getPlaceCategory( PlaceCategoryFilter filter ) {
-		 return filter != null ? filter.toString() : null;
+		 String result = null;
+		 
+		 if ( filter != null ) {
+			 result = filter.toString().toLowerCase().replace('_', ' ');
+		 }
+		 return result;
 	}
 	
 	protected String getDatesFromFilter(DateFilter filter) {
@@ -319,22 +337,22 @@ public class EventFullProvider extends DataProvider
 			
 		case THIS_WEEKEND:
 			long thisWeekend = DateUtils.getThisWeekendInMiliseconds();
-			String start = DateFormat.format("yyyyMMMdd", thisWeekend ).toString();	
-			String end = DateFormat.format("yyyyMMMdd", thisWeekend + DateUtils.ONE_DAY * 1000 ).toString();	
+			String start = DateFormat.format("yyyyMMdd", thisWeekend ).toString();	
+			String end = DateFormat.format("yyyyMMdd", thisWeekend + DateUtils.ONE_DAY * 1000 ).toString();	
 			result = start + "00-" + end + "23";
 			break;
 			
 		case NEXT_WEEKEND:
 			long nextWeekend = DateUtils.getNextWeekendInMiliseconds();
-			String nextStart = DateFormat.format("yyyyMMMdd", nextWeekend ).toString();	
-			String nextEnd = DateFormat.format("yyyyMMMdd", nextWeekend + DateUtils.ONE_DAY * 1000 ).toString();	
+			String nextStart = DateFormat.format("yyyyMMdd", nextWeekend ).toString();	
+			String nextEnd = DateFormat.format("yyyyMMdd", nextWeekend + DateUtils.ONE_DAY * 1000 ).toString();	
 			result = nextStart + "00-" + nextEnd + "23";
 			break;
 			
 		case NEXT_30_DAYS:
 			long today = DateUtils.getTodayTimeInMiliseconds();
-			String nextMonthStart = DateFormat.format("yyyyMMMdd", today ).toString();	
-			String nextMonthEnd = DateFormat.format("yyyyMMMdd", today + DateUtils.ONE_DAY * 1000 ).toString();	
+			String nextMonthStart = DateFormat.format("yyyyMMdd", today ).toString();	
+			String nextMonthEnd = DateFormat.format("yyyyMMdd", today + DateUtils.ONE_DAY * 1000 ).toString();	
 			result = nextMonthStart + "00-" + nextMonthEnd + "23";
 			break;
 			

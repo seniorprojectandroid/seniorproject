@@ -121,56 +121,31 @@ public class EventDetailsActivity extends MapActivity {
 						distance.setText("--");
 					}
 				}
-			    
-			    
-				
 				
 				MapView map = (MapView)findViewById(R.id.mapview);
-				
-				
-				List<Overlay> mapOverlaysList = map.getOverlays();
-				
-				Drawable drawable = this.getResources().getDrawable(R.drawable.facebook_icon_small);
-				
-				//creating an ItemizedOverlayActivity object so we can have multiple overlays
-				//added to a list to show them in a map
-			    ItemizedOverlayActivity itemizedoverlay = new ItemizedOverlayActivity(drawable, this);
-				
-			    
-			    
-			   
 			    
 				if ( map != null ) {
 					MapController mc = map.getController();
 		    		if ( mc != null ) {
 		    			
+		    			List<Overlay> mapOverlaysList = map.getOverlays();
+						Drawable drawable = this.getResources().getDrawable(R.drawable.red_pointer_icon);
+						
+						//creating an ItemizedOverlayActivity object so we can have multiple overlays
+						//added to a list to show them in a map
+					    ItemizedOverlayActivity itemizedoverlay = new ItemizedOverlayActivity(drawable, this);
+					    
 		    			GeoPoint geoPoint =  new GeoPoint( (int)(Double.valueOf( location.getLatitude() ) * 1E6),
 		    			  (int)(Double.valueOf( location.getLongitude() ) * 1E6 ));
 		    			
 		    			// Creates an overlay item with a geopoint to show in the map
-		    			 OverlayItem overlayitem = new OverlayItem(geoPoint, "Hi, I am in !", event.getName());
+		    			 OverlayItem overlayitem = new OverlayItem(geoPoint, "Event", event.getName());
 		    			
-		    			 //
-		    			    itemizedoverlay.addOverlay(overlayitem);
-
-		    			    mapOverlaysList.add(itemizedoverlay);
-		    			    
-		    			    itemizedoverlay.addOverlay(overlayitem);
-		    				
-		    			    mapOverlaysList.add(itemizedoverlay);
+	    			    itemizedoverlay.addOverlay(overlayitem);
+	    			    mapOverlaysList.add(itemizedoverlay);	    			    
 		    			
 		    			mc.setCenter(geoPoint);
 		    			mc.setZoom(17);
-		    			
-		    			    
-		    			   
-		    			    
-		    			    
-		    			    
-		    			
-		    			
-		    			//mc.setCenter(new GeoPoint( (int)(Double.valueOf( location.getLatitude() ) * 1E6),(int)(Double.valueOf( location.getLongitude() ) * 1E6 )));
-		    			
 		    		}
 				}
 			}

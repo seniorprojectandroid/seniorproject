@@ -21,11 +21,21 @@ public class DateUtils {
 	
 	public static long getThisWeekendInMiliseconds() {
 		Calendar calendar = Calendar.getInstance();
+		
+		int today = calendar.get(Calendar.DAY_OF_WEEK);
+		if ( today != Calendar.SATURDAY ) {
+			if ( today == Calendar.SUNDAY ) {
+				calendar.add(Calendar.DAY_OF_WEEK, -1);	// go back to Saturday
+			} else {
+				calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY); // go forward to Saturday
+			}
+		}
+		
 		calendar.clear(Calendar.SECOND);
 		calendar.clear(Calendar.MINUTE);
 		calendar.clear(Calendar.HOUR_OF_DAY);
 		calendar.clear(Calendar.HOUR);
-		calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+		
 		return calendar.getTimeInMillis();
 	}
 	

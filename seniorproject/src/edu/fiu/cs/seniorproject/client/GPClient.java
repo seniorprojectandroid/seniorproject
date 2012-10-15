@@ -76,6 +76,10 @@ public class GPClient extends RestClient{
 		if(radius != null)
 			params.putString("radius", radius);
 		
+		if (query!=null) {
+			params.putString("keyword", query);
+		}
+		
 		String result = null;
 		String url = "https://maps.googleapis.com/maps/api/place/search/json";
 		String method = "GET";

@@ -69,12 +69,12 @@ public class MBVCAProvider extends DataProvider
 	public List<Place> getPlaceList(Location location, PlaceCategoryFilter category, String radius, String query) {
 		List<Place> result = null;
 		
-		String places = this.mMBVCAClient.getPlaceList(location, getPlaceCategory(category), "1");
+		String places = this.mMBVCAClient.getPlaceList(location, getPlaceCategory(category), "1", query);
 		
 		if ( places != null && !places.isEmpty() ) {
 			try {
 				JSONObject placeObject = new JSONObject(places);
-				if ( placeObject != null && placeObject.has("solodev_view") ) {
+				if ( placeObject != null && placeObject.has("solodev_view") && !placeObject.isNull("solodev_view")) {
 					JSONArray placeList = placeObject.getJSONArray("solodev_view");
 					if ( placeList != null && placeList.length() > 0 ) {
 						result = new LinkedList<Place>();
@@ -89,7 +89,7 @@ public class MBVCAProvider extends DataProvider
 					}
 				}
 			} catch (JSONException e ) {
-				Logger.Warning("Exception decoding place list " + e.getMessage());
+				Logger.Warning("Exception decoding place list on getPlaceList " + e.getMessage());
 			}
 		}
 		return result;
@@ -158,6 +158,12 @@ public class MBVCAProvider extends DataProvider
 				break;
 				
 			case THIS_WEEKEND:
+				times[0] = DateUtils.getThisWeekendInMiliseconds() / 1000L;
+				times[1] = times[0] + 2 * DateUtils.ONE_DAY; 
+				break;
+				
+			case NEXT_WEEKEND:
+				times[0] = DateUtils.getNextWeekendInMiliseconds() / 1000L;
 				times[1] = times[0] + 2 * DateUtils.ONE_DAY; 
 				break;
 				

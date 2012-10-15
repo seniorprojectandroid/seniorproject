@@ -2,16 +2,22 @@ package edu.fiu.cs.seniorproject;
 
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
+import java.util.List;
+
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
+import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
+
 import edu.fiu.cs.seniorproject.data.Place;
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -120,7 +126,24 @@ public class PlaceDetailsActivity extends MapActivity {
 				if ( map != null ) {
 					MapController mc = map.getController();
 		    		if ( mc != null ) {
-		    			mc.setCenter(new GeoPoint( (int)(Double.valueOf( location.getLatitude() ) * 1E6),(int)(Double.valueOf( location.getLongitude() ) * 1E6 )));
+		    			
+		    			List<Overlay> mapOverlaysList = map.getOverlays();
+						Drawable drawable = this.getResources().getDrawable(R.drawable.red_pointer_icon);
+						
+						//creating an ItemizedOverlayActivity object so we can have multiple overlays
+						//added to a list to show them in a map
+					    ItemizedOverlayActivity itemizedoverlay = new ItemizedOverlayActivity(drawable, this);
+					    
+		    			GeoPoint geoPoint =  new GeoPoint( (int)(Double.valueOf( location.getLatitude() ) * 1E6),
+		    			  (int)(Double.valueOf( location.getLongitude() ) * 1E6 ));
+		    			
+		    			// Creates an overlay item with a geopoint to show in the map
+		    			 OverlayItem overlayitem = new OverlayItem(geoPoint, "Place", place.getName());
+		    			
+	    			    itemizedoverlay.addOverlay(overlayitem);
+	    			    mapOverlaysList.add(itemizedoverlay);	    			    
+		    			
+		    			mc.setCenter(geoPoint);
 		    			mc.setZoom(17);
 		    		}
 				}

@@ -1,8 +1,6 @@
 package edu.fiu.cs.seniorproject;
 
-import android.app.Activity;
 import android.os.Bundle;
-
 
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
@@ -12,6 +10,7 @@ import java.util.List;
 
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.Place;
+import edu.fiu.cs.seniorproject.data.PlaceCategoryFilter;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
@@ -22,17 +21,19 @@ import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.content.Intent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
+import android.widget.Spinner;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.SearchView.OnQueryTextListener;
 
-public class PlacesActivity extends Activity {
+public class PlacesActivity extends FilterActivity {
 
 	private PlacesLoader mPlacesLoader = null;
 	private List<Hashtable<String, String>> mPlaceList = null;
@@ -62,40 +63,47 @@ public class PlacesActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.items_list);
+        setContentView(R.layout.activity_places);
         
         mPlaceList = null;
         AppLocationManager.init(this);
-        mPlacesLoader = new PlacesLoader(this);
-        mPlacesLoader.execute();
+        
+        this.setupFilters();
+        
+        this.startNewSearch(false, null);
     }
 
     @Override
     protected void onDestroy() {
-    	if ( mPlacesLoader != null && mPlacesLoader.getStatus() != Status.FINISHED )
-    		mPlacesLoader.cancelLoader();
-    		mPlacesLoader.cancel(true);
+    	this.cancelLoader();
     	mPlaceList = null;	// release memory
     	super.onDestroy();
     }
-//    
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.places_activity, menu);
-//        return true;
-//    }
-    
-    
     
     // This creates an Action bar with options in EventsActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //getMenuInflater().inflate(R.menu.items_list, menu);
+    	getMenuInflater().inflate(R.menu.activity_places, menu);
     	
-    	
-    	MenuInflater inflater = getMenuInflater();
-    	inflater.inflate(R.menu.places_actionbar, menu);
-     
+    	SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        
+        if ( searchView != null ) {
+        	searchView.setOnQueryTextListener(new OnQueryTextListener() {
+				
+				@Override
+				public boolean onQueryTextSubmit(String query) {
+					Logger.Debug("process query = " + query);
+					PlacesActivity.this.startNewSearch(true,query);
+					return true;
+				}
+				
+				@Override
+				public boolean onQueryTextChange(String newText) {
+					Logger.Debug("query changed " + newText);
+					return false;
+				}
+			});
+        }
         
         return true;
     }
@@ -105,7 +113,37 @@ public class PlacesActivity extends Activity {
     	this.showPlacesInMapView();
     }
     
+    private void cancelLoader() {
+    	if ( mPlacesLoader != null && mPlacesLoader.getStatus() != Status.FINISHED ) {
+    		mPlacesLoader.cancelLoader();
+    		mPlacesLoader.cancel(true);
+    	}
+    	mPlacesLoader = null;
+    }
     
+    private void startNewSearch(boolean useFilters, String query ) {
+    	this.cancelLoader();    	
+    	
+    	ListView lv = (ListView)findViewById(android.R.id.list);
+    	
+    	if ( lv != null ) {
+    		lv.setVisibility( View.GONE);
+    		lv.setAdapter(null);
+    	}
+    	
+		findViewById(android.R.id.empty).setVisibility(View.GONE);
+		findViewById(android.R.id.progress).setVisibility(View.VISIBLE);
+		
+		mPlaceList = null;
+    	mPlacesLoader = new PlacesLoader(this);
+    	
+    	if ( useFilters ) {
+    		this.getSearchFilters();
+    	}
+    	mPlacesLoader.mQuery = query;
+    	
+        mPlacesLoader.execute();
+    }
     
     public void showPlaceList( List<Place> places ) {
     	
@@ -125,17 +163,12 @@ public class PlacesActivity extends Activity {
 	    			lv.setVisibility(View.VISIBLE);
 	    			lv.setOnItemClickListener(mClickListener);
 	    		}
-	    	} else {
-	    		TextView tv = (TextView)findViewById(android.R.id.empty);
-	    		if ( tv != null ) {
-	    			tv.setVisibility(View.VISIBLE);
-	    		}
-	    	}
-	    	
-	    	// Hide progress bar
-	    	ProgressBar pb = (ProgressBar)findViewById(android.R.id.progress);
-	    	if ( pb!= null ) {
-	    		pb.setVisibility(View.GONE);
+	    		
+	    		// Hide progress bar
+		    	ProgressBar pb = (ProgressBar)findViewById(android.R.id.progress);
+		    	if ( pb!= null ) {
+		    		pb.setVisibility(View.GONE);
+		    	}
 	    	}
     	} else {
     		ListView lv = (ListView)findViewById(android.R.id.list);
@@ -184,9 +217,40 @@ public class PlacesActivity extends Activity {
 		return placeList;
     }
     
+    private void onDoneLoadingPlaces() {
+    	findViewById(android.R.id.list).setVisibility( mPlaceList != null ? View.VISIBLE : View.GONE);
+		findViewById(android.R.id.empty).setVisibility(mPlaceList == null ? View.VISIBLE : View.GONE);
+		findViewById(android.R.id.progress).setVisibility(View.GONE);
+    }
+    
+    private void getSearchFilters() {
+    	if ( mPlacesLoader != null ) {
+	    	Spinner spinner = (Spinner)findViewById(R.id.category_spinner);
+	    	if ( spinner != null ) {
+	    		mPlacesLoader.mCategory = PlaceCategoryFilter.getValueAtIndex( spinner.getSelectedItemPosition() );
+	    	}
+
+	    	NumberPicker picker = (NumberPicker)findViewById(R.id.radius_picker);
+	    	if ( picker != null ) {
+	    		mPlacesLoader.mSearchRadius = String.valueOf( picker.getValue() );
+	    	}
+	    	mPlacesLoader.mQuery = null;
+    	}
+    }
+    
+    
+    @Override
+    protected void onFilterClicked() {
+    	this.startNewSearch(true, null);
+	}   
+    
     private class PlacesLoader extends AsyncTask<Void, List<Place>, Integer>
     {
-    	private WeakReference<PlacesActivity> mActivityReference = null;
+    	protected PlaceCategoryFilter mCategory = PlaceCategoryFilter.RESTAURANT_BARS;
+    	protected String mSearchRadius = "1";
+    	protected String mQuery = null;
+    	
+    	private final WeakReference<PlacesActivity> mActivityReference;
     	private ConcurrentPlaceListLoader mLoader = null;
     	
     	public PlacesLoader( PlacesActivity activity) {
@@ -205,14 +269,18 @@ public class PlacesActivity extends Activity {
 			Location location = new Location( String.valueOf( currentLocation.getLatitude() ), String.valueOf(currentLocation.getLongitude()) );
 			
 			Integer total = 0;
-			mLoader = DataManager.getSingleton().getConcurrentPlaceList(location, null, "1", null);
+			mLoader = DataManager.getSingleton().getConcurrentPlaceList(location, mCategory, mSearchRadius, mQuery);
 			
 			if ( mLoader != null ) {
 				List<Place> iter = null;
 				while ( (iter = mLoader.getNext()) != null ) {
-					total += iter.size();
-					Logger.Debug("Add new set of data size = " + iter.size());
-					this.publishProgress(iter);
+					int iterSize = iter.size();
+					total += iterSize;
+					Logger.Debug("Add new set of data size = " + iterSize);
+					
+					if ( iterSize > 0 ) {
+						this.publishProgress(iter);
+					}
 				}
 			}
 			return total;
@@ -221,7 +289,7 @@ public class PlacesActivity extends Activity {
 		
 		@Override
 		protected void onProgressUpdate(List<Place>... placeList) {
-			if ( placeList != null && mActivityReference != null && mActivityReference.get() != null ) {
+			if ( !this.isCancelled() && placeList != null && mActivityReference != null && mActivityReference.get() != null ) {
 				for( int i = 0; i < placeList.length; i++ ) {
 					mActivityReference.get().showPlaceList(placeList[i]);
 				}
@@ -230,7 +298,10 @@ public class PlacesActivity extends Activity {
     	
 		@Override
 		protected void onPostExecute(Integer total) {
-			Logger.Debug("Total records = " + total );			
+			Logger.Debug("Total records = " + total );	
+			if ( !this.isCancelled() && mActivityReference != null && mActivityReference.get() != null ) {
+				mActivityReference.get().onDoneLoadingPlaces();
+			}
 		}
     }
     

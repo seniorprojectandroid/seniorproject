@@ -7,7 +7,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 import edu.fiu.cs.seniorproject.data.DateFilter;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
@@ -30,31 +29,22 @@ import edu.fiu.cs.seniorproject.manager.DataManager;
 import edu.fiu.cs.seniorproject.manager.DataManager.ConcurrentEventListLoader;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationUtils;
 import android.widget.NumberPicker;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.Spinner;
 
-public class EventsActivity extends Activity {
+public class EventsActivity extends FilterActivity {
 
 	private EventLoader mEventLoader = null;
 	private List<Hashtable<String, String>> mEventList = null;
 	private boolean isInForeground = false;
-	private List<Event> mPendingEventList = null;
-	
-	private boolean filterExpanded = false;
-	private Animation showFilterAnimation = null;
-	private Animation hideFilterActivity = null;
-	
-	private MenuItem mExpandMenuItem = null;
+	private List<Event> mPendingEventList = null;	
 	
 	private final OnItemClickListener mClickListener = new OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			if ( !filterExpanded && mEventList != null && mEventList.size() > position ) {
+			if ( !EventsActivity.this.isFilterExpanded() && mEventList != null && mEventList.size() > position ) {
 				Hashtable<String, String> map = mEventList.get(position);
 				
 				if ( map != null ) {
@@ -74,32 +64,7 @@ public class EventsActivity extends Activity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
         AppLocationManager.init(this);
         
-        NumberPicker picker = (NumberPicker)findViewById(R.id.radius_picker);
-        if ( picker != null ) {
-        	picker.setMinValue(1);
-        	picker.setMaxValue(10);
-        	picker.setWrapSelectorWheel(false);
-        }
-
-        this.showFilterAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_from_top);
-        this.hideFilterActivity = AnimationUtils.loadAnimation(this, R.anim.slide_to_top);
-        
-        this.hideFilterActivity.setAnimationListener(new AnimationListener() {			
-			@Override
-			public void onAnimationStart(Animation animation) {
-			}
-			
-			@Override
-			public void onAnimationRepeat(Animation animation) {
-			}
-			
-			@Override
-			public void onAnimationEnd(Animation animation) {
-				Logger.Debug("Animation completed. Hiding..");
-				findViewById(R.id.filter_form).setVisibility(View.GONE);
-				findViewById(R.id.filter_ok).setVisibility(View.GONE);
-			}
-		});
+        this.setupFilters();
         
         mEventLoader = new EventLoader(this);
         this.loadEvents();
@@ -129,12 +94,6 @@ public class EventsActivity extends Activity {
     	this.isInForeground = false;
     	super.onPause();
     }
-    
-    //settings click
-    public void onSettingsClick(MenuItem view) {
-    	Intent intent = new Intent(this, SettingsActivity.class);
-    	this.startActivity(intent);
-    }    
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -172,32 +131,10 @@ public class EventsActivity extends Activity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
-                return true;
-            case R.id.expand_collapse:
-            	this.switchFilterView(item);
-            	break;
+                return true;            
         }
         return super.onOptionsItemSelected(item);
-    }
-    
-    
-
-    private void switchFilterView(MenuItem item) {
-    	findViewById(R.id.filter_ok).setVisibility(View.VISIBLE);
-    	findViewById(R.id.filter_form).setVisibility(View.VISIBLE);
-    	filterExpanded = !filterExpanded;
-    	if ( filterExpanded ) {
-    		item.setIcon(R.drawable.navigation_collapse_dark);    		
-    		this.hideFilterActivity.cancel();    		
-    		findViewById(R.id.filter_form).startAnimation(this.showFilterAnimation);
-    		mExpandMenuItem = item;
-    	} else {
-    		item.setIcon(R.drawable.navigation_expand_dark);    		
-    		this.showFilterAnimation.cancel();
-    		findViewById(R.id.filter_form).startAnimation(this.hideFilterActivity);
-    		mExpandMenuItem = null;
-    	}
-    }
+    }  
     
     private void cancelEventLoader() {
     	if ( mEventLoader != null ) {
@@ -219,7 +156,7 @@ public class EventsActivity extends Activity {
     		}
     		
     		findViewById(android.R.id.empty).setVisibility(View.GONE);
-    		findViewById(R.id.filter_form).setVisibility(View.GONE);
+    		//findViewById(R.id.filter_form).setVisibility(View.GONE);
     		findViewById(android.R.id.progress).setVisibility(View.VISIBLE);
     		
     		mEventList = null;
@@ -331,20 +268,18 @@ public class EventsActivity extends Activity {
     	}
     }
     
-    public void onFilterClick(View view) {
+    @Override
+    protected void onFilterClicked() {
     	this.startNewSearch(null);
-    }
+	}    
     
     private void startNewSearch(String query) {
     	this.cancelEventLoader();
+    	this.hideFilters();
     	mEventLoader = new EventLoader(this);
     	this.getSearchFilters();
     	this.mEventLoader.mQuery = query;
-    	this.loadEvents();
-    	
-    	if ( mExpandMenuItem != null ) {
-    		this.switchFilterView(mExpandMenuItem);
-    	}
+    	this.loadEvents();    	
     }
     
     // Method to show all events in a MapView 
@@ -400,7 +335,7 @@ public class EventsActivity extends Activity {
     	
 		@Override
 		protected void onProgressUpdate(List<Event>... eventList) {
-			if ( mActivityReference != null ) {
+			if ( !this.isCancelled() && mActivityReference != null ) {
 				EventsActivity activity = this.mActivityReference.get();
 				if ( activity != null ) {
 					for ( int i = 0; i < eventList.length; i++ ) {
@@ -412,7 +347,7 @@ public class EventsActivity extends Activity {
 		
 		@Override
 		protected void onPostExecute(Integer total) {
-			if ( mActivityReference != null ) {
+			if ( !this.isCancelled() && mActivityReference != null ) {
 				EventsActivity activity = this.mActivityReference.get();
 				if ( activity != null ) {
 					activity.onDoneLoadingEvents();

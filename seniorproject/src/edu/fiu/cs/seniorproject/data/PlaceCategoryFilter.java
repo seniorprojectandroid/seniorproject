@@ -1,11 +1,12 @@
 package edu.fiu.cs.seniorproject.data;
 
 public enum PlaceCategoryFilter {
+	RESTAURANT_BARS(361),
+	HOTEL(360),
 	BAKERY(447),
 	DENTISTS(367),
 	FOOD_SALES(383),
-	GALLERY_ART(466),
-	HOTEL(360),
+	GALLERY_ART(466),	
 	LIQUOR_SALES(470),
 	LOCKSMITH(504),
 	PARKING_GARAGE(472),
@@ -15,8 +16,7 @@ public enum PlaceCategoryFilter {
 	PARKING_LOT_TEMPORARY(396),
 	PARKING_LOT_UNDERUTILIZED(441),
 	PARKING_LOT_VALET(516),
-	PHARMACY(450),
-	RESTAURANT_BARS(361);
+	PHARMACY(450);
 	
 	private final int _value;
 	

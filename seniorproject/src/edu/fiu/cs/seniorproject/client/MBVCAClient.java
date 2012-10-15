@@ -116,7 +116,7 @@ public class MBVCAClient extends RestClient{
 		return response;
 	}
 
-	public String getPlaceList(Location location, String category,String radiusStr) {
+	public String getPlaceList(Location location, String category,String radiusStr, String search) {
 		String result = null;
 
 		try {
@@ -135,6 +135,10 @@ public class MBVCAClient extends RestClient{
 				if ( radius > 0 ) {
 					this.addLocationFilter(query, location, radius);
 				}
+			}
+			
+			if ( search != null ) {
+				query.put("name", "/" + search + "/i" );
 			}
 			
 			String queryStr = query.toString();
