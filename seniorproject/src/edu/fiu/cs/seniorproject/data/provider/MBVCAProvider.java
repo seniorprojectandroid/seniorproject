@@ -38,29 +38,7 @@ public class MBVCAProvider extends DataProvider
 		this.getTimeByDateFilter(date, times);
 		String events = mMBVCAClient.getEventList(location, getEventCategory(category), radius, times[0], times[1], query );
 		if ( events != null && !events.isEmpty() ) {
-			try {
-				JSONObject eventsObject = new JSONObject(events);
-				
-				if ( eventsObject != null && eventsObject.has("solodev_view") && !eventsObject.isNull("solodev_view")) {
-					JSONArray eventList = eventsObject.getJSONArray("solodev_view");
-					
-					if ( eventList != null && eventList.length() > 0 ) {
-						
-						result = new LinkedList<Event>();
-						for( int i = 0; i < eventList.length(); i++ ) {
-							JSONObject iter = eventList.getJSONObject(i);
-							Event event = this.parseEvent(iter);
-							
-							if ( event != null ) {
-								result.add(event);
-							}
-						}
-					}
-				}
-			} catch (JSONException e) {
-				Logger.Debug("events = " + events);
-				Logger.Error("Exception decoding json object in MBVCA " + e.getMessage());
-			}
+			result = this.parseEventList(events);
 		}
 		return result;
 	}
@@ -131,6 +109,14 @@ public class MBVCAProvider extends DataProvider
 					JSONArray placeList = placeObject.getJSONArray("solodev_view");
 					if ( placeList != null && placeList.length() > 0 ) {
 						place = this.parsePlace(placeList.getJSONObject(0));
+						
+						if ( place != null ) {
+							String placeEvents = this.mMBVCAClient.getEventsAtPlace(place.getName());
+							
+							if ( placeEvents != null && !placeEvents.isEmpty() ) {
+								place.setEventsAtPlace(this.parseEventList(placeEvents));
+							}
+						}
 					}
 				}
 			} catch (JSONException e ) {
@@ -264,6 +250,34 @@ public class MBVCAProvider extends DataProvider
 			}
 		}
 		return place;
+	}
+	
+	private List<Event> parseEventList(String events) {
+		List<Event> result = null;
+		try {
+			JSONObject eventsObject = new JSONObject(events);
+			
+			if ( eventsObject != null && eventsObject.has("solodev_view") && !eventsObject.isNull("solodev_view")) {
+				JSONArray eventList = eventsObject.getJSONArray("solodev_view");
+				
+				if ( eventList != null && eventList.length() > 0 ) {
+					
+					result = new LinkedList<Event>();
+					for( int i = 0; i < eventList.length(); i++ ) {
+						JSONObject iter = eventList.getJSONObject(i);
+						Event event = this.parseEvent(iter);
+						
+						if ( event != null ) {
+							result.add(event);
+						}
+					}
+				}
+			}
+		} catch (JSONException e) {
+			Logger.Debug("events = " + events);
+			Logger.Error("Exception decoding json object in MBVCA " + e.getMessage());
+		}
+		return result;
 	}
 	
 	@Override
