@@ -16,6 +16,7 @@ import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -123,5 +124,10 @@ public class GeoLocationActivity extends MapActivity {
     	}	
     	currentLocation.setLatitude(latitudeInfo);
     	currentLocation.setLongitude(longitudeInfo);
-    }   
+    } 
+    
+    public void onSettingsClick(MenuItem view) {
+    	Intent intent = new Intent(this, SettingsActivity.class);
+    	this.startActivity(intent);
+    } 
 }

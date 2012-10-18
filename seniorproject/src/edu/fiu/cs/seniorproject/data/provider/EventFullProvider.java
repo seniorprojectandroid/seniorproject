@@ -10,12 +10,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.text.format.DateFormat;
+
 import edu.fiu.cs.seniorproject.client.EventfulRestClient;
 import edu.fiu.cs.seniorproject.config.AppConfig;
+import edu.fiu.cs.seniorproject.data.DateFilter;
 import edu.fiu.cs.seniorproject.data.Event;
+import edu.fiu.cs.seniorproject.data.EventCategoryFilter;
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.Place;
+import edu.fiu.cs.seniorproject.data.PlaceCategoryFilter;
 import edu.fiu.cs.seniorproject.data.SourceType;
+import edu.fiu.cs.seniorproject.utils.DateUtils;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class EventFullProvider extends DataProvider
@@ -30,31 +36,34 @@ public class EventFullProvider extends DataProvider
 		 this.myRestClient = new EventfulRestClient(AppConfig.EVENTFUL_APP_ID);
 	 }// EventFullProvider
 	 
-	 public List<Event> getEventList(Location location, String category, String radius, String query ) 
+	 public List<Event> getEventList(Location location, EventCategoryFilter category, String radius, String query, DateFilter date ) 
 	 {
 		 List<Event> myEventList = null;
-		 String myListRequestClient = this.myRestClient.getEventList(query, location, null, category, (int)Math.ceil(Double.valueOf(radius))); 
+		 String myListRequestClient = this.myRestClient.getEventList(query, location, getDatesFromFilter(date), getEventCategory(category), (int)Math.ceil(Double.valueOf(radius))); 
 		 if ( myListRequestClient != null && !myListRequestClient.isEmpty() )
 		 {
 				try {
 					JSONObject eventsObject = new JSONObject(myListRequestClient);
-					if ( eventsObject != null && eventsObject.has("events"))
+					if ( eventsObject != null && eventsObject.has("events") && !eventsObject.isNull("events") )
 					{
 						JSONObject events = eventsObject.getJSONObject("events");
-						JSONArray jsonEventList = events.getJSONArray("event");
 						
-						if ( jsonEventList != null && jsonEventList.length() > 0 )
-						{
+						if ( events != null && events.has("event") && !events.isNull("event")) {
+							JSONArray jsonEventList = events.getJSONArray("event");
 							
-							myEventList = new LinkedList<Event>();
-							
-							for( int i = 0; i < jsonEventList.length(); i++ )
+							if ( jsonEventList != null && jsonEventList.length() > 0 )
 							{
-								JSONObject iter = jsonEventList.getJSONObject(i);
 								
-								Event event = this.parseEvent(iter);
-								if ( event != null ) {
-									myEventList.add(event);
+								myEventList = new LinkedList<Event>();
+								
+								for( int i = 0; i < jsonEventList.length(); i++ )
+								{
+									JSONObject iter = jsonEventList.getJSONObject(i);
+									
+									Event event = this.parseEvent(iter);
+									if ( event != null ) {
+										myEventList.add(event);
+									}
 								}
 							}
 						}
@@ -91,19 +100,35 @@ public class EventFullProvider extends DataProvider
 		return event;
 	}
 	 
-	 public List<Place> getPlaceList(Location location, String category, String radius, String query)
+	 public List<Place> getPlaceList(Location location, PlaceCategoryFilter category, String radius, String query)
 	 {	
 		
 		List<Place> myPlaceList = null;
-		String myListRequestClient = this.myRestClient.getPlaceList(query, new Location("32.746682","-117.162741"), 10, 10,150);
-		 if ( myListRequestClient != null && !myListRequestClient.isEmpty() )
+		
+		String keywords = query != null ? query : this.getPlaceCategory(category);
+		String myListRequestClient = this.myRestClient.getPlaceList(keywords, location, 0, 0, Integer.valueOf(radius) );
+		
+		if ( myListRequestClient != null && !myListRequestClient.isEmpty() )
 		 {
 				try {
 					JSONObject placesObject = new JSONObject(myListRequestClient);
-					if ( placesObject != null && placesObject.has("venues"))
+					if ( placesObject != null && placesObject.has("venues") && !placesObject.isNull("venues"))
 					{
 						JSONObject venues = placesObject.getJSONObject("venues");
-						JSONArray jsonPlaceList = venues.getJSONArray("venue");
+						JSONArray jsonPlaceList = null;// ? venues.getJSONArray("venue") : null;
+					
+						if (venues != null && venues.has("venue") && !venues.isNull("venue") ) {
+							try {
+								jsonPlaceList = venues.getJSONArray("venue");
+							} catch (JSONException e ) {
+								// try to get an object
+								JSONObject aux = venues.getJSONObject("venue");
+								if ( aux != null ) {
+									jsonPlaceList = new JSONArray();
+									jsonPlaceList.put(aux);
+								}
+							}
+						}
 						
 						if ( jsonPlaceList != null && jsonPlaceList.length() > 0 )
 						{
@@ -133,7 +158,7 @@ public class EventFullProvider extends DataProvider
 	 }// getPlaceList
 	
 	 @Override
-	public Place getPlaceDetails(String placeId, String reference) {
+	public Place getPlaceDetails(String placeId) {
 		Place place = null;
 		String placeStr = this.myRestClient.getPlaceDetails(placeId);
 		
@@ -312,6 +337,60 @@ public class EventFullProvider extends DataProvider
 			Logger.Error("Exception decoding place from eventful " + e.getMessage() );
 		}
 		return place;
+	}
+	
+	@Override
+	protected String getEventCategory(EventCategoryFilter filter) {
+		// FIXME Should match general categories into Eventfull categories
+		return null;
+	}
+	
+	@Override
+	protected String getPlaceCategory( PlaceCategoryFilter filter ) {
+		 String result = null;
+		 
+		 if ( filter != null ) {
+			 result = filter.toString().toLowerCase().replace('_', ' ');
+		 }
+		 return result;
+	}
+	
+	protected String getDatesFromFilter(DateFilter filter) {
+		String result = "All";
+		
+		switch ( filter ) {
+		case TODAY:
+			result = "Today";
+			break;
+		case THIS_WEEK:
+			result = "This Week";
+			break;
+			
+		case THIS_WEEKEND:
+			long thisWeekend = DateUtils.getThisWeekendInMiliseconds();
+			String start = DateFormat.format("yyyyMMdd", thisWeekend ).toString();	
+			String end = DateFormat.format("yyyyMMdd", thisWeekend + DateUtils.ONE_DAY * 1000 ).toString();	
+			result = start + "00-" + end + "23";
+			break;
+			
+		case NEXT_WEEKEND:
+			long nextWeekend = DateUtils.getNextWeekendInMiliseconds();
+			String nextStart = DateFormat.format("yyyyMMdd", nextWeekend ).toString();	
+			String nextEnd = DateFormat.format("yyyyMMdd", nextWeekend + DateUtils.ONE_DAY * 1000 ).toString();	
+			result = nextStart + "00-" + nextEnd + "23";
+			break;
+			
+		case NEXT_30_DAYS:
+			long today = DateUtils.getTodayTimeInMiliseconds();
+			String nextMonthStart = DateFormat.format("yyyyMMdd", today ).toString();	
+			String nextMonthEnd = DateFormat.format("yyyyMMdd", today + DateUtils.ONE_DAY * 1000 ).toString();	
+			result = nextMonthStart + "00-" + nextMonthEnd + "23";
+			break;
+			
+			default:
+				result="All";
+		}
+		return result;
 	}
 }// EventFullProvider
 

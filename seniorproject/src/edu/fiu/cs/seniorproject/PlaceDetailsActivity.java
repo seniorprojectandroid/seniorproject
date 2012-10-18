@@ -2,8 +2,10 @@ package edu.fiu.cs.seniorproject;
 
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
+
 import java.util.List;
 
 import com.google.android.maps.GeoPoint;
@@ -11,14 +13,19 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 
+
 import edu.fiu.cs.seniorproject.data.Event;
+
+import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
+
 import edu.fiu.cs.seniorproject.data.Place;
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
-import edu.fiu.cs.seniorproject.utils.Logger;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -45,41 +52,14 @@ public class PlaceDetailsActivity extends MapActivity {
         AppLocationManager.init(this);
         
         Intent intent = getIntent();
-        String eventId = null;
-        if ( intent.hasExtra("reference")) {
-    
-        	String reference = intent.getStringExtra("reference");
+        
+        if ( intent != null && intent.hasExtra("id") && intent.hasExtra("source")) {
+        	String placeId = intent.getStringExtra("id");
+        	SourceType source =  (SourceType)intent.getSerializableExtra("source");
         	
-        	if( reference != null)
-        	{
-        		eventId = reference;
-        	}
-        	else
-        	{
-        		Logger.Error("PlaceDetailsA: getStringExtra(reference) ");
-        	}
-        
+        	(new PlaceDownloader(this)).execute(new PlaceSearchData(placeId, source));
         }
-        else
-        {
-        	Logger.Error("PlaceActivityDetails: Does not have a reference.");
-        }
-        
-        SourceType source = null;
-        
-        if(intent.hasExtra("source"))
-        {
-        	source =  (SourceType)intent.getSerializableExtra("source");
-        	
-        	if(source == null)
-        	{
-        		Logger.Error("Source not being retrieve");
-        	}
-        }
-            	
-    	(new PlaceDownloader(this)).execute(new PlaceSearchData(eventId, source)); // constructor
-        
-        
+
     }
 
     @Override
@@ -104,6 +84,12 @@ public class PlaceDetailsActivity extends MapActivity {
 		return false;
 	}
 
+	//settings click
+    public void onSettingsClick(MenuItem view) {
+    	Intent intent = new Intent(this, SettingsActivity.class);
+    	this.startActivity(intent);
+    } 
+    
 	private void showPlace(Place place) {
 		
 		if ( place != null ) {
@@ -156,7 +142,24 @@ public class PlaceDetailsActivity extends MapActivity {
 				if ( map != null ) {
 					MapController mc = map.getController();
 		    		if ( mc != null ) {
-		    			mc.setCenter(new GeoPoint( (int)(Double.valueOf( location.getLatitude() ) * 1E6),(int)(Double.valueOf( location.getLongitude() ) * 1E6 )));
+		    			
+		    			List<Overlay> mapOverlaysList = map.getOverlays();
+						Drawable drawable = this.getResources().getDrawable(R.drawable.red_pointer_icon);
+						
+						//creating an ItemizedOverlayActivity object so we can have multiple overlays
+						//added to a list to show them in a map
+					    ItemizedOverlayActivity itemizedoverlay = new ItemizedOverlayActivity(drawable, this);
+					    
+		    			GeoPoint geoPoint =  new GeoPoint( (int)(Double.valueOf( location.getLatitude() ) * 1E6),
+		    			  (int)(Double.valueOf( location.getLongitude() ) * 1E6 ));
+		    			
+		    			// Creates an overlay item with a geopoint to show in the map
+		    			 OverlayItem overlayitem = new OverlayItem(geoPoint, "Place", place.getName());
+		    			
+	    			    itemizedoverlay.addOverlay(overlayitem);
+	    			    mapOverlaysList.add(itemizedoverlay);	    			    
+		    			
+		    			mc.setCenter(geoPoint);
 		    			mc.setZoom(17);
 		    		}
 				}
@@ -219,38 +222,13 @@ public class PlaceDetailsActivity extends MapActivity {
 	 
 	private class PlaceSearchData {
 		
-		public String reference;
+		public String id;
 		public SourceType source;
 		
 		public PlaceSearchData(String id, SourceType sourceType) {
 			
-			
-			this.setReference(id);
-			this.setSourceType(sourceType);
-		}
-		
-		public void setReference(String reference)
-		{
-			if(reference != null)
-			{
-				this.reference = reference;
-			}
-			else
-			{
-				Logger.Error("PlaceSearchData: reference is: " + reference);
-			}
-		}
-		
-		public void setSourceType( SourceType sourceType )
-		{
-			if(sourceType != null)
-			{
-				this.source = sourceType;
-			}
-			else
-			{
-				Logger.Error("PlaceSearchData: source is: "+ sourceType); 
-			}
+			this.id = id;
+			this.source = sourceType;
 		}
 	}
 	
@@ -265,7 +243,7 @@ public class PlaceDetailsActivity extends MapActivity {
 		@Override
 		protected Place doInBackground(PlaceSearchData... params) {
 
-			return DataManager.getSingleton().getPlaceDetails(null,params[0].reference, params[0].source);
+			return DataManager.getSingleton().getPlaceDetails(params[0].id, params[0].source);
 		}
 		
 		@Override

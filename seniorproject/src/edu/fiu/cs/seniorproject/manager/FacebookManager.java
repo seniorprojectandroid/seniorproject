@@ -148,7 +148,7 @@ public class FacebookManager {
 		return result;
 	}
 	
-	private Facebook getFacebookClient() {
+	public Facebook getFacebookClient() {
 		if ( mFacebook == null ) {
 			mFacebook = new Facebook( AppConfig.FB_APP_ID );
 		}

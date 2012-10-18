@@ -4,5 +4,8 @@
     <translate
         android:fromYDelta="0%"
         android:toYDelta="-100%"
+        android:fillAfter="true"
+        android:fillBefore="true"
+        android:fillEnabled="true"
         android:duration="400" />
 </set>

@@ -1,5 +1,37 @@
 package edu.fiu.cs.seniorproject.data;
 
+public enum EventCategoryFilter {
+	NONE(0),
+	Arts_Crafts(594),
+	Business_Tech(595),
+	Comedy(596),
+	Community(597),
+	Dance(598),
+	Education_Campus(599),
+	Fairs_Festivals(600),
+	Food_Dining(601),
+	Music(602),
+	Other(603),
+	Performing_Arts(604),
+	Shopping(605),
+	Sports_Outdoors(606),
+	Visual_Arts(607);
+	
+	private final int _value;
+	
+	EventCategoryFilter(int value) {
+		_value = value;
+	}
+	
+	public int Value() {
+		return _value;
+	}
+	
+	public static EventCategoryFilter getValueAtIndex(int index) {
+		return EventCategoryFilter.values()[ index ];
+	}
+}
+/*
 public final class EventCategoryFilter {
 	public static final int Arts_Crafts=594;
 	public static final int Business_Tech=595;
@@ -16,3 +48,4 @@ public final class EventCategoryFilter {
 	public static final int Sports_Outdoors=606;
 	public static final int Visual_Arts=607;
 }
+*/

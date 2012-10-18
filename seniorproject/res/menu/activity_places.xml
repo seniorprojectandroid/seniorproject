@@ -1,4 +1,5 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
     
     <item android:id="@+id/menu_search"
           android:title="@string/menu_search"
@@ -7,17 +8,17 @@
           android:actionViewClass="android.widget.SearchView" />
     
     <item android:id="@+id/expand_collapse"
-        android:title="@string/events"
-        android:icon="@drawable/navigation_expand_dark"
-        android:orderInCategory="10"
-        android:showAsAction="always" />
+		android:title="@string/events"
+		android:icon="@drawable/navigation_expand_dark"
+		android:orderInCategory="10"
+		android:showAsAction="always" />
     
-    <item android:id="@+id/map_menuitem" 
-          android:title="Events Map"
+    <item android:id="@+id/map_menuitem"
+          android:title="Places Map"
           android:showAsAction="ifRoom"
-          android:onClick="onEventsMapClick" />
+          android:onClick="onPlacesMapClick" />
     
-    <item android:id="@+id/menu_settings"
+   <item android:id="@+id/menu_settings"
         android:title="@string/menu_settings"
         android:orderInCategory="100"
         android:onClick="onSettingsClick"

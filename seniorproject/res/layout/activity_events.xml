@@ -7,12 +7,13 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
 	        android:visibility="gone" />
-    
+    
     <TextView
         android:id="@android:id/empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
+        android:text="@string/empty_result"
         android:visibility="gone" />
 
     <ProgressBar
@@ -21,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:indeterminate="true" />
-
+
     <LinearLayout
         android:id="@+id/filter_form"
         android:layout_width="match_parent"
@@ -96,14 +97,17 @@
                     android:layout_height="wrap_content" />
             </TableRow>           
         </TableLayout>
-
+
         <Button
             android:id="@+id/filter_ok"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            android:text="@string/ok" />
+            android:drawableLeft="@android:drawable/ic_menu_search"
+            android:drawablePadding="5dp"
+            android:onClick="onFilterClick"
+            android:text="@string/menu_search" />
         
     </LinearLayout>
     
