@@ -13,11 +13,12 @@
    </integer-array>
    
    <string-array name="placescategories">
+     <item>Restaurant Bars</item>
+     <item>Hotel</item>
      <item>Bakery</item>
      <item>Dentists</item>
      <item>Food Sales</item>
      <item>Gallery Art</item>
-     <item>Hotel</item>
      <item>Liquor Sales</item>
      <item>Locksmith</item>
      <item>Parking Garage</item>
@@ -28,15 +29,16 @@
      <item>Parking Lot Underutilized</item>
      <item>Parking Lot Valet</item>
      <item>Pharmacy</item>
-     <item>Restaurant Bars</item>
+     
      </string-array>
 
    <string-array name="PlacesValues">
+     <item>RESTAURANT_BARS</item>
+     <item>HOTEL</item>
      <item>BAKERY</item>
      <item>DENTISTS</item>
      <item>FOOD_SALES</item>
      <item>GALLERY_ART</item>
-     <item>HOTEL</item>
      <item>LIQUOR_SALES</item>
      <item>LOCKSMITH</item>
      <item>PARKING_GARAGE</item>
@@ -47,7 +49,7 @@
      <item>PARKING_LOT_UNDERUTILIZED</item>
      <item>PARKING_LOT_VALET</item>
      <item>PHARMACY</item>
-     <item>RESTAURANT_BARS</item>
+     
    </string-array>
    
    <string-array name="eventscategories">
@@ -84,5 +86,13 @@
         <item>Visual Arts</item>
    </string-array>   
    
-   
+    <string-array name="time_filters">
+        <item>NOME</item>
+        <item>TODAY</item>
+        <item>THIS WEEK</item>
+        <item>THIS WEEKEND</item>
+        <item>NEXT WEEKEND</item>
+        <item>NEXT 30 DAYS</item>
+    </string-array>
+    
  </resources>
