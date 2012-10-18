@@ -2,10 +2,16 @@ package edu.fiu.cs.seniorproject;
 
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
+
+import edu.fiu.cs.seniorproject.data.Event;
 import edu.fiu.cs.seniorproject.data.Place;
 import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.SourceType;
@@ -17,12 +23,19 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.support.v4.app.NavUtils;
+import android.text.format.DateFormat;
 
 public class PlaceDetailsActivity extends MapActivity {
-
+	
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +77,7 @@ public class PlaceDetailsActivity extends MapActivity {
         	}
         }
             	
-    	(new PlaceDownloader(this)).execute(new PlaceSearchData(eventId, source));
+    	(new PlaceDownloader(this)).execute(new PlaceSearchData(eventId, source)); // constructor
         
         
     }
@@ -147,10 +160,63 @@ public class PlaceDetailsActivity extends MapActivity {
 		    			mc.setZoom(17);
 		    		}
 				}
+				
+				
+				if(place.getEventsAtPlace() != null)
+				{
+					List<Event> events = place.getEventsAtPlace();	
+					showEventList(events);
+				
+				}
 			}
-		}
-	}
-
+		}	
+		
+		
+	}// end showPlace
+	
+	 private void showEventList( List<Event> eventList ) {
+	    	
+	    		
+	    		if ( eventList != null && eventList.size() > 0 ) {
+	    			
+	    			LinearLayout ll = (LinearLayout)findViewById(android.R.id.list);
+	    			
+	    			if(ll!= null)
+	    			{
+	    				for(int i = 0; i < eventList.size(); i ++)
+	    				{
+	    					Event event = eventList.get(i);
+	    					TextView tv = new TextView(this);
+	    					tv.setText(event.getName());
+	    					ll.addView(tv);
+	    				}
+	    			}
+//		    		ListView lv = (ListView)findViewById(android.R.id.list);
+//		    		if ( lv != null ) {
+//		    			
+//		    			// create the grid item mapping
+//		    			String[] from = new String[] {"name", "place", "time", "distance" };
+//						int[] to = new int[] { R.id.event_name, R.id.event_place, R.id.event_time, R.id.event_distance };
+//
+//						this.mEventList = this.buildEventMap(eventList);
+//						
+//						SimpleAdapter adapter = new SimpleAdapter(this, this.mEventList, R.layout.event_row, from, to);
+//						lv.setAdapter(adapter);
+//		    			lv.setVisibility(View.VISIBLE);
+//		    		//	lv.setOnItemClickListener(mClickListener);
+//		    		}
+		    	} else {
+		    		TextView tv = (TextView)findViewById(android.R.id.empty);
+		    		if ( tv != null ) {
+		    			tv.setVisibility(View.VISIBLE);
+		    		}
+		    	} 		
+	    		
+	    	
+	}// end showEventList
+	 
+	 
+	 
 	private class PlaceSearchData {
 		
 		public String reference;
@@ -209,4 +275,4 @@ public class PlaceDetailsActivity extends MapActivity {
 			}
 	    }
 	}
-}
+}// end PlaceDetailActivity

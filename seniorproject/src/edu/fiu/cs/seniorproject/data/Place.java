@@ -1,4 +1,6 @@
 package edu.fiu.cs.seniorproject.data;
+import java.util.List;
+
 import edu.fiu.cs.seniorproject.data.Location;
 
 public class Place {
@@ -11,9 +13,11 @@ public class Place {
 	private String reference;
 	private String image;
 	private SourceType source = SourceType.MBVCA;	// default source to Miami beach api
+	private List<Event> eventsAtPlace = null;
 
 	public Place()
-	{		
+	{	
+		
 	}
 
 	public String getReference() {
@@ -81,6 +85,16 @@ public class Place {
 	public SourceType getSource()
 	{
 		return this.source;
+	}
+	
+	public void setEventsAtPlace(List<Event> eventsAtPlace)
+	{
+		this.eventsAtPlace = eventsAtPlace;
+	}
+	
+	public List<Event> getEventsAtPlace()
+	{
+		return this.eventsAtPlace;
 	}
 
 }
