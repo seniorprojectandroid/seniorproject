@@ -6,11 +6,13 @@ import java.util.List;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.text.format.DateFormat;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,11 +28,14 @@ import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
+import edu.fiu.cs.seniorproject.utils.Logger;
 
 import android.os.AsyncTask;
 
 public class EventDetailsActivity extends MapActivity {
 
+	private Event currentEvent = null;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,9 +80,44 @@ public class EventDetailsActivity extends MapActivity {
     	this.startActivity(intent);
     } 
 
+    public void onDirectionsClick(View view) {
+    	Logger.Debug("On direction click");
+    	if ( this.currentEvent != null && this.currentEvent.getLocation() != null ) {
+    		android.location.Location currentLocation = AppLocationManager.getCurrentLocation();
+    	
+    		if ( currentLocation != null ) {
+    			String uri = "http://maps.google.com/maps?saddr=" + currentLocation.getLatitude() +
+    					"," + currentLocation.getLongitude() + 
+    					"&daddr=" + this.currentEvent.getLocation().getLatitude() +
+    					"," + this.currentEvent.getLocation().getLongitude();
+    			Logger.Debug("Uri = " + uri);
+    			
+    			Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+    			this.startActivity(intent);
+    		}
+    	}
+    }
+    
+    public void onNavigationClick(View view) {
+    	Logger.Debug("On navigation click");
+    	if ( this.currentEvent != null && this.currentEvent.getLocation() != null ) {
+    		android.location.Location currentLocation = AppLocationManager.getCurrentLocation();
+    	
+    		if ( currentLocation != null ) {
+    			String uri = "google.navigation:q=" + this.currentEvent.getLocation().getLatitude() +
+    					"," + this.currentEvent.getLocation().getLongitude();
+    			Logger.Debug("Uri = " + uri);
+    			
+    			Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+    			this.startActivity(intent);
+    		}
+    	}
+    }
+ 
 	private void showEvent(Event event) {
 		
 		if ( event != null ) {
+			this.currentEvent = event;
 			TextView name = (TextView)findViewById(R.id.event_name);
 			if ( name != null ) {
 				name.setText(event.getName());

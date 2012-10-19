@@ -21,8 +21,10 @@ import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
+import edu.fiu.cs.seniorproject.utils.Logger;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -34,7 +36,7 @@ import android.widget.TextView;
 import android.support.v4.app.NavUtils;
 
 public class PlaceDetailsActivity extends MapActivity {
-	
+	private Place currentPlace = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,9 +85,44 @@ public class PlaceDetailsActivity extends MapActivity {
     	this.startActivity(intent);
     } 
     
+    public void onDirectionsClick(View view) {
+    	Logger.Debug("On direction click");
+    	if ( this.currentPlace != null && this.currentPlace.getLocation() != null ) {
+    		android.location.Location currentLocation = AppLocationManager.getCurrentLocation();
+    	
+    		if ( currentLocation != null ) {
+    			String uri = "http://maps.google.com/maps?saddr=" + currentLocation.getLatitude() +
+    					"," + currentLocation.getLongitude() + 
+    					"&daddr=" + this.currentPlace.getLocation().getLatitude() +
+    					"," + this.currentPlace.getLocation().getLongitude();
+    			Logger.Debug("Uri = " + uri);
+    			
+    			Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+    			this.startActivity(intent);
+    		}
+    	}
+    }
+    
+    public void onNavigationClick(View view) {
+    	Logger.Debug("On navigation click");
+    	if ( this.currentPlace != null && this.currentPlace.getLocation() != null ) {
+    		android.location.Location currentLocation = AppLocationManager.getCurrentLocation();
+    	
+    		if ( currentLocation != null ) {
+    			String uri = "google.navigation:q=" + this.currentPlace.getLocation().getLatitude() +
+    					"," + this.currentPlace.getLocation().getLongitude();
+    			Logger.Debug("Uri = " + uri);
+    			
+    			Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+    			this.startActivity(intent);
+    		}
+    	}
+    }
+    
 	private void showPlace(Place place) {
 		
 		if ( place != null ) {
+			this.currentPlace = place;
 			//create place name.
 			TextView name = (TextView)findViewById(R.id.place_name);
 			if ( name != null ) {
