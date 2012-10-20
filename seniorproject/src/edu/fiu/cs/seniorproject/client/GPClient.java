@@ -145,6 +145,7 @@ public class GPClient extends RestClient{
 		}catch(IOException e)
 		{
 			Logger.Error("GPClient get next page IOException.");
+			e.printStackTrace();
 		}
 		
 		return result;

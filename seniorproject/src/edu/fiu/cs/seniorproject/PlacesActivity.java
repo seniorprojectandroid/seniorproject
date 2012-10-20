@@ -23,7 +23,9 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.ProgressBar;
@@ -37,7 +39,8 @@ public class PlacesActivity extends FilterActivity {
 
 	private PlacesLoader mPlacesLoader = null;
 	private List<Hashtable<String, String>> mPlaceList = null;
-
+	private SimpleAdapter listAdapter = null;
+	
 	private final OnItemClickListener mClickListener = new OnItemClickListener() 
 	{
 		@Override
@@ -65,6 +68,20 @@ public class PlacesActivity extends FilterActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_places);
         
+        ListView lv = (ListView)findViewById(android.R.id.list);
+    	
+    	if ( lv != null ) {
+    		Button button = new Button(this);
+    		button.setText("Load More");
+    		button.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					getMorePlaces();
+				}
+			});    		
+    		lv.addFooterView(button);
+    	}
+    	
         mPlaceList = null;
         AppLocationManager.init(this);
         
@@ -141,8 +158,16 @@ public class PlacesActivity extends FilterActivity {
     		this.getSearchFilters();
     	}
     	mPlacesLoader.mQuery = query;
+    	mPlacesLoader.useNextPage = false;
     	
         mPlacesLoader.execute();
+    }
+    
+    private void getMorePlaces() {
+    	this.cancelLoader();
+    	mPlacesLoader = new PlacesLoader(this);
+    	mPlacesLoader.useNextPage = true;
+    	mPlacesLoader.execute();
     }
     
     public void showPlaceList( List<Place> places ) {
@@ -158,8 +183,8 @@ public class PlacesActivity extends FilterActivity {
 	
 					this.mPlaceList = this.buildPlaceList(places);
 					
-					SimpleAdapter adapter = new SimpleAdapter(this, this.mPlaceList, R.layout.place_row, from, to);
-					lv.setAdapter(adapter);
+					this.listAdapter = new SimpleAdapter(this, this.mPlaceList, R.layout.place_row, from, to);
+					lv.setAdapter(this.listAdapter);
 	    			lv.setVisibility(View.VISIBLE);
 	    			lv.setOnItemClickListener(mClickListener);
 	    		}
@@ -176,7 +201,9 @@ public class PlacesActivity extends FilterActivity {
     			List<Hashtable<String, String>> placeList = this.buildPlaceList(places);
         		if ( placeList != null ) {
         			this.mPlaceList.addAll(placeList);
-        			((SimpleAdapter)lv.getAdapter()).notifyDataSetChanged();
+        			if ( this.listAdapter != null ) {
+        				this.listAdapter.notifyDataSetChanged();
+        			}
         		}
     		}    		
     	}
@@ -249,6 +276,7 @@ public class PlacesActivity extends FilterActivity {
     	protected PlaceCategoryFilter mCategory = PlaceCategoryFilter.RESTAURANT_BARS;
     	protected String mSearchRadius = "1";
     	protected String mQuery = null;
+    	protected boolean useNextPage = false;
     	
     	private final WeakReference<PlacesActivity> mActivityReference;
     	private ConcurrentPlaceListLoader mLoader = null;
@@ -269,7 +297,12 @@ public class PlacesActivity extends FilterActivity {
 			Location location = new Location( String.valueOf( currentLocation.getLatitude() ), String.valueOf(currentLocation.getLongitude()) );
 			
 			Integer total = 0;
-			mLoader = DataManager.getSingleton().getConcurrentPlaceList(location, mCategory, mSearchRadius, mQuery);
+			
+			if ( useNextPage ) {
+				mLoader = DataManager.getSingleton().getConcurrentNextPlaceList();
+			} else {
+				mLoader = DataManager.getSingleton().getConcurrentPlaceList(location, mCategory, mSearchRadius, mQuery);
+			}
 			
 			if ( mLoader != null ) {
 				List<Place> iter = null;
