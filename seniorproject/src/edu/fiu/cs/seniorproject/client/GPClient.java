@@ -127,6 +127,29 @@ public class GPClient extends RestClient{
 		return result;
 	}
 	
+	public String getNextPlaces(String nextPageToken)
+	{
+		String result = null;
+		
+		Bundle params = this.getBundle();
+	
+		if(nextPageToken != null)
+			params.putString("pagetoken", nextPageToken);
+		
+		String url = "https:maps.googleapis.com/maps/api/place/search/json?";
+		String method = "GET";
+		
+		try
+		{
+			result = this.openUrl(url, method, params);
+		}catch(IOException e)
+		{
+			Logger.Error("GPClient get next page IOException.");
+		}
+		
+		return result;
+	}
+	
 	public Bundle getBundle()
 	{
 		Bundle bundle = new Bundle();

@@ -28,6 +28,8 @@ public class GPProvider extends DataProvider {
 
 	private GPClient gpClient;
 
+	private String nextPageToken = null;
+	
 	public GPProvider() {
 		this.gpClient = new GPClient(AppConfig.GOOGLE_PLACE_APP_ID);
 	}
@@ -81,9 +83,7 @@ public class GPProvider extends DataProvider {
 		event.setSource(SourceType.GOOGLE_PLACE);
 		
 		return event;
-
 	}
-
 
 
 	@Override
@@ -335,12 +335,17 @@ public class GPProvider extends DataProvider {
 			try {
 				data = new JSONObject(result);
 				jsonArray = data.getJSONArray("results");
+				
+				if(data.getString("next_page_token") != null)
+				{
+					this.setNextToken(data.getString("next_page_token"));
+				}
 
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 			if(jsonArray != null && jsonArray.length() > 0)
-			{
+			{	
 				for (int i = 0; i < jsonArray.length(); i++) 
 				{
 					place = new Place();
@@ -458,6 +463,15 @@ public class GPProvider extends DataProvider {
 
 		return result;
 	}
+	
+	private String getNextPlaces(String nextPageToken)
+	{
+		String results = null;
+		
+		results = this.gpClient.getNextPlaces(nextPageToken);
+		
+		return results;
+	}
 
 	@Override
 	public boolean supportEvents() {
@@ -468,5 +482,133 @@ public class GPProvider extends DataProvider {
 	public SourceType getSource() {
 		return SourceType.GOOGLE_PLACE;
 	}
+	
+	public String getNextToken()
+	{
+		return this.nextPageToken;
+	}
+	
+	public void setNextToken(String nextPageToken)
+	{
+		this.nextPageToken = nextPageToken;
+	}
+	
+	 public List<Event> getNextEventPage() {
+		 
+		 
+		 
+		 
+		 return null;
+	 }
+	 
+	 public List<Place> getNextPlacePage() 
+	 {
+		 	LinkedList<Place> placeList = new LinkedList<Place>();
+		 	
+		 	String result = null;
+			JSONObject data = null;
+			JSONArray jsonArray = null;
+			JSONObject eachPlace = null;
+			Place place = null;
+			Location loc = null;
+			
+		 	if(this.getNextToken() != null)
+		 		result = this.getNextPlaces(this.getNextToken());
+
+			if (result != null && result.length() > 0) 
+			{
+				try {
+					data = new JSONObject(result);
+					jsonArray = data.getJSONArray("results");
+					
+					if(data.getString("next_page_token") != null)
+					{
+						this.setNextToken(data.getString("next_page_token"));
+					}
+
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				if(jsonArray != null && jsonArray.length() > 0)
+				{	
+					for (int i = 0; i < jsonArray.length(); i++) 
+					{
+						place = new Place();
+						loc = new Location();
+		
+						try {
+							eachPlace = jsonArray.getJSONObject(i);
+		
+							if (eachPlace != null && eachPlace.has("reference") ) 
+							{
+								
+								if(eachPlace.has("vicinity") && eachPlace.getString("vicinity") != null)
+								{
+									loc.setAddress(eachPlace.getString("vicinity"));	
+								}
+								
+
+								JSONObject geometry = eachPlace.getJSONObject("geometry");
+								
+								if(geometry != null && geometry.has("location"))
+								{
+									JSONObject ltn = geometry.getJSONObject("location");
+									
+									if(ltn != null && ltn.has("lat") && ltn.has("lng"))
+									{
+										String latitude = ltn.getString("lat");
+										
+										if(latitude != null)
+										{
+											loc.setLatitude(latitude);
+										}
+										
+										String longitude = ltn.getString("lng");
+										
+										if(longitude != null)
+										{
+											loc.setLongitude(longitude);
+										}
+									}
+									
+								}
+								
+								if(eachPlace.has("name") && eachPlace.getString("name") != null)
+								{
+									place.setName(eachPlace.getString("name"));
+								}
+								
+								if( eachPlace.getString("reference") != null)
+								{
+									place.setId(eachPlace.getString("reference"));
+								}
+								
+//								String id = eachPlace.getString("id");
+//								
+//								if(id != null)
+//								{
+//									place.setId(id);
+//								}
+							
+								place.setLocation(loc);
+								place.setSource(SourceType.GOOGLE_PLACE);
+								placeList.add(place);
+								
+							} else {
+								Logger.Error("");
+							}
+		
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			} else {
+				Logger.Error("");
+			}
+
+			return placeList;
+		 
+	 }
 
 }
