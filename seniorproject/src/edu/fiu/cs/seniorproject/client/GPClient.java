@@ -136,7 +136,7 @@ public class GPClient extends RestClient{
 		if(nextPageToken != null)
 			params.putString("pagetoken", nextPageToken);
 		
-		String url = "https:maps.googleapis.com/maps/api/place/search/json?";
+		String url = "https://maps.googleapis.com/maps/api/place/search/json";
 		String method = "GET";
 		
 		try
@@ -145,6 +145,7 @@ public class GPClient extends RestClient{
 		}catch(IOException e)
 		{
 			Logger.Error("GPClient get next page IOException.");
+			e.printStackTrace();
 		}
 		
 		return result;
