@@ -75,10 +75,10 @@ public class GPClient extends RestClient{
 			params.putString("location", location.getLatitude() + "," + location.getLongitude());
 		if(radius != null)
 			params.putString("radius", radius);
-		
-		if (query!=null) {
+		if (query!=null)
 			params.putString("keyword", query);
-		}
+		if(category != null)
+			params.putString("types", category);
 		
 		String result = null;
 		String url = "https://maps.googleapis.com/maps/api/place/search/json";
@@ -136,7 +136,7 @@ public class GPClient extends RestClient{
 		if(nextPageToken != null)
 			params.putString("pagetoken", nextPageToken);
 		
-		String url = "https:maps.googleapis.com/maps/api/place/search/json?";
+		String url = "https://maps.googleapis.com/maps/api/place/search/json";
 		String method = "GET";
 		
 		try
