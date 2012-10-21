@@ -327,19 +327,36 @@ public class GPProvider extends DataProvider {
 		Place place = null;
 		Location loc = null;
 
+		String categ = category.toString().toLowerCase();
+		
 		String radiusInMeters = String.valueOf( Double.valueOf(radius) * 1609.34 );
-		result = getPlaces(location, getPlaceCategory(category), radiusInMeters, query);
+		result = getPlaces(location,"restaurant" , radiusInMeters, query);
 
 		if (result != null && result.length() > 0) 
 		{
 			try {
 				data = new JSONObject(result);
-				jsonArray = data.getJSONArray("results");
 				
-				if(data.getString("next_page_token") != null)
+				if(data.has("results"))
 				{
-					this.setNextToken(data.getString("next_page_token"));
+					jsonArray = data.getJSONArray("results");
+					
+					Logger.Error("JSON ARRAY: "+jsonArray.toString()+ " category: "+category.toString());
+					
+					if(data.has("next_page_token"))
+					{
+						this.setNextToken(data.getString("next_page_token"));
+					}else
+					{
+						this.setNextToken(null);
+						Logger.Error("Page token empty ");
+					}
 				}
+				else
+				{
+					Logger.Error("Results are empty ");
+				}
+			
 
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -396,14 +413,7 @@ public class GPProvider extends DataProvider {
 							if( eachPlace.getString("reference") != null)
 							{
 								place.setId(eachPlace.getString("reference"));
-							}
-							
-//							String id = eachPlace.getString("id");
-//							
-//							if(id != null)
-//							{
-//								place.setId(id);
-//							}
+							} 
 						
 							place.setLocation(loc);
 							place.setSource(SourceType.GOOGLE_PLACE);
@@ -419,7 +429,7 @@ public class GPProvider extends DataProvider {
 				}
 			}
 		} else {
-			Logger.Error("");
+			Logger.Error("Results empty");
 		}
 
 		return placeList;
@@ -521,9 +531,13 @@ public class GPProvider extends DataProvider {
 					data = new JSONObject(result);
 					jsonArray = data.getJSONArray("results");
 					
-					if(data.getString("next_page_token") != null)
+					if(data.has("next_page_token"))
 					{
 						this.setNextToken(data.getString("next_page_token"));
+					}
+					else
+					{
+						this.setNextToken(null);
 					}
 
 				} catch (JSONException e) {
