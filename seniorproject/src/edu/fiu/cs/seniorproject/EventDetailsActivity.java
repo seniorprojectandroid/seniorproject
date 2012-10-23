@@ -75,7 +75,7 @@ public class EventDetailsActivity extends MapActivity {
     	this.startActivity(intent);
     } 
 
-	private void showEvent(Event event) {
+	public void showEvent(Event event) {
 		
 		if ( event != null ) {
 			TextView name = (TextView)findViewById(R.id.event_name);

@@ -303,7 +303,7 @@ public class EventFullProvider extends DataProvider
 				
 				
 				// set eventlist at place
-				if ( iter.has("events") && iter.isNull("events") )
+				if ( iter.has("events") && !iter.isNull("events") )
 				{
 					JSONObject events = iter.getJSONObject("events");
 					JSONArray jsonEventList = events.getJSONArray("event");

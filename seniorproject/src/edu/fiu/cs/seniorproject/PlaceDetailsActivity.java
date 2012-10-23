@@ -90,7 +90,7 @@ public class PlaceDetailsActivity extends MapActivity {
     	this.startActivity(intent);
     } 
     
-	private void showPlace(Place place) {
+	public void showPlace(Place place) {
 		
 		if ( place != null ) {
 			//create place name.
@@ -172,7 +172,7 @@ public class PlaceDetailsActivity extends MapActivity {
 				
 				}
 			}
-		}	
+		}
 		
 		
 	}// end showPlace
@@ -194,31 +194,15 @@ public class PlaceDetailsActivity extends MapActivity {
 	    					ll.addView(tv);
 	    				}
 	    			}
-//		    		ListView lv = (ListView)findViewById(android.R.id.list);
-//		    		if ( lv != null ) {
-//		    			
-//		    			// create the grid item mapping
-//		    			String[] from = new String[] {"name", "place", "time", "distance" };
-//						int[] to = new int[] { R.id.event_name, R.id.event_place, R.id.event_time, R.id.event_distance };
-//
-//						this.mEventList = this.buildEventMap(eventList);
-//						
-//						SimpleAdapter adapter = new SimpleAdapter(this, this.mEventList, R.layout.event_row, from, to);
-//						lv.setAdapter(adapter);
-//		    			lv.setVisibility(View.VISIBLE);
-//		    		//	lv.setOnItemClickListener(mClickListener);
-//		    		}
+		    		
 		    	} else {
 		    		TextView tv = (TextView)findViewById(android.R.id.empty);
 		    		if ( tv != null ) {
 		    			tv.setVisibility(View.VISIBLE);
 		    		}
-		    	} 		
-	    		
+		    	} 
 	    	
-	}// end showEventList
-	 
-	 
+	}//end showEventList
 	 
 	private class PlaceSearchData {
 		

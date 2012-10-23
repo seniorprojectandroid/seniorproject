@@ -3,6 +3,9 @@ package edu.fiu.cs.seniorproject.data.provider;
 import java.io.IOException;
 //import java.lang.reflect.Array;
 import java.net.MalformedURLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 //import java.util.Iterator;
 import java.util.List;
@@ -297,6 +300,35 @@ public class GPProvider extends DataProvider {
 								place.setWebsite(web);
 							}
 						}
+						
+						if (results.has("events") && !results.isNull("events"))
+						{
+							
+							JSONArray jsonEventList = results.getJSONArray("events");
+							
+							List<Event> myEventList = null;
+							
+							if ( jsonEventList != null && jsonEventList.length() > 0 )
+							{
+								
+								myEventList = new LinkedList<Event>();
+								
+								for( int i = 0; i < jsonEventList.length(); i++ )
+								{
+									JSONObject jsonEvent = jsonEventList.getJSONObject(i);
+									
+									Event event = this.parseEvent(jsonEvent);
+									
+									if ( event != null )
+									{
+										myEventList.add(event);
+									}
+								}// end for
+							}
+							
+							place.setEventsAtPlace(myEventList);
+						}
+							
 					}
 				} else {
 					Logger.Error("parsePlaceDetails: invalid data.");
@@ -314,6 +346,32 @@ public class GPProvider extends DataProvider {
 		return place;
 
 	}
+	
+	
+	private Event parseEvent( JSONObject iter ) {
+		Event event = null;
+		
+		try {
+			if ( iter != null && iter.has("event_id") && iter.has("summary"))
+			{
+				event = new Event();
+				event.setId(iter.getString("event_id"));
+				event.setName(iter.getString("summary"));
+				
+				if ( iter.has("url")&&!iter.getString("url").isEmpty() && !iter.getString("url").equals("null"))
+				{
+					event.setUrl(iter.getString("url"));
+				}
+				
+				
+				event.setSource(SourceType.GOOGLE_PLACE);
+			}
+		} catch ( JSONException e ) {
+			Logger.Warning("exception decoding json from eventful " + e.getMessage() );
+		}
+		return event;
+	}
+	
 
 	@Override
 	public List<Place> getPlaceList(Location location, PlaceCategoryFilter category,
@@ -467,6 +525,15 @@ public class GPProvider extends DataProvider {
 	@Override
 	public SourceType getSource() {
 		return SourceType.GOOGLE_PLACE;
-	}
+	}	 
+	 
+	 protected String getPlaceCategory( PlaceCategoryFilter filter )
+	 {
+		 return filter != null ? String.valueOf(filter.Value()) : null;
+	 }
+	 
+	 protected String getEventCategory( EventCategoryFilter filter ) {
+		 return filter != null ? String.valueOf(filter.Value()) : null;
+	 }
 
 }

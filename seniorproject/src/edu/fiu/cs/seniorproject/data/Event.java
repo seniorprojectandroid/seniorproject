@@ -10,6 +10,7 @@ public class Event
 	private Location location = null;
 	private String image = null;
 	private SourceType source = SourceType.GOOGLE_PLACE;
+	private String url = null;
 	
 	public Event()
 	{
@@ -70,6 +71,14 @@ public class Event
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+	
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.image = url;
 	}
 
 }
