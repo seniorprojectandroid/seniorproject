@@ -1,7 +1,7 @@
 package edu.fiu.cs.seniorproject.data;
 
 public enum EventCategoryFilter {
-	NONE(0),
+	
 	Arts_Crafts(594),
 	Business_Tech(595),
 	Comedy(596),
@@ -15,7 +15,8 @@ public enum EventCategoryFilter {
 	Performing_Arts(604),
 	Shopping(605),
 	Sports_Outdoors(606),
-	Visual_Arts(607);
+	Visual_Arts(607),
+	NONE(0);
 	
 	private final int _value;
 	

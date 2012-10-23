@@ -6,35 +6,93 @@
      <item>10 Miles</item>
      </string-array>
 
-   <string-array name="listValues">
+   <integer-array name="listValues">
      <item>1</item>
      <item>5</item>
      <item>10</item>
-   </string-array>
+   </integer-array>
    
    <string-array name="placescategories">
-     <item>Bars</item>
-     <item>Restaurants</item>
-     <item>Clubs</item>
+     <item>Restaurant Bars</item>
+     <item>Hotel</item>
+     <item>Bakery</item>
+     <item>Dentists</item>
+     <item>Food Sales</item>
+     <item>Gallery Art</item>
+     <item>Liquor Sales</item>
+     <item>Locksmith</item>
+     <item>Parking Garage</item>
+     <item>Parking Lot</item>
+     <item>Parking Lot Provisional</item>
+     <item>Parking Lot Self Parking</item>
+     <item>Parking Lot Temporary</item>
+     <item>Parking Lot Underutilized</item>
+     <item>Parking Lot Valet</item>
+     <item>Pharmacy</item>
+     
      </string-array>
 
    <string-array name="PlacesValues">
-     <item>1</item>
-     <item>2</item>
-     <item>3</item>
+     <item>RESTAURANT_BARS</item>
+     <item>HOTEL</item>
+     <item>BAKERY</item>
+     <item>DENTISTS</item>
+     <item>FOOD_SALES</item>
+     <item>GALLERY_ART</item>
+     <item>LIQUOR_SALES</item>
+     <item>LOCKSMITH</item>
+     <item>PARKING_GARAGE</item>
+     <item>PARKING_LOT</item>
+     <item>PARKING_LOT_PROVISIONAL</item>
+     <item>PARKING_LOT_SELF_PARKING</item>
+     <item>PARKING_LOT_TEMPORARY</item>
+     <item>PARKING_LOT_UNDERUTILIZED</item>
+     <item>PARKING_LOT_VALET</item>
+     <item>PHARMACY</item>
+     
    </string-array>
    
    <string-array name="eventscategories">
-     <item>Art</item>
-     <item>Food</item>
-     <item>Party</item>
+		<item>Arts Crafts</item>
+        <item>Business Tech</item>
+        <item>Comedy</item>
+        <item>Community</item>
+        <item>Dance</item>
+        <item>Education Campus</item>
+        <item>Fairs Festivals</item>
+        <item>Food Dining</item>
+        <item>Music</item>
+        <item>Other</item>
+        <item>Performing Arts</item>
+        <item>Shopping</item>
+        <item>Sports Outdoors</item>
+        <item>Visual Arts</item>
      </string-array>
 
    <string-array name="EventsValues">
-     <item>1</item>
-     <item>2</item>
-     <item>3</item>
+		<item>Arts Crafts</item>
+        <item>Business Tech</item>
+        <item>Comedy</item>
+        <item>Community</item>
+        <item>Dance</item>
+        <item>Education Campus</item>
+        <item>Fairs Festivals</item>
+        <item>Food Dining</item>
+        <item>Music</item>
+        <item>Other</item>
+        <item>Performing Arts</item>
+        <item>Shopping</item>
+        <item>Sports Outdoors</item>
+        <item>Visual Arts</item>
    </string-array>   
    
-   
+    <string-array name="time_filters">
+        <item>NOME</item>
+        <item>TODAY</item>
+        <item>THIS WEEK</item>
+        <item>THIS WEEKEND</item>
+        <item>NEXT WEEKEND</item>
+        <item>NEXT 30 DAYS</item>
+    </string-array>
+    
  </resources>

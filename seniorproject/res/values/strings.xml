@@ -42,4 +42,7 @@
     <string name= "place_image">PlaceImage</string>
 	<string name="places">Places</string>
 	<string name="empty_result">No Result</string>
+	<string name="empty_events">No Events</string>
+	<string name="directions">Directions</string>
+	<string name="navigation">Navigation</string>
 </resources>

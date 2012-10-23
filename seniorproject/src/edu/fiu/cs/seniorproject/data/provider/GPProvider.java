@@ -3,9 +3,7 @@ package edu.fiu.cs.seniorproject.data.provider;
 import java.io.IOException;
 //import java.lang.reflect.Array;
 import java.net.MalformedURLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Hashtable;
 import java.util.LinkedList;
 //import java.util.Iterator;
 import java.util.List;
@@ -31,10 +29,141 @@ public class GPProvider extends DataProvider {
 
 	private GPClient gpClient;
 
+	private String nextPageToken = null;
+	
+	Hashtable<String,String> categories = null;
 	public GPProvider() {
 		this.gpClient = new GPClient(AppConfig.GOOGLE_PLACE_APP_ID);
+		this.categories =  new Hashtable<String,String>();
 	}
 
+	private String getCategory(String category)
+	{
+		if(!this.getCategories().containsKey(category))
+			Logger.Error("this category: " + category + " does not exist.");
+		
+		
+		return this.getCategories().get(category);
+	}
+	
+	private Hashtable<String,String> getCategories()
+	{
+		this.categories.put(PlaceCategoryFilter.RESTAURANT_BARS.toString(), "restaurant");
+		this.categories.put(PlaceCategoryFilter.HOTEL.toString(), "lodging");
+		this.categories.put(PlaceCategoryFilter.BAKERY.toString(), "bakery");
+		this.categories.put(PlaceCategoryFilter.DENTISTS.toString(), "dentist");
+		this.categories.put(PlaceCategoryFilter.FOOD_SALES.toString(), "food");
+		this.categories.put(PlaceCategoryFilter.GALLERY_ART.toString(), "art_gallery");
+		this.categories.put(PlaceCategoryFilter.LIQUOR_SALES.toString(), "liquor_store");
+		this.categories.put(PlaceCategoryFilter.LOCKSMITH.toString(), "locksmith");
+		this.categories.put(PlaceCategoryFilter.PARKING_GARAGE.toString(), "parking");
+		this.categories.put(PlaceCategoryFilter.PARKING_LOT.toString(), "parking");
+		this.categories.put(PlaceCategoryFilter.PARKING_LOT_PROVISIONAL.toString(), "parking");
+		this.categories.put(PlaceCategoryFilter.PARKING_LOT_SELF_PARKING.toString(), "parking");
+		this.categories.put(PlaceCategoryFilter.PARKING_LOT_TEMPORARY.toString(), "parking");
+		this.categories.put(PlaceCategoryFilter.PARKING_LOT_UNDERUTILIZED.toString(), "parking");
+		this.categories.put(PlaceCategoryFilter.PARKING_LOT_VALET.toString(), "parking");
+		this.categories.put(PlaceCategoryFilter.PHARMACY.toString(), "pharmacy");
+		
+		return this.categories;
+	}
+	
+	//accounting
+	//airport
+	//amusement_park
+	//aquarium
+	//art_gallery
+	//atm
+	//bakery
+	//bank
+	//bar
+	//beauty_salon
+	//bicycle_store
+	//book_store
+	//bowling_alley
+	//bus_station
+	//cafe
+	//campground
+	//car_dealer
+	//car_rental
+	//car_repair
+	//car_wash
+	//casino
+	//cemetery
+	//church
+	//city_hall
+	//clothing_store
+	//convenience_store
+	//courthouse
+	//dentist
+	//department_store
+	//doctor
+	//electrician
+	//electronics_store
+	//embassy
+	//establishment
+	//finance
+	//fire_station
+	//florist
+	//food
+	//funeral_home
+	//furniture_store
+	//gas_station
+	//general_contractor
+	//grocery_or_supermarket
+	//gym
+	//hair_care
+	//hardware_store
+	//health
+	//hindu_temple
+	//home_goods_store
+	//hospital
+	//insurance_agency
+	//jewelry_store
+	//laundry
+	//lawyer
+	//library
+	//liquor_store
+	//local_government_office
+	//locksmith
+	//lodging
+	//meal_delivery
+	//meal_takeaway
+	//mosque
+	//movie_rental
+	//movie_theater
+	//moving_company
+	//museum
+	//night_club
+	//painter
+	//park
+	//parking
+	//pet_store
+	//pharmacy
+	//physiotherapist
+	//place_of_worship
+	//plumber
+	//police
+	//post_office
+	//real_estate_agency
+	//restaurant
+	//roofing_contractor
+	//rv_park
+	//school
+	//shoe_store
+	//shopping_mall
+	//spa
+	//stadium
+	//storage
+	//store
+	//subway_station
+	//synagogue
+	//taxi_stand
+	//train_station
+	//travel_agency
+	//university
+	//veterinary_care
+	//zoo
 	@Override
 	public Event getEventDetails(String eventId, String reference) {
 		JSONObject data = null;
@@ -84,9 +213,7 @@ public class GPProvider extends DataProvider {
 		event.setSource(SourceType.GOOGLE_PLACE);
 		
 		return event;
-
 	}
-
 
 
 	@Override
@@ -385,20 +512,42 @@ public class GPProvider extends DataProvider {
 		Place place = null;
 		Location loc = null;
 
+		String categ = this.getCategory(category.toString());
+		
 		String radiusInMeters = String.valueOf( Double.valueOf(radius) * 1609.34 );
-		result = getPlaces(location, getPlaceCategory(category), radiusInMeters, query);
+		result = getPlaces(location, categ, radiusInMeters, query);
 
 		if (result != null && result.length() > 0) 
 		{
 			try {
 				data = new JSONObject(result);
-				jsonArray = data.getJSONArray("results");
+				
+				if(data.has("results"))
+				{
+					jsonArray = data.getJSONArray("results");
+					
+					Logger.Error("JSON ARRAY: "+jsonArray.toString()+ " category: "+category.toString());
+					
+					if(data.has("next_page_token"))
+					{
+						this.setNextToken(data.getString("next_page_token"));
+					}else
+					{
+						this.setNextToken(null);
+						Logger.Error("Page token empty ");
+					}
+				}
+				else
+				{
+					Logger.Error("Results are empty ");
+				}
+			
 
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 			if(jsonArray != null && jsonArray.length() > 0)
-			{
+			{	
 				for (int i = 0; i < jsonArray.length(); i++) 
 				{
 					place = new Place();
@@ -449,14 +598,7 @@ public class GPProvider extends DataProvider {
 							if( eachPlace.getString("reference") != null)
 							{
 								place.setId(eachPlace.getString("reference"));
-							}
-							
-//							String id = eachPlace.getString("id");
-//							
-//							if(id != null)
-//							{
-//								place.setId(id);
-//							}
+							} 
 						
 							place.setLocation(loc);
 							place.setSource(SourceType.GOOGLE_PLACE);
@@ -472,7 +614,7 @@ public class GPProvider extends DataProvider {
 				}
 			}
 		} else {
-			Logger.Error("");
+			Logger.Error("Results empty");
 		}
 
 		return placeList;
@@ -516,6 +658,15 @@ public class GPProvider extends DataProvider {
 
 		return result;
 	}
+	
+	private String getNextPlaces(String nextPageToken)
+	{
+		String results = null;
+		
+		results = this.gpClient.getNextPlaces(nextPageToken);
+		
+		return results;
+	}
 
 	@Override
 	public boolean supportEvents() {
@@ -534,6 +685,134 @@ public class GPProvider extends DataProvider {
 	 
 	 protected String getEventCategory( EventCategoryFilter filter ) {
 		 return filter != null ? String.valueOf(filter.Value()) : null;
+	}
+	
+	public String getNextToken()
+	{
+		return this.nextPageToken;
+	}
+	
+	public void setNextToken(String nextPageToken)
+	{
+		this.nextPageToken = nextPageToken;
+	}
+	
+	 public List<Event> getNextEventPage() {
+		 return null;
+	 }
+	 
+	 public List<Place> getNextPlacePage() 
+	 {
+		 	LinkedList<Place> placeList = new LinkedList<Place>();
+		 	
+		 	String result = null;
+			JSONObject data = null;
+			JSONArray jsonArray = null;
+			JSONObject eachPlace = null;
+			Place place = null;
+			Location loc = null;
+			
+		 	if(this.getNextToken() != null)
+		 		result = this.getNextPlaces(this.getNextToken());
+
+			if (result != null && result.length() > 0) 
+			{
+				try {
+					data = new JSONObject(result);
+					jsonArray = data.getJSONArray("results");
+					
+					if(data.has("next_page_token"))
+					{
+						this.setNextToken(data.getString("next_page_token"));
+					}
+					else
+					{
+						this.setNextToken(null);
+					}
+
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				if(jsonArray != null && jsonArray.length() > 0)
+				{	
+					for (int i = 0; i < jsonArray.length(); i++) 
+					{
+						place = new Place();
+						loc = new Location();
+		
+						try {
+							eachPlace = jsonArray.getJSONObject(i);
+		
+							if (eachPlace != null && eachPlace.has("reference") ) 
+							{
+								
+								if(eachPlace.has("vicinity") && eachPlace.getString("vicinity") != null)
+								{
+									loc.setAddress(eachPlace.getString("vicinity"));	
+								}
+								
+
+								JSONObject geometry = eachPlace.getJSONObject("geometry");
+								
+								if(geometry != null && geometry.has("location"))
+								{
+									JSONObject ltn = geometry.getJSONObject("location");
+									
+									if(ltn != null && ltn.has("lat") && ltn.has("lng"))
+									{
+										String latitude = ltn.getString("lat");
+										
+										if(latitude != null)
+										{
+											loc.setLatitude(latitude);
+										}
+										
+										String longitude = ltn.getString("lng");
+										
+										if(longitude != null)
+										{
+											loc.setLongitude(longitude);
+										}
+									}
+									
+								}
+								
+								if(eachPlace.has("name") && eachPlace.getString("name") != null)
+								{
+									place.setName(eachPlace.getString("name"));
+								}
+								
+								if( eachPlace.getString("reference") != null)
+								{
+									place.setId(eachPlace.getString("reference"));
+								}
+								
+//								String id = eachPlace.getString("id");
+//								
+//								if(id != null)
+//								{
+//									place.setId(id);
+//								}
+							
+								place.setLocation(loc);
+								place.setSource(SourceType.GOOGLE_PLACE);
+								placeList.add(place);
+								
+							} else {
+								Logger.Error("");
+							}
+		
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			} else {
+				Logger.Error("");
+			}
+
+			return placeList;
+		 
 	 }
 
 }

@@ -3,9 +3,6 @@ package edu.fiu.cs.seniorproject;
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-
 import java.util.List;
 
 import com.google.android.maps.GeoPoint;
@@ -24,8 +21,10 @@ import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
+import edu.fiu.cs.seniorproject.utils.Logger;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -33,15 +32,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.support.v4.app.NavUtils;
-import android.text.format.DateFormat;
 
 public class PlaceDetailsActivity extends MapActivity {
-	
+	private Place currentPlace = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,9 +85,44 @@ public class PlaceDetailsActivity extends MapActivity {
     	this.startActivity(intent);
     } 
     
+    public void onDirectionsClick(View view) {
+    	Logger.Debug("On direction click");
+    	if ( this.currentPlace != null && this.currentPlace.getLocation() != null ) {
+    		android.location.Location currentLocation = AppLocationManager.getCurrentLocation();
+    	
+    		if ( currentLocation != null ) {
+    			String uri = "http://maps.google.com/maps?saddr=" + currentLocation.getLatitude() +
+    					"," + currentLocation.getLongitude() + 
+    					"&daddr=" + this.currentPlace.getLocation().getLatitude() +
+    					"," + this.currentPlace.getLocation().getLongitude();
+    			Logger.Debug("Uri = " + uri);
+    			
+    			Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+    			this.startActivity(intent);
+    		}
+    	}
+    }
+    
+    public void onNavigationClick(View view) {
+    	Logger.Debug("On navigation click");
+    	if ( this.currentPlace != null && this.currentPlace.getLocation() != null ) {
+    		android.location.Location currentLocation = AppLocationManager.getCurrentLocation();
+    	
+    		if ( currentLocation != null ) {
+    			String uri = "google.navigation:q=" + this.currentPlace.getLocation().getLatitude() +
+    					"," + this.currentPlace.getLocation().getLongitude();
+    			Logger.Debug("Uri = " + uri);
+    			
+    			Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+    			this.startActivity(intent);
+    		}
+    	}
+    }
+    
 	public void showPlace(Place place) {
 		
 		if ( place != null ) {
+			this.currentPlace = place;
 			//create place name.
 			TextView name = (TextView)findViewById(R.id.place_name);
 			if ( name != null ) {
@@ -164,13 +194,7 @@ public class PlaceDetailsActivity extends MapActivity {
 		    		}
 				}
 				
-				
-				if(place.getEventsAtPlace() != null)
-				{
-					List<Event> events = place.getEventsAtPlace();	
-					showEventList(events);
-				
-				}
+				showEventList(place.getEventsAtPlace());
 			}
 		}
 		
@@ -178,31 +202,27 @@ public class PlaceDetailsActivity extends MapActivity {
 	}// end showPlace
 	
 	 private void showEventList( List<Event> eventList ) {
-	    	
-	    		
-	    		if ( eventList != null && eventList.size() > 0 ) {
-	    			
-	    			LinearLayout ll = (LinearLayout)findViewById(android.R.id.list);
-	    			
-	    			if(ll!= null)
-	    			{
-	    				for(int i = 0; i < eventList.size(); i ++)
-	    				{
-	    					Event event = eventList.get(i);
-	    					TextView tv = new TextView(this);
-	    					tv.setText(event.getName());
-	    					ll.addView(tv);
-	    				}
-	    			}
-		    		
-		    	} else {
-		    		TextView tv = (TextView)findViewById(android.R.id.empty);
-		    		if ( tv != null ) {
-		    			tv.setVisibility(View.VISIBLE);
-		    		}
-		    	} 
-	    	
-	}//end showEventList
+
+		TextView tv = (TextView)findViewById(android.R.id.empty);
+		if ( eventList != null && eventList.size() > 0 ) {
+			
+			tv.setVisibility(View.GONE);
+			LinearLayout ll = (LinearLayout)findViewById(android.R.id.list);
+			
+			if(ll!= null)
+			{
+				for(int i = 0; i < eventList.size(); i ++)
+				{
+					Event event = eventList.get(i);
+					tv = new TextView(this);
+					tv.setText(event.getName());
+					ll.addView(tv);
+				}
+			}
+    	} else {
+    		tv.setVisibility(View.VISIBLE);
+    	} 
+	}// end showEventList
 	 
 	private class PlaceSearchData {
 		
