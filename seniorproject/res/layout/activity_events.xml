@@ -96,8 +96,7 @@
                     android:layout_margin="10dp"
                     android:layout_height="wrap_content" />
             </TableRow>           
-        </TableLayout>
-
+        </TableLayout>
         <Button
             android:id="@+id/filter_ok"
             android:layout_width="wrap_content"

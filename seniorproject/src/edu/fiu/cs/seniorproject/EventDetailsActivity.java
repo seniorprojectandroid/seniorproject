@@ -2,17 +2,30 @@ package edu.fiu.cs.seniorproject;
 
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Dialog;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.support.v4.app.NavUtils;
 import android.text.format.DateFormat;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -21,16 +34,25 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
+import edu.fiu.cs.seniorproject.data.CalendarEvent;
 import edu.fiu.cs.seniorproject.data.Event;
 import edu.fiu.cs.seniorproject.data.Location;
+import edu.fiu.cs.seniorproject.data.MbGuideDB;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
 
-import android.os.AsyncTask;
-
 public class EventDetailsActivity extends MapActivity {
+	
 
+	final static String TAG = "Miami Beach Guide";
+	CalendarEvent calendar = null;
+	ArrayList<CalendarEvent> calendarList = new  ArrayList<CalendarEvent>();
+	Event eventToCalendar = null;
+	ArrayList<String> createdEventsList = new ArrayList<String>();
+	//Map<String, Long> createdEvents= new HashMap<String, Long>();
+	MbGuideDB eventDB  = new MbGuideDB(this);; 
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,15 +95,27 @@ public class EventDetailsActivity extends MapActivity {
     public void onSettingsClick(MenuItem view) {
     	Intent intent = new Intent(this, SettingsActivity.class);
     	this.startActivity(intent);
-    } 
+    }
+    
+    public void onAddEventToCalendarClick(MenuItem view) {
+    	addEventToCalendarAndDB();
+    }
+    
+    public void onDeleteEventFromCalendarAndDBClick(MenuItem view) { 	  	
+    	
+    	deleteEventToCalendarAndDB();
+    }
+    
 
 	private void showEvent(Event event) {
 		
 		if ( event != null ) {
+			eventToCalendar = event;
 			TextView name = (TextView)findViewById(R.id.event_name);
 			if ( name != null ) {
 				name.setText(event.getName());
 			}
+			
 			
 			TextView description = (TextView)findViewById(R.id.event_description);
 			if ( description != null ) {
@@ -91,6 +125,7 @@ public class EventDetailsActivity extends MapActivity {
 			TextView time = (TextView)findViewById(R.id.event_time);
 			if ( time != null ) {
 				time.setText(DateFormat.format("EEEE, MMMM dd, h:mmaa", Long.valueOf( event.getTime() ) * 1000 ).toString());
+                
 			}
 			 
 			if ( event.getImage() != null && !event.getImage().isEmpty() ) {
@@ -152,7 +187,285 @@ public class EventDetailsActivity extends MapActivity {
 		}
 	}
 
-	private class EventSearchData {
+	public void addEventToCalendarAndDB()
+	{
+		String eName = eventToCalendar.getName();		
+		int commaIndex = eName.indexOf(',');		
+    	//int atIndex = eName.indexOf("at");    	
+    	int atLastIndex = eName.lastIndexOf("at");    	
+    	String eLocation = eName.substring(0, commaIndex);    	
+    	eLocation = eName.substring(atLastIndex+3);    	
+    	String eventNameOnly = eName.substring(0,commaIndex);
+    	eventNameOnly = eventNameOnly.trim(); 
+
+		//int duration = Toast.LENGTH_LONG;
+
+    	try{   	
+        	eventDB.openDatabase();   
+        	boolean exists = eventDB.existsVersion3(eventNameOnly); 
+        	 if(exists)
+             {         		  
+		        	Dialog d2 = new Dialog(this);
+		        	d2.setTitle("This Event is already in your Event List!");
+		        	TextView tv2 = new TextView(this);
+		        	tv2.setText("TRUE!");
+		        	d2.show();
+             }
+        	 
+        	 else{
+            
+     			listCalendars();       
+     	        if(calendarList.get(0)!= null)
+     	        {	    
+     	        	long startTimeInMilliseconds = Long.valueOf(eventToCalendar.getTime())* 1000;//startDate.getTimeInMillis();
+     		        long endTimeInMilliseconds = Long.valueOf(eventToCalendar.getTime())* 1000;//endDate.getTimeInMillis();	    		        
+     		        long createdCalendarEventID = createEventToCalendar(calendarList.get(0).getCalendarId(),eventNameOnly,TAG, eLocation, startTimeInMilliseconds,  endTimeInMilliseconds );           
+     		     //this VERSION IS NOT YET USED
+			         eventDB.createEventRecordVersion2(eventNameOnly, createdCalendarEventID, eLocation, startTimeInMilliseconds,  endTimeInMilliseconds);	    
+     			        	//eventDB.createEventRecord(eventNameOnly, createdCalendarEventID, eLocation);		  
+     			     Dialog d = new Dialog(this);
+     			     d.setTitle("New Event Added to your Event List!");
+     		     	 TextView tv = new TextView(this);
+     			     tv.setText("FALSE!");
+     			     d.show();   			        	
+     			        	
+     	        }
+             }       	 
+        	
+  	        eventDB.closeDatabase();  	        
+    	}catch(Exception ex)
+    	{   
+    		ex.printStackTrace();    		
+    	}
+	}
+	
+	public void deleteEventToCalendarAndDB()
+	{
+		//probably return the event name 
+		
+		// Two things
+		// 1. Delete the event from the calendar
+		// 2. Set its event_is_deleted_flag in DB to 1
+		//maybe find a way that by only deleting the even from calendar, you set the flag automatically
+		String eNameClean = this.getEventNameOnly();
+		try{   	
+        	eventDB.openDatabase();   
+        	
+        	
+        	long eID = eventDB.getEventCalendarID(eNameClean);
+        	
+        	if(eID >=0 )
+        	{
+        		deleteEventFromCalendar(eID);
+        		int result = eventDB.deleteEvent(eID);
+        		
+        	//boolean exists = eventDB.existsVersion3(eventNameOnly); 
+        		if(result>0)
+        		{
+        			Dialog d2 = new Dialog(this);
+		        	d2.setTitle("Event deleted "+eNameClean+ " from your Event List!");
+		        	TextView tv2 = new TextView(this);
+		        	tv2.setText("TRUE!");
+		        	d2.show();
+		        }
+        		else
+        		{
+        			 Dialog d = new Dialog(this);
+     			     d.setTitle("Event NOT deleted "+eNameClean+ " from your Event List!");
+     		     	 TextView tv = new TextView(this);
+     			     tv.setText("FALSE!");
+     			     d.show();
+        		}
+        	}
+        	else
+        	{
+             
+			     //    eventDB.createEventRecordVersion2(eventNameOnly, createdCalendarEventID, eLocation, startTimeInMilliseconds,  endTimeInMilliseconds);	    
+     			        	//eventDB.createEventRecord(eventNameOnly, createdCalendarEventID, eLocation);		  
+     			     Dialog d = new Dialog(this);
+     			     d.setTitle("Event NOT deleted "+eNameClean+ " from your Event List!");
+     		     	 TextView tv = new TextView(this);
+     			     tv.setText("FALSE!");
+     			     d.show();  
+        	}  			        	
+     			        	
+     	        
+                 	 
+        	
+  	        eventDB.closeDatabase();  	        
+    	}catch(Exception ex)
+    	{   
+    		ex.printStackTrace();    		
+    	}
+		
+		
+		
+	}
+	
+	private void listCalendars(){
+	        String[] returnColumns = new String[] {
+	            CalendarContract.Calendars._ID,                     // 0
+	            CalendarContract.Calendars.ACCOUNT_NAME,            // 1
+	            CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,   // 2
+	            CalendarContract.Calendars.ACCOUNT_TYPE             // 3
+	        };
+
+	        Cursor cursor = null;
+	        ContentResolver cr = getContentResolver();
+
+	        // Call query to get all rows from the Calendars table
+	        cursor = cr.query(CalendarContract.Calendars.CONTENT_URI, returnColumns, null, null, null);
+
+	        while (cursor.moveToNext()) {
+	            long calID = 0;
+	            String displayName = null;
+	            String accountName = null;
+	            String accountType = null;
+
+	            // Get the field values
+	            calID = cursor.getLong(0);
+	            displayName = cursor.getString(1);
+	            accountName = cursor.getString(2);
+	            accountType = cursor.getString(3);
+	            
+	            //Create a MyCalendar Object and add to the Calendar List
+	            
+	            calendarList.add(new CalendarEvent(calID, displayName, accountName, accountType ));
+	            
+//	            Log.i(TAG, String.format("ID=%d  Display=%s  Account=%s  Type=%s",
+//	                    calID, displayName, accountName, accountType));
+	        }
+
+	        cursor.close();
+	    }
+	
+	
+	
+	
+	// Method to add an event to a Calendar
+	 
+	 private long createEventToCalendar(long calendarID, String title, String description, String location, long startMilliseconds, long endMilliseconds) //, Calendar startDate, Calendar endDate
+	 {
+	        long eventID = -1;        
+	        ContentResolver cr = getContentResolver();
+
+	        // Populate content values	    
+	        ContentValues values = new ContentValues();
+	        values.put(CalendarContract.Events.CALENDAR_ID, calendarID);
+	        values.put(CalendarContract.Events.TITLE, title);
+	        values.put(CalendarContract.Events.DESCRIPTION, description);
+	        values.put(CalendarContract.Events.EVENT_LOCATION, location);
+	        values.put(CalendarContract.Events.DTSTART, startMilliseconds);
+	        values.put(CalendarContract.Events.DTEND, endMilliseconds);
+	        values.put(CalendarContract.Events.EVENT_TIMEZONE, "US/Eastern");	  
+
+	        // Call insert and get the returned ID
+	        Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+	        eventID = ContentUris.parseId(uri);
+	        
+	        return eventID;
+	        
+	  }
+	 
+	 private void deleteEventFromCalendar(long eCalendarID)
+	 {		 
+		 if(isCalendarEventDeleted(eCalendarID))
+		 {
+			 //do not deleted because the event is already deleted
+			 Log.i(TAG, String.format("Event was already deleted"));
+		 }
+		 else
+		 {
+			 ContentResolver cr = getContentResolver();
+			 // Set the event URI
+		     Uri uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eCalendarID);
+			 int rows = cr.delete(uri, null, null);
+			 Log.i(TAG, String.format("Event ID:%d  |  Rows Deleted:%d", eCalendarID, rows));			 
+		 }        
+
+	   }
+	 
+	  private boolean isCalendarEventDeleted(long eCalID) {
+	        String[] EVENT_PROJECTION = new String[] {
+	            CalendarContract.Events._ID,                     // 0
+	            CalendarContract.Events.TITLE,                   // 1
+	            CalendarContract.Events.DELETED                  // 2
+	        };
+	        // Assure that deleted flag is not set
+	        String queryFilter = CalendarContract.Events.DELETED + " = ?";
+	        String[] queryFilterValues = {"0"};
+
+	        Cursor cur = null;
+	        ContentResolver cr = getContentResolver();
+	        Uri uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eCalID);
+	        cur = cr.query(uri, EVENT_PROJECTION, queryFilter, queryFilterValues, null);
+
+	        // Use the cursor to step through the returned records
+	        if (cur.moveToNext()) {
+	        	
+	        	cur.close();
+	        	return false;
+//	            long returnedEventID = cur.getLong(0);
+//	            String title = cur.getString(1);
+//	            int isDeleted = cur.getInt(2);
+
+	           // Log.i(TAG, String.format("[NOT DELETED] Event ID=%d  Title=%s  Is Deleted:%d", returnedEventID, title, isDeleted));
+	        }
+	        else 
+	        {
+	        	cur.close();
+	        	return true;
+	            //Log.i(TAG, String.format("[DELETED]Event ID=%d", eventID));
+	        	
+	        }
+	        
+	    }
+	  
+	  private String getEventNameOnly()
+	  {
+		  String eName = eventToCalendar.getName();		
+			int commaIndex = eName.indexOf(',');		
+	    //	int atIndex = eName.indexOf("at");    	
+	    //	int atLastIndex = eName.lastIndexOf("at");    	
+	    	//String eLocation = eName.substring(0, commaIndex);    	
+	    //	eLocation = eName.substring(atLastIndex+3);    	
+	    	String eventNameOnly = eName.substring(0,commaIndex);
+	    	eventNameOnly = eventNameOnly.trim();
+	    	
+	    	return eventNameOnly;
+	  }
+	 
+	 
+	 
+	  private void findEvent(long eventID) {
+	        String[] EVENT_PROJECTION = new String[] {
+	            CalendarContract.Events._ID,                     // 0
+	            CalendarContract.Events.TITLE,                   // 1
+	            CalendarContract.Events.DELETED                  // 2
+	        };
+
+	        Cursor cur = null;
+	        ContentResolver cr = getContentResolver();
+	        Uri uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
+	        
+	        
+	        cur = cr.query(uri, EVENT_PROJECTION, null, null, null);
+
+	        // Use the cursor to step through the returned records
+	        if (cur.moveToNext()) {
+	            long returnedEventID = cur.getLong(0);
+	            String title = cur.getString(1);
+	            int isDeleted = cur.getInt(2);
+
+	            Log.i(TAG, String.format("Event ID=%d  Title=%s  Is Deleted:%d", returnedEventID, title, isDeleted));
+	        }
+
+	        cur.close();
+	    }
+	 
+
+	private class EventSearchData
+	{
 		public EventSearchData(String id, SourceType sourceType) {
 			this.eventId = id;
 			this.source = sourceType;

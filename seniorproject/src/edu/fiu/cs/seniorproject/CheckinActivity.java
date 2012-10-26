@@ -31,6 +31,7 @@ public class CheckinActivity extends Activity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkin);
+       
         
         Intent intent = getIntent();
         final String latitude = intent != null ? intent.getStringExtra("latitude") : null;
