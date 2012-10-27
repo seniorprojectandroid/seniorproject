@@ -1,5 +1,4 @@
 <resources>
-
     <string name="app_name">Miami Beach Guide</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
@@ -52,6 +51,7 @@
     <string name="my_places">My Places</string>
     <string name="title_activity_my_events">MyEventsActivity</string>
     <string name="title_activity_my_places">MyPlacesActivity</string>
-  
-
+	<string name="empty_events">No Events</string>
+	<string name="directions">Directions</string>
+	<string name="navigation">Navigation</string>
 </resources>

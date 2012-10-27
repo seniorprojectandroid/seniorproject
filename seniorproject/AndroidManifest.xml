@@ -22,7 +22,6 @@
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -64,10 +63,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.fiu.cs.seniorproject.EventsActivity" />
         </activity>
+
         <activity android:name="EventsMapViewActivity" >
         </activity>
+        
         <activity android:name="LoginActivity" >
         </activity>
+        
         <activity
             android:name=".PlacesActivity"
             android:label="@string/title_activity_places" >
@@ -96,25 +98,18 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.fiu.cs.seniorproject.MainActivity" />
         </activity>
+        
         <activity android:name="CalendarActivity" >
         </activity>
+        
         <activity
             android:name=".MyEventsActivity"
             android:label="@string/title_activity_my_events" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
+        
         <activity
             android:name=".MyPlacesActivity"
             android:label="@string/title_activity_my_places" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

@@ -300,6 +300,37 @@ public class EventFullProvider extends DataProvider
 				{
 					place.setDescription(iter.getString("description"));
 				}
+				
+				
+				// set eventlist at place
+				if ( iter.has("events") && !iter.isNull("events") )
+				{
+					JSONObject events = iter.getJSONObject("events");
+					JSONArray jsonEventList = events.getJSONArray("event");
+					
+					List<Event> myEventList = null;
+					
+					if ( jsonEventList != null && jsonEventList.length() > 0 )
+					{
+						
+						myEventList = new LinkedList<Event>();
+						
+						for( int i = 0; i < jsonEventList.length(); i++ )
+						{
+							JSONObject jsonEvent = jsonEventList.getJSONObject(i);
+							
+							Event event = this.parseEvent(jsonEvent);
+							
+							if ( event != null )
+							{
+								myEventList.add(event);
+							}
+						}// end for
+					}
+					
+					place.setEventsAtPlace(myEventList);
+				}// end if
+				
 			}
 		} catch (JSONException e ) {
 			place = null;
@@ -365,286 +396,7 @@ public class EventFullProvider extends DataProvider
 
 
 
-/////// http://api.evdb.com/json/events/get?app_key=HrsPRcW3W49b6hZq&id=E0-001-000278174-6
+//http://api.eventful.com/json/venues/get?app_key=HrsPRcW3W49b6hZq&id=V0-001-000104270-1
 
+//http://api.eventful.com/rest/venues/get?app_key=HrsPRcW3W49b6hZq&id=V0-001-000104270-1
 
-//public class EventFullProvider extends DataProvider
-//{
-//	private EventfulRestClient myRestClient = null;
-//		
-//	 public EventFullProvider()
-//	 {
-//		 this.myRestClient = new EventfulRestClient(AppConfig.EVENTFUL_APP_ID);
-//	 }// EventFullProvider
-//	 
-//	 public List<Event> getEventList(Location location, String category, String radius, String query ) 
-//	 {
-//		 Event myEvent = null;   
-//		 List<Event> myEventList = new LinkedList<Event>();
-//		 String myListRequestClient = this.myRestClient.getEventList(query, new Location("32.746682","-117.162741"), null, category,10); // ojo con el signature
-//		 
-////		DocumentBuilder db = null;
-////		
-////		try { db = DocumentBuilderFactory.newInstance().newDocumentBuilder(); } 
-////		catch (ParserConfigurationException e1) { e1.printStackTrace();	}
-////		
-////	    InputSource is = new InputSource();
-////	    is.setCharacterStream(new StringReader(myListRequestClient));
-////
-////	    Document doc = null;
-////		try { doc = db.parse(is);} 
-////		catch (SAXException e) { e.printStackTrace(); } 
-////		catch (IOException e) {	e.printStackTrace(); }
-////		
-////	    NodeList nodes = doc.getElementsByTagName("events");
-////	    
-////	    for (int i = 0; i < nodes.getLength(); i++)
-////	    {
-////	    	myEvent = new Event();    	
-////	    	Element element = (Element) nodes.item(i);	    	
-////	    	// Set the event values
-////	    	this.setEvent(element, myEvent);   	
-////	        // Add myEvent to the list
-////	        myEventList.add(myEvent);
-////	    }// end for		 
-//		 				 
-//		 return myEventList;
-//		 
-//	 }// getEventList 
-//	
-//	 
-//	 public Event getEventDetails(String eventId)
-//	 {
-//		 String myEventXml = this.myRestClient.getEventDetails(eventId);
-//		 
-//		 DocumentBuilder db = null;		 
-//			
-//		try { db = DocumentBuilderFactory.newInstance().newDocumentBuilder(); } 
-//		catch (ParserConfigurationException e1) { e1.printStackTrace();	}
-//		
-//	    InputSource is = new InputSource();
-//	    is.setCharacterStream(new StringReader(myEventXml));
-//
-//	    Document doc = null;
-//		try { doc = db.parse(is);} 
-//		catch (SAXException e) { e.printStackTrace(); } 
-//		catch (IOException e) {	e.printStackTrace(); }			
-//		
-//		NodeList nodes = doc.getElementsByTagName("events");    
-//		
-//		Event myEvent = new Event();    	
-//    	Element element = (Element) nodes.item(0);   
-//    	// Set the event values
-//    	this.setEvent(element, myEvent);   	
-//	 
-//        return myEvent;
-//	        
-//	 }// getEventDetails 
-//	 
-//	 public List<Place> getPlaceList(Location location, String category, String radius, String query)
-//	 {
-//		
-//		Place myPlace = null;   
-//		List<Place> myListPlace = new LinkedList<Place>();
-//		String myListRequestClient = this.myRestClient.getPlaceList(query, location, 10, 10, 10);
-//		
-//		DocumentBuilder db = null;		 
-//		
-//		try { db = DocumentBuilderFactory.newInstance().newDocumentBuilder(); } 
-//		catch (ParserConfigurationException e1) { e1.printStackTrace();	}
-//		
-//	    InputSource is = new InputSource();
-//	    is.setCharacterStream(new StringReader(myListRequestClient));
-//
-//	    Document doc = null;
-//		try { doc = db.parse(is);} 
-//		catch (SAXException e) { e.printStackTrace(); } 
-//		catch (IOException e) {	e.printStackTrace(); }
-//		
-//	    NodeList nodes = doc.getElementsByTagName("venues");
-//	    
-//	    for (int i = 0; i < nodes.getLength(); i++)
-//	    {
-//	    	myPlace = new Place();  	
-//	    	Element element = (Element) nodes.item(i);	    	
-//	    	// Set the place values
-//	    	this.setPlace(element, myPlace);   	
-//	        // Add myPlace to the list
-//	    	myListPlace.add(myPlace);
-//	    }// end for	
-//		 
-//		 return myListPlace;
-//	 }// getPlaceList
-//	 
-//	 
-//	 public Place getPlaceDetails(String placeId)
-//	 {
-//		 		 
-//		 String myEventXml = this.myRestClient.getPlaceDetails(placeId);		 
-//		 DocumentBuilder db = null;		 
-//			
-//		 try { db = DocumentBuilderFactory.newInstance().newDocumentBuilder(); } 
-//		 catch (ParserConfigurationException e1) { e1.printStackTrace(); }
-//		
-//	     InputSource is = new InputSource();
-//	     is.setCharacterStream(new StringReader(myEventXml));
-//
-//	     Document doc = null;
-//		 try { doc = db.parse(is);} 
-//		 catch (SAXException e) { e.printStackTrace(); } 
-//		 catch (IOException e) {	e.printStackTrace(); }			
-//		
-//		 NodeList nodes = doc.getElementsByTagName("venue");    
-//		
-//		 Place myPlace = new Place();    	
-//    	 Element element = (Element) nodes.item(0);   
-//    	// Set the place values
-//    	 this.setPlace(element, myPlace);         
-//		 
-//		 return myPlace;
-//	 }// getEventDetails
-//	 
-//	 @Override
-//	public Place getPlaceDetails(String placeId, String reference) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public SourceType getSource() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//	 
-//	 
-//	// helper to set the event values
-//	 private void setEvent( Element element, Event myEvent)
-//	 {
-//		// Set event name
-//        NodeList name = ((Document) element).getElementsByTagName("title");
-//        Element line = (Element) name.item(0);        
-//        myEvent.setName(getCharacterDataFromElement(line));
-//        
-//        // Set event time
-//        NodeList time = ((Document) element).getElementsByTagName("start_time");
-//        line = (Element) time.item(0);
-//        myEvent.setTime(getCharacterDataFromElement(line));
-//        
-//        // Set event description
-//        NodeList desscription = ((Document) element).getElementsByTagName("description");
-//        line = (Element) desscription.item(0);
-//        myEvent.setDescription(getCharacterDataFromElement(line));
-//        
-//        // Create Location Object
-//        Location mylacation = new Location();
-//    	//get latitude
-//        NodeList nlatitude = ((Document) element).getElementsByTagName("latitude");
-//        line = (Element) nlatitude.item(0);	        
-//        mylacation.setLatitude(getCharacterDataFromElement(line));
-//        //get longitude
-//        NodeList nlongitude = ((Document) element).getElementsByTagName("longitude");
-//        line = (Element) nlongitude.item(0);	        
-//        mylacation.setLongitude(getCharacterDataFromElement(line));
-//        
-//        //String to hold the address
-//        StringBuilder myAddress = new StringBuilder(110);
-//        //get the address
-//        NodeList naddress = ((Document) element).getElementsByTagName("venue_address");
-//        line = (Element) naddress.item(0);	        
-//        myAddress.append(getCharacterDataFromElement(line)+","); 
-//        //get the city
-//        NodeList city = ((Document) element).getElementsByTagName("city_name");
-//        line = (Element) city.item(0);	        
-//        myAddress.append(getCharacterDataFromElement(line)+",");	        
-//        //get the region
-//        NodeList region = ((Document) element).getElementsByTagName("region_abbr");
-//        line = (Element) region.item(0);	        
-//        myAddress.append(getCharacterDataFromElement(line)+","); 
-//        //get the region
-//        NodeList cPostal = ((Document) element).getElementsByTagName("postal_code");
-//        line = (Element) cPostal.item(0);	        
-//        myAddress.append(getCharacterDataFromElement(line)+"."); 
-//        //set address
-//        mylacation.setAddress(myAddress.toString());
-//        
-//        // Set myEvent Location
-//        myEvent.setLocation(mylacation);	        
-//        // Set myEvent source
-//        myEvent.setSource(SourceType.EVENTFUL);	
-//	 }// end setEvent
-// 
-//	// helper to set the event values
-//	 private void setPlace( Element element, Place myPlace)
-//	 {
-//		// Set place id
-//        NodeList id = ((Document) element).getElementsByTagName("venue id");
-//        Element line = (Element) id.item(0);        
-//        myPlace.setId(getCharacterDataFromElement(line));
-//        
-//        // Set place name
-//        NodeList name = ((Document) element).getElementsByTagName("venue_name");
-//        line = (Element) name.item(0);
-//        myPlace.setName(getCharacterDataFromElement(line)); 
-//       
-//        // Create Location Object
-//        Location mylacation = new Location();
-//    	//get latitude
-//        NodeList nlatitude = ((Document) element).getElementsByTagName("latitude");
-//        line = (Element) nlatitude.item(0);	        
-//        mylacation.setLatitude(getCharacterDataFromElement(line));
-//        //get longitude
-//        NodeList nlongitude = ((Document) element).getElementsByTagName("longitude");
-//        line = (Element) nlongitude.item(0);	        
-//        mylacation.setLongitude(getCharacterDataFromElement(line));
-//        
-//        //String to hold the address
-//        StringBuilder myAddress = new StringBuilder(110);
-//        //get the address
-//        NodeList naddress = ((Document) element).getElementsByTagName("venue_address");
-//        line = (Element) naddress.item(0);	        
-//        myAddress.append(getCharacterDataFromElement(line)+","); 
-//        //get the city
-//        NodeList city = ((Document) element).getElementsByTagName("city_name");
-//        line = (Element) city.item(0);	        
-//        myAddress.append(getCharacterDataFromElement(line)+",");	        
-//        //get the region
-//        NodeList region = ((Document) element).getElementsByTagName("region_abbr");
-//        line = (Element) region.item(0);	        
-//        myAddress.append(getCharacterDataFromElement(line)+","); 
-//        //get the region
-//        NodeList cPostal = ((Document) element).getElementsByTagName("postal_code");
-//        line = (Element) cPostal.item(0);	        
-//        myAddress.append(getCharacterDataFromElement(line)+"."); 
-//        //set address
-//        mylacation.setAddress(myAddress.toString());
-//        
-//        //set location to myPlace
-//        myPlace.setLocation(mylacation);
-//        
-//        // Set place description
-//        NodeList desscription = ((Document) element).getElementsByTagName("description");
-//        line = (Element) desscription.item(0);
-//        myPlace.setDescription(getCharacterDataFromElement(line));
-//        
-//        // Set place description
-//        NodeList url = ((Document) element).getElementsByTagName("url");
-//        line = (Element) url.item(0);
-//        myPlace.setWebsite(getCharacterDataFromElement(line));
-//        
-//        // see reference
-//        
-//	 }// end setEvent
-//	 
-//	 // helper method
-//	 private static String getCharacterDataFromElement(Element e) 
-//	 {
-//	    Node child = ((Node) e).getFirstChild();
-//	    if (child instanceof CharacterData)
-//	    {
-//	      CharacterData cd = (CharacterData) child;
-//	      return cd.getData();
-//	    }
-//	    return "";
-//	 }// end getCharacterDataFromElement	
-//	 
-//}// EventFullProvider

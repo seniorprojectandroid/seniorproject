@@ -2,12 +2,17 @@ package edu.fiu.cs.seniorproject;
 
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
+
 import java.util.List;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
+
+
+import edu.fiu.cs.seniorproject.data.Event;
+
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
@@ -16,18 +21,23 @@ import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
+import edu.fiu.cs.seniorproject.utils.Logger;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.support.v4.app.NavUtils;
 
 public class PlaceDetailsActivity extends MapActivity {
-
+	private Place currentPlace = null;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +54,7 @@ public class PlaceDetailsActivity extends MapActivity {
         	
         	(new PlaceDownloader(this)).execute(new PlaceSearchData(placeId, source));
         }
+
     }
 
     @Override
@@ -74,9 +85,44 @@ public class PlaceDetailsActivity extends MapActivity {
     	this.startActivity(intent);
     } 
     
-	private void showPlace(Place place) {
+    public void onDirectionsClick(View view) {
+    	Logger.Debug("On direction click");
+    	if ( this.currentPlace != null && this.currentPlace.getLocation() != null ) {
+    		android.location.Location currentLocation = AppLocationManager.getCurrentLocation();
+    	
+    		if ( currentLocation != null ) {
+    			String uri = "http://maps.google.com/maps?saddr=" + currentLocation.getLatitude() +
+    					"," + currentLocation.getLongitude() + 
+    					"&daddr=" + this.currentPlace.getLocation().getLatitude() +
+    					"," + this.currentPlace.getLocation().getLongitude();
+    			Logger.Debug("Uri = " + uri);
+    			
+    			Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+    			this.startActivity(intent);
+    		}
+    	}
+    }
+    
+    public void onNavigationClick(View view) {
+    	Logger.Debug("On navigation click");
+    	if ( this.currentPlace != null && this.currentPlace.getLocation() != null ) {
+    		android.location.Location currentLocation = AppLocationManager.getCurrentLocation();
+    	
+    		if ( currentLocation != null ) {
+    			String uri = "google.navigation:q=" + this.currentPlace.getLocation().getLatitude() +
+    					"," + this.currentPlace.getLocation().getLongitude();
+    			Logger.Debug("Uri = " + uri);
+    			
+    			Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+    			this.startActivity(intent);
+    		}
+    	}
+    }
+    
+	public void showPlace(Place place) {
 		
 		if ( place != null ) {
+			this.currentPlace = place;
 			//create place name.
 			TextView name = (TextView)findViewById(R.id.place_name);
 			if ( name != null ) {
@@ -147,10 +193,37 @@ public class PlaceDetailsActivity extends MapActivity {
 		    			mc.setZoom(17);
 		    		}
 				}
+				
+				showEventList(place.getEventsAtPlace());
 			}
 		}
-	}
+		
+		
+	}// end showPlace
+	
+	 private void showEventList( List<Event> eventList ) {
 
+		TextView tv = (TextView)findViewById(android.R.id.empty);
+		if ( eventList != null && eventList.size() > 0 ) {
+			
+			tv.setVisibility(View.GONE);
+			LinearLayout ll = (LinearLayout)findViewById(android.R.id.list);
+			
+			if(ll!= null)
+			{
+				for(int i = 0; i < eventList.size(); i ++)
+				{
+					Event event = eventList.get(i);
+					tv = new TextView(this);
+					tv.setText(event.getName());
+					ll.addView(tv);
+				}
+			}
+    	} else {
+    		tv.setVisibility(View.VISIBLE);
+    	} 
+	}// end showEventList
+	 
 	private class PlaceSearchData {
 		
 		public String id;
@@ -184,4 +257,4 @@ public class PlaceDetailsActivity extends MapActivity {
 			}
 	    }
 	}
-}
+}// end PlaceDetailActivity

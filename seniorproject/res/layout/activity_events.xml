@@ -53,7 +53,7 @@
                     android:id="@+id/category_spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:entries="@array/event_categories" />
+                    android:entries="@array/eventscategories" />
             </TableRow>
 
             <TableRow

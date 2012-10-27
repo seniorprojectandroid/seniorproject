@@ -65,6 +65,50 @@
 	        android:layout_marginTop="20dp"
 	        android:text="@string/places" />
 	    
+	     <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:id="@android:id/list"
+	        android:layout_marginTop="10dp" >
+		   
+		    
+		    <TextView
+		        android:id="@android:id/empty"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_marginRight="10dp"
+		        android:text="@string/empty_events"
+		        android:textColor="#f00"
+		        android:textStyle="italic" />
+	
+		</LinearLayout>
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="2dp"
+	        android:layout_marginLeft="6dp"
+	        android:layout_marginRight="6dp"
+	        android:orientation="horizontal" >
+
+	        <Button
+	            android:id="@+id/directions"
+	            style="?android:attr/buttonStyleSmall"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:onClick="onDirectionsClick"
+	            android:text="@string/directions" />
+
+	        <Button
+	            android:id="@+id/navigation"
+	            style="?android:attr/buttonStyleSmall"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:onClick="onNavigationClick"
+	            android:text="@string/navigation" />
+		    
+		</LinearLayout>
+		
 	    <com.google.android.maps.MapView
 	        xmlns:android="http://schemas.android.com/apk/res/android"
 	        android:id="@+id/mapview"
@@ -73,5 +117,8 @@
 	        android:layout_margin="8dp"        
 	        android:apiKey="0f7bvw0dRHCH9_Amp0WBvAXmnY95nxeUVef3zHg"
 	        android:clickable="false" />
+	    
+	    
+	   
 	</LinearLayout>
 </ScrollView>

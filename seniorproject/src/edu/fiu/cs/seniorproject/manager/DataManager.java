@@ -36,7 +36,7 @@ public class DataManager {
 	private static DataManager mSingleton = null;
 	
 	private DataManager() {
-		// register all the provider
+		//register all the provider
 		mProviderList.add(new MBVCAProvider());
 		mProviderList.add(new GPProvider());
 		mProviderList.add(new EventFullProvider());
@@ -74,8 +74,14 @@ public class DataManager {
 	}
 	
 	public ConcurrentEventListLoader getConcurrentEventList(Location location, EventCategoryFilter category, String radius, String query, DateFilter date) {
-		ConcurrentEventListLoader loader = new ConcurrentEventListLoader();
+		ConcurrentEventListLoader loader = new ConcurrentEventListLoader(false);
 		loader.execute(location, category, radius, query, date);
+		return loader;
+	}
+	
+	public ConcurrentEventListLoader getConcurrentNextEventList() {
+		ConcurrentEventListLoader loader = new ConcurrentEventListLoader(true);
+		loader.execute(null, null, null, null, null);
 		return loader;
 	}
 	
@@ -110,8 +116,15 @@ public class DataManager {
 	
 	public ConcurrentPlaceListLoader getConcurrentPlaceList(Location location, PlaceCategoryFilter category, String radius, String query) {
 		Logger.Debug("get concurrent place list");
-		ConcurrentPlaceListLoader loader = new ConcurrentPlaceListLoader();
+		ConcurrentPlaceListLoader loader = new ConcurrentPlaceListLoader(false);
 		loader.execute(location, category, radius, query);
+		return loader;
+	}
+	
+	public ConcurrentPlaceListLoader getConcurrentNextPlaceList() {
+		Logger.Debug("get concurrent place list");
+		ConcurrentPlaceListLoader loader = new ConcurrentPlaceListLoader(true);
+		loader.execute(null, null, null, null);
 		return loader;
 	}
 	
@@ -189,7 +202,10 @@ public class DataManager {
 		private final List<FutureTask<List<Place>>> mTaskList = new ArrayList<FutureTask<List<Place>>>(mProviderList.size());
 		private final BlockingQueue<List<Place>> mResultQueue = new ArrayBlockingQueue<List<Place>>(mProviderList.size());
 		
-		private ConcurrentPlaceListLoader() {
+		private boolean useNextPage = false;
+		
+		private ConcurrentPlaceListLoader( boolean useNext ) {
+			this.useNextPage = useNext;
 		}
 		
 		protected void execute(final Location location, final PlaceCategoryFilter category, final String radius, final String query) {
@@ -204,7 +220,7 @@ public class DataManager {
 							public List<Place> call() throws Exception {
 								List<Place> list = null;
 								try {
-									list = provider.getPlaceList(location, category, radius, query);
+									list = useNextPage ? provider.getNextPlacePage() : provider.getPlaceList(location, category, radius, query);
 								} catch (Exception e) {
 									list = null;
 									Logger.Error("Exception getting event list from provider " + e.getMessage());
@@ -272,7 +288,10 @@ public class DataManager {
 		private final List<FutureTask<List<Event>>> mTaskList = new ArrayList<FutureTask<List<Event>>>( mProviderList.size() );
 		private final BlockingQueue<List<Event>> mResultQueue = new ArrayBlockingQueue<List<Event>>(mProviderList.size());
 		
-		private ConcurrentEventListLoader() {			
+		private boolean useNextPage = false;
+		
+		private ConcurrentEventListLoader( boolean useNext ) {
+			this.useNextPage = useNext;
 		}
 		
 		protected void execute(final Location location, final EventCategoryFilter category, final String radius, final String query, final DateFilter date) {
@@ -287,7 +306,7 @@ public class DataManager {
 							public List<Event> call() throws Exception {
 								List<Event> list = null;
 								try {
-									list = provider.getEventList(location, category, radius, query, date);
+									list = useNextPage ? provider.getNextEventPage() : provider.getEventList(location, category, radius, query, date);
 								} catch (Exception e) {
 									list = null;
 									Logger.Error("Exception getting event list from provider " + e.getMessage());
