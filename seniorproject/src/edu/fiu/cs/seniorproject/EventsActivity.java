@@ -60,6 +60,7 @@ public class EventsActivity extends FilterActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.pull_in_from_bottom, R.anim.hold);
         setContentView(R.layout.activity_events);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         AppLocationManager.init(this);
@@ -92,6 +93,7 @@ public class EventsActivity extends FilterActivity {
     protected void onPause() {
     	mPendingEventList = null;
     	this.isInForeground = false;
+    	overridePendingTransition(R.anim.hold, R.anim.pull_out_to_bottom);
     	super.onPause();
     }
     

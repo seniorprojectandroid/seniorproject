@@ -57,6 +57,7 @@ public class EventDetailsActivity extends MapActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.pull_in_from_bottom, R.anim.hold);
         setContentView(R.layout.activity_event_details);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         
@@ -76,6 +77,11 @@ public class EventDetailsActivity extends MapActivity {
         return true;
     }
 
+    @Override
+    protected void onPause() {
+    	overridePendingTransition(R.anim.hold, R.anim.pull_out_to_bottom);
+    	super.onPause();
+    }
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
