@@ -4,16 +4,13 @@
         android:orderInCategory="100"
         android:showAsAction="never" />
     
-    
-       <item android:id="@+id/add_to_calendar2"
+    <item android:id="@+id/add_to_calendar"
         android:orderInCategory="100"
-        android:onClick="onAddEventToCalendarClick2"
-         android:title="@string/add_to_calendar"        
+        android:title="@string/add_to_calendar"        
         android:showAsAction="never" />
         
-          <item android:id="@+id/delete_from_calendar2"
+    <item android:id="@+id/delete_from_calendar"
         android:orderInCategory="100"
-        android:onClick="onDeleteEventFromCalendarAndDBClick2"
-         android:title="@string/delete_from_calendar"        
+        android:title="@string/delete_from_calendar"        
         android:showAsAction="never" />
 </menu>

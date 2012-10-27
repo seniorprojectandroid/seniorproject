@@ -92,6 +92,16 @@ public class GeoLocationActivity extends MapActivity {
     }
     
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                this.onSettingsClick(item);
+                return true;            
+        }
+        return super.onOptionsItemSelected(item);
+    }  
+    
+    @Override
     protected boolean isRouteDisplayed() {
         return false;
     }

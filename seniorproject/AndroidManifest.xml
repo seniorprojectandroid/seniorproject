@@ -64,10 +64,16 @@
                 android:value="edu.fiu.cs.seniorproject.EventsActivity" />
         </activity>
 
-        <activity android:name="EventsMapViewActivity" >
+        <activity android:name=".EventsMapViewActivity" android:label="@string/events_map_button" >
+             <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.EventsActivity" />
         </activity>
         
-        <activity android:name="LoginActivity" >
+        <activity android:name=".LoginActivity" android:label="@string/mb_login" >
+             <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.MainActivity" />
         </activity>
         
         <activity
@@ -99,17 +105,26 @@
                 android:value="edu.fiu.cs.seniorproject.MainActivity" />
         </activity>
         
-        <activity android:name="CalendarActivity" >
+        <activity android:name=".CalendarActivity" android:label="@string/calendar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.MainActivity" />
         </activity>
         
         <activity
             android:name=".MyEventsActivity"
             android:label="@string/title_activity_my_events" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.MainActivity" />
         </activity>
         
         <activity
             android:name=".MyPlacesActivity"
             android:label="@string/title_activity_my_places" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.MainActivity" />
         </activity>
     </application>
 

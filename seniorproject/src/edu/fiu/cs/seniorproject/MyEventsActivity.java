@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -58,8 +59,22 @@ public class MyEventsActivity extends ListActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
+            case R.id.menu_settings:
+                this.onSettingsClick(item);
+                return true;
+            case R.id.add_to_calendar:
+            	this.onAddEventToCalendarClick2(item);
+            	return true;
+            case R.id.delete_from_calendar:
+            	this.onDeleteEventFromCalendarAndDBClick2(item);
+            	return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    
+    public void onSettingsClick(MenuItem view) {
+    	Intent intent = new Intent(this, SettingsActivity.class);
+    	this.startActivity(intent);
     }
     
     public void onAddEventToCalendarClick2(MenuItem view) {

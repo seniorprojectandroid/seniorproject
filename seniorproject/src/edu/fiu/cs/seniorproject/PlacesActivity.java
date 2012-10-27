@@ -125,6 +125,19 @@ public class PlacesActivity extends FilterActivity {
         return true;
     }
     
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                this.onSettingsClick(item);
+                return true;
+            case R.id.map_menuitem:
+            	this.onPlacesMapClick(item);
+            	return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }  
+    
     public void onPlacesMapClick( MenuItem menuItem)
     {
     	this.showPlacesInMapView();

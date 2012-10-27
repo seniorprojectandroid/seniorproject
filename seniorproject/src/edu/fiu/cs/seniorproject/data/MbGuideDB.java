@@ -19,11 +19,11 @@ public class MbGuideDB
 	
 	// Database Tables
 	private static final String EVENT_TABLE_NAME = "Event";
-	private static final String TEST_TABLE_NAME = "Test";
-	private static final String PLACE_TABLE_NAME = "Place";
-	private static final String CATEGORY_TABLE_NAME = "Categoty";
-	private static final String LOCATION_TABLE_NAME = "Location";
-	private static final String USER_PREFFERENCES_TABLE_NAME = "User_Prefferences";
+	//private static final String TEST_TABLE_NAME = "Test";
+	//private static final String PLACE_TABLE_NAME = "Place";
+	//private static final String CATEGORY_TABLE_NAME = "Categoty";
+	//private static final String LOCATION_TABLE_NAME = "Location";
+	//private static final String USER_PREFFERENCES_TABLE_NAME = "User_Prefferences";
 	
 	// Event table	
 	public static final String EVENT_ID = "event_id";
@@ -259,20 +259,20 @@ public class MbGuideDB
 									EVENT_IS_EXPIRED_FLAG + " INTEGER DEFAULT (0), "+ 
 									EVENT_PLACE_ID  + " INTEGER );";
 		
-		private static final String createPlaceTableQuery = "CREATE TABLE " + PLACE_TABLE_NAME + " ( " +
-								
-								PLACE_NAME + " TEXT PRIMARY KEY, " +
-								PLACE_CATEGORY_ID + " INTEGER, "+ 	
-								PLACE_CATEGORY_DESCRIPTION  + " TEXT, "+ 
-								PLACE_TIME_OPENS + " INTEGER, "+ 
-								PLACE_TIME_CLOSES + " INTEGER, "+ 
-								PLACE_IS_DELETED_FLAG + " INTEGER DEFAULT (0), "+ 
-								PLACE_HAS_EVENT_FLAG + " INTEGER DEFAULT (0), "+ 
-								PLACE_EVENT_ID + " INTEGER, " +
-								"FOREIGN KEY(PLACE_EVENT_ID) REFERENCES " + 
-										 PLACE_TABLE_NAME + "(EVENT_PLACE_ID) );";								
-								
-		
+//		private static final String createPlaceTableQuery = "CREATE TABLE " + PLACE_TABLE_NAME + " ( " +
+//								
+//								PLACE_NAME + " TEXT PRIMARY KEY, " +
+//								PLACE_CATEGORY_ID + " INTEGER, "+ 	
+//								PLACE_CATEGORY_DESCRIPTION  + " TEXT, "+ 
+//								PLACE_TIME_OPENS + " INTEGER, "+ 
+//								PLACE_TIME_CLOSES + " INTEGER, "+ 
+//								PLACE_IS_DELETED_FLAG + " INTEGER DEFAULT (0), "+ 
+//								PLACE_HAS_EVENT_FLAG + " INTEGER DEFAULT (0), "+ 
+//								PLACE_EVENT_ID + " INTEGER, " +
+//								"FOREIGN KEY(PLACE_EVENT_ID) REFERENCES " + 
+//										 PLACE_TABLE_NAME + "(EVENT_PLACE_ID) );";								
+//								
+//		
 
 				 
 		public MbGuideHelper(Context context) 

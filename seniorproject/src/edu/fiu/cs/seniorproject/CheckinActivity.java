@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -72,6 +73,21 @@ public class CheckinActivity extends Activity {
         getMenuInflater().inflate(R.menu.activity_checkin, menu);
         return true;
     }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                this.onSettingsClick(item);
+                return true;            
+        }
+        return super.onOptionsItemSelected(item);
+    }  
+    
+    public void onSettingsClick(MenuItem view) {
+    	Intent intent = new Intent(this, SettingsActivity.class);
+    	this.startActivity(intent);
+    } 
     
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)

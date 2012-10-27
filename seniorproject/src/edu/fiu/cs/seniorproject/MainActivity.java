@@ -4,6 +4,7 @@ package edu.fiu.cs.seniorproject;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -13,15 +14,23 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-        
-             
     }
 
-    //@Override
-   // public boolean onCreateOptionsMenu(Menu menu) {
-     //   getMenuInflater().inflate(R.menu.activity_main, menu);
-       // return true;
-    //}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main, menu);
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                this.onSettingsClick(item);
+                return true;            
+        }
+        return super.onOptionsItemSelected(item);
+    }
     
     public void onFacebookLoginButtonClick(View view) {
     	Intent intent = new Intent(this, FacebookLoginActivity.class);

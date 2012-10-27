@@ -83,6 +83,15 @@ public class EventDetailsActivity extends MapActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
+            case R.id.menu_settings:
+                this.onSettingsClick(item);
+                return true;  
+            case R.id.add_to_calendar:
+                this.onAddEventToCalendarClick(item);
+                return true;  
+            case R.id.delete_from_calendar:
+                this.onDeleteEventFromCalendarAndDBClick(item);
+                return true;  
         }
         return super.onOptionsItemSelected(item);
     }
@@ -471,8 +480,8 @@ public class EventDetailsActivity extends MapActivity {
 	    	return eventNameOnly;
 	  }
 	 
-	 
-	 
+	 /*
+	 uncomment when needed
 	  private void findEvent(long eventID) {
 	        String[] EVENT_PROJECTION = new String[] {
 	            CalendarContract.Events._ID,                     // 0
@@ -498,7 +507,7 @@ public class EventDetailsActivity extends MapActivity {
 
 	        cur.close();
 	    }
-	 
+	 */
 
 	private class EventSearchData
 	{

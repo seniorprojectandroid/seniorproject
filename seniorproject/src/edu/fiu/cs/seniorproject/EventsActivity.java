@@ -131,7 +131,13 @@ public class EventsActivity extends FilterActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
-                return true;            
+                return true;  
+            case R.id.map_menuitem:
+            	this.onEventsMapClick(item);
+            	return true;
+            case R.id.menu_settings:
+                this.onSettingsClick(item);
+                return true;    
         }
         return super.onOptionsItemSelected(item);
     }  

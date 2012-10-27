@@ -70,6 +70,9 @@ public class PlaceDetailsActivity extends MapActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
+            case R.id.menu_settings:
+                this.onSettingsClick(item);
+                return true; 
         }
         return super.onOptionsItemSelected(item);
     }
