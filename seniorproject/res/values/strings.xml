@@ -55,4 +55,7 @@
 	<string name="directions">Directions</string>
 	<string name="navigation">Navigation</string>
 	<string name="calendar">Calendar</string>
+	<string name="title_activity_personalization">Personalize your App!!!</string>
+	<string name="interest_prompt">Select Your Interest</string>
+    <string name="distance_prompt">Select Radius (Miles)</string>
 </resources>
