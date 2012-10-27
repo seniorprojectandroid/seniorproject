@@ -257,22 +257,25 @@ public class MBVCAProvider extends DataProvider
 		try {
 			JSONObject eventsObject = new JSONObject(events);
 			
-			if ( eventsObject != null && eventsObject.has("solodev_view") && !eventsObject.isNull("solodev_view")) {
-				JSONArray eventList = eventsObject.getJSONArray("solodev_view");
-				
-				if ( eventList != null && eventList.length() > 0 ) {
+			JSONArray eventList = null;
+			if ( eventsObject != null && eventsObject.has("Events") && !eventsObject.isNull("Events")) {
+				eventList = eventsObject.getJSONArray("Events");
+			} else if ( eventsObject != null && eventsObject.has("solodev_view") && !eventsObject.isNull("solodev_view")) {
+				eventList = eventsObject.getJSONArray("solodev_view");
+			}
+			
+			if ( eventList != null && eventList.length() > 0 ) {
+				result = new LinkedList<Event>();
+				for( int i = 0; i < eventList.length(); i++ ) {
+					JSONObject iter = eventList.getJSONObject(i);
+					Event event = this.parseEvent(iter);
 					
-					result = new LinkedList<Event>();
-					for( int i = 0; i < eventList.length(); i++ ) {
-						JSONObject iter = eventList.getJSONObject(i);
-						Event event = this.parseEvent(iter);
-						
-						if ( event != null ) {
-							result.add(event);
-						}
+					if ( event != null ) {
+						result.add(event);
 					}
 				}
 			}
+			
 		} catch (JSONException e) {
 			Logger.Debug("events = " + events);
 			Logger.Error("Exception decoding json object in MBVCA " + e.getMessage());
