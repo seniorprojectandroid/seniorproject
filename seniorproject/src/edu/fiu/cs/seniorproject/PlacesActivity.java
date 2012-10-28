@@ -40,6 +40,7 @@ public class PlacesActivity extends FilterActivity {
 	private PlacesLoader mPlacesLoader = null;
 	private List<Hashtable<String, String>> mPlaceList = null;
 	private SimpleAdapter listAdapter = null;
+	private Button loadMoreButton = null;
 	
 	private final OnItemClickListener mClickListener = new OnItemClickListener() 
 	{
@@ -73,6 +74,7 @@ public class PlacesActivity extends FilterActivity {
     	if ( lv != null ) {
     		Button button = new Button(this);
     		button.setText("Load More");
+    		this.loadMoreButton = button; 
     		button.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -257,10 +259,16 @@ public class PlacesActivity extends FilterActivity {
 		return placeList;
     }
     
-    private void onDoneLoadingPlaces() {
+    private void onDoneLoadingPlaces(int total) {
     	findViewById(android.R.id.list).setVisibility( mPlaceList != null ? View.VISIBLE : View.GONE);
 		findViewById(android.R.id.empty).setVisibility(mPlaceList == null ? View.VISIBLE : View.GONE);
 		findViewById(android.R.id.progress).setVisibility(View.GONE);
+		
+		if(total == 0)
+		{
+			this.loadMoreButton.setText("no more places!!!");
+			this.loadMoreButton.setEnabled(false);
+		}
     }
     
     private void getSearchFilters() {
@@ -346,7 +354,7 @@ public class PlacesActivity extends FilterActivity {
 		protected void onPostExecute(Integer total) {
 			Logger.Debug("Total records = " + total );	
 			if ( !this.isCancelled() && mActivityReference != null && mActivityReference.get() != null ) {
-				mActivityReference.get().onDoneLoadingPlaces();
+				mActivityReference.get().onDoneLoadingPlaces(total);
 			}
 		}
     }
