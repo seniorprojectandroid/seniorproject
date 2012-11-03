@@ -30,63 +30,49 @@ public class EventFullProvider extends DataProvider
 	
 	private final static String IMAGE_BASE_URL = "http://www.eventful.com";	
 	
-		
+	private int currentPage = 1;
+	private Location currentLocation = null;
+	private String currentRadius = null;
+	private DateFilter currentDateFilter = null;
+	private EventCategoryFilter currentEventCategory = null;
+	private PlaceCategoryFilter currentPlaceFilter = null;
+	
 	 public EventFullProvider()
 	 {
 		 this.myRestClient = new EventfulRestClient(AppConfig.EVENTFUL_APP_ID);
-	 }// EventFullProvider
+	 }
 	 
-	 public List<Event> getEventList(Location location, EventCategoryFilter category, String radius, String query, DateFilter date ) 
-	 {
+	@Override
+	public List<Event> getEventList(Location location, EventCategoryFilter category, String radius, String query, DateFilter date ) 
+	{
+		this.currentPage = 1;
+		this.currentLocation = location;
+		this.currentEventCategory = category;
+		this.currentRadius = radius;
+		this.currentDateFilter = date;
+			
 		 List<Event> myEventList = null;
-		 String myListRequestClient = this.myRestClient.getEventList(query, location, getDatesFromFilter(date), getEventCategory(category), (int)Math.ceil(Double.valueOf(radius))); 
+		 String myListRequestClient = this.myRestClient.getEventList(query, location, getDatesFromFilter(date), getEventCategory(category), (int)Math.ceil(Double.valueOf(radius)), 1, this.eventPageSize ); 
 		 if ( myListRequestClient != null && !myListRequestClient.isEmpty() )
 		 {
-				try {
-					JSONObject eventsObject = new JSONObject(myListRequestClient);
-					if ( eventsObject != null && eventsObject.has("events") && !eventsObject.isNull("events") )
-					{
-						JSONObject events = eventsObject.getJSONObject("events");
-						
-						if ( events != null && events.has("event") && !events.isNull("event")) {
-							JSONArray jsonEventList = null;
-							
-							try {
-								jsonEventList = events.getJSONArray("event");
-							} catch (JSONException e) {
-								jsonEventList = new JSONArray();
-								jsonEventList.put(events.getJSONObject("event"));
-							}
-							
-							if ( jsonEventList != null && jsonEventList.length() > 0 )
-							{
-								
-								myEventList = new LinkedList<Event>();
-								
-								for( int i = 0; i < jsonEventList.length(); i++ )
-								{
-									JSONObject iter = jsonEventList.getJSONObject(i);
-									
-									Event event = this.parseEvent(iter);
-									if ( event != null ) {
-										myEventList.add(event);
-									}
-								}
-							}
-						}
-					}
-				}
-				catch (JSONException e)
-				{
-					Logger.Error("Exception decoding json object in MBVCA " );
-					e.printStackTrace();
-				}
+				myEventList = this.parseEventList(myListRequestClient);
 		 }
 		 return myEventList;
-	 }// getEventList 
+	}
 	
-	 
-	 @Override
+	@Override
+	public List<Event> getNextEventPage() {
+		this.currentPage++;
+		List<Event> myEventList = null;
+		 String myListRequestClient = this.myRestClient.getEventList(null, this.currentLocation, getDatesFromFilter(this.currentDateFilter), getEventCategory(this.currentEventCategory), (int)Math.ceil(Double.valueOf(this.currentRadius)), this.currentPage, this.eventPageSize); 
+		 if ( myListRequestClient != null && !myListRequestClient.isEmpty() )
+		 {
+				myEventList = this.parseEventList(myListRequestClient);
+		 }
+		 return myEventList;
+	}
+	
+	@Override
 	public Event getEventDetails(String eventId, String reference) {
 		String eventStr = this.myRestClient.getEventDetails(eventId);
 		
@@ -107,64 +93,42 @@ public class EventFullProvider extends DataProvider
 		return event;
 	}
 	 
-	 public List<Place> getPlaceList(Location location, PlaceCategoryFilter category, String radius, String query)
-	 {	
+	@Override
+	public List<Place> getPlaceList(Location location, PlaceCategoryFilter category, String radius, String query)
+	{	
+		this.currentPage = 1;
+		this.currentLocation = location;
+		this.currentPlaceFilter = category;
+		this.currentRadius = radius;
 		
 		List<Place> myPlaceList = null;
 		
 		String keywords = query != null ? query : this.getPlaceCategory(category);
-		String myListRequestClient = this.myRestClient.getPlaceList(keywords, location, 0, 0, Integer.valueOf(radius) );
+		String myListRequestClient = this.myRestClient.getPlaceList(keywords, location, this.placePageSize, 1, Integer.valueOf(radius) );
 		
 		if ( myListRequestClient != null && !myListRequestClient.isEmpty() )
-		 {
-				try {
-					JSONObject placesObject = new JSONObject(myListRequestClient);
-					if ( placesObject != null && placesObject.has("venues") && !placesObject.isNull("venues"))
-					{
-						JSONObject venues = placesObject.getJSONObject("venues");
-						JSONArray jsonPlaceList = null;// ? venues.getJSONArray("venue") : null;
-					
-						if (venues != null && venues.has("venue") && !venues.isNull("venue") ) {
-							try {
-								jsonPlaceList = venues.getJSONArray("venue");
-							} catch (JSONException e ) {
-								// try to get an object
-								JSONObject aux = venues.getJSONObject("venue");
-								if ( aux != null ) {
-									jsonPlaceList = new JSONArray();
-									jsonPlaceList.put(aux);
-								}
-							}
-						}
-						
-						if ( jsonPlaceList != null && jsonPlaceList.length() > 0 )
-						{
-							
-							myPlaceList = new LinkedList<Place>();
-							
-							for( int i = 0; i < jsonPlaceList.length(); i++ )
-							{
-								JSONObject iter = jsonPlaceList.getJSONObject(i);
-								
-								Place place = this.parsePlace(iter);
-								if ( place != null ) {
-									myPlaceList.add(place);
-								}
-							}
-						}
-					}
-				}
-				catch (JSONException e)
-				{
-					Logger.Error("Exception decoding json object in MBVCA " );
-					e.printStackTrace();
-				}
-		 }		
-		 
-		 return myPlaceList;
-	 }// getPlaceList
+		{
+			myPlaceList = this.parsePlaceList(myListRequestClient);
+		}
+		return myPlaceList;
+	}
 	
-	 @Override
+	@Override
+	public List<Place> getNextPlacePage() {
+		this.currentPage++;
+		List<Place> myPlaceList = null;
+		
+		String keywords = this.getPlaceCategory( this.currentPlaceFilter);
+		String myListRequestClient = this.myRestClient.getPlaceList(keywords, this.currentLocation, this.placePageSize, this.currentPage, Integer.valueOf(this.currentRadius) );
+		
+		if ( myListRequestClient != null && !myListRequestClient.isEmpty() )
+		{
+			myPlaceList = this.parsePlaceList(myListRequestClient);
+		}
+		return myPlaceList;
+	}
+	
+	@Override
 	public Place getPlaceDetails(String placeId) {
 		Place place = null;
 		String placeStr = this.myRestClient.getPlaceDetails(placeId);
@@ -186,6 +150,101 @@ public class EventFullProvider extends DataProvider
 	@Override
 	public SourceType getSource() {
 		return SourceType.EVENTFUL;
+	}
+	
+	private List<Event> parseEventList(String eventList) {
+		List<Event> myEventList = null;
+		if ( eventList != null && !eventList.isEmpty() )
+		 {
+				try {
+					JSONObject eventsObject = new JSONObject(eventList);
+					if ( eventsObject != null && eventsObject.has("events") && !eventsObject.isNull("events") )
+					{
+						JSONObject events = eventsObject.getJSONObject("events");
+						
+						if ( events != null && events.has("event") && !events.isNull("event")) {
+							JSONArray jsonEventList = null;
+							
+							try {
+								jsonEventList = events.getJSONArray("event");
+							} catch (JSONException e) {
+								jsonEventList = new JSONArray();
+								jsonEventList.put(events.getJSONObject("event"));
+							}
+							
+							if ( jsonEventList != null && jsonEventList.length() > 0 )
+							{
+								myEventList = new LinkedList<Event>();
+								
+								for( int i = 0; i < jsonEventList.length(); i++ )
+								{
+									JSONObject iter = jsonEventList.getJSONObject(i);
+									
+									Event event = this.parseEvent(iter);
+									if ( event != null ) {
+										myEventList.add(event);
+									}
+								}
+							}
+						}
+					}
+				}
+				catch (JSONException e)
+				{
+					Logger.Error("Exception decoding json object in MBVCA " );
+					e.printStackTrace();
+				}
+		 }
+		return myEventList;
+	}
+	
+	private List<Place> parsePlaceList(String placeList) {
+		List<Place> myPlaceList = null;
+		if ( placeList != null && !placeList.isEmpty() )
+		{
+			try {
+				JSONObject placesObject = new JSONObject(placeList);
+				if ( placesObject != null && placesObject.has("venues") && !placesObject.isNull("venues"))
+				{
+					JSONObject venues = placesObject.getJSONObject("venues");
+					JSONArray jsonPlaceList = null;// ? venues.getJSONArray("venue") : null;
+				
+					if (venues != null && venues.has("venue") && !venues.isNull("venue") ) {
+						try {
+							jsonPlaceList = venues.getJSONArray("venue");
+						} catch (JSONException e ) {
+							// try to get an object
+							JSONObject aux = venues.getJSONObject("venue");
+							if ( aux != null ) {
+								jsonPlaceList = new JSONArray();
+								jsonPlaceList.put(aux);
+							}
+						}
+					}
+					
+					if ( jsonPlaceList != null && jsonPlaceList.length() > 0 )
+					{
+						myPlaceList = new LinkedList<Place>();
+						
+						for( int i = 0; i < jsonPlaceList.length(); i++ )
+						{
+							JSONObject iter = jsonPlaceList.getJSONObject(i);
+							
+							Place place = this.parsePlace(iter);
+							if ( place != null ) {
+								myPlaceList.add(place);
+							}
+						}
+					}
+				}
+			}
+			catch (JSONException e)
+			{
+				Logger.Error("Exception decoding json object in MBVCA " );
+				e.printStackTrace();
+			}
+		}
+		return myPlaceList;
 	}
 	
 	private Event parseEvent( JSONObject iter ) {

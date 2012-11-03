@@ -32,6 +32,10 @@ public class EventfulRestClient extends RestClient {
 	}
 	
 	public String getEventList( String keywords, Location location, String date, String category, int within ) {
+		return this.getEventList(keywords, location, date, category, within, 0, 25);
+	}
+	
+	public String getEventList( String keywords, Location location, String date, String category, int within, int page, int pageSize ) {
 		Bundle params = this.getBundle();
 		
 		if ( keywords != null ) {
@@ -56,6 +60,11 @@ public class EventfulRestClient extends RestClient {
 			} else if ( location.getAddress() != null ) {
 				params.putString("where", location.getAddress());
 			}
+		}
+		
+		if ( page != 0 ) {
+			params.putInt("page_number", page);
+			params.putInt("page_size", pageSize);
 		}
 		
 		String response = null;
