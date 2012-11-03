@@ -17,14 +17,7 @@
         android:icon="@drawable/main_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <activity
-            android:name=".PersonalizationActivity"
-            android:label="@string/title_activity_personalization" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main" >
@@ -33,6 +26,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity
+            android:name=".PersonalizationActivity"
+            android:label="@string/title_activity_personalization" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.MainActivity" />
+        </activity>
+        
         <activity
             android:name=".FacebookLoginActivity"
             android:label="@string/login_button_text" >

@@ -48,6 +48,6 @@ public class SettingsActivity extends PreferenceActivity  {
     	String defaultCategory = EventCategoryFilter.Music.toString();
     	SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
     	return pref != null ? pref.getString(SettingsFragment.KEY_DEFAULT_EVENT_CATEGORY, defaultCategory) : defaultCategory;
-    }
+    }    
 }
 

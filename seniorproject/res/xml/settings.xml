@@ -29,6 +29,28 @@
 
     </PreferenceCategory>
     
+    <PreferenceCategory 
+        android:title="@string/data_source">
+        
+        <CheckBoxPreference
+	        android:key="pref_MBVCA"
+	        android:title="@string/miami_beach_api"
+	        android:summary="@string/miami_beach_api"
+	        android:defaultValue="true" />
+        
+        <CheckBoxPreference
+	        android:key="pref_GOOGLE_PLACE"
+	        android:title="@string/google_place_api"
+	        android:summary="@string/google_place_api"
+	        android:defaultValue="true" />
+        
+        <CheckBoxPreference
+	        android:key="pref_EVENTFUL"
+	        android:title="@string/eventful_api"
+	        android:summary="@string/eventful_api"
+	        android:defaultValue="true" />
+        
+    </PreferenceCategory>  
 </PreferenceScreen>
 
 

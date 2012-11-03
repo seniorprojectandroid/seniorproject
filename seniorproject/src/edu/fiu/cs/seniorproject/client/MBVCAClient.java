@@ -64,7 +64,9 @@ public class MBVCAClient extends RestClient{
 		}
 		
 		params.putString("srt", "{\"name\":1}" );
-
+		params.putString("page", "1");
+		params.putString("rows", "25");
+		
 		try {
 			response = openUrl( "http://www.miamibeachapi.com/rest/a.pi/events/search", GET, params );
 		} catch (MalformedURLException e) {

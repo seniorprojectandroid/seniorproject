@@ -526,7 +526,7 @@ public class GPProvider extends DataProvider {
 				{
 					jsonArray = data.getJSONArray("results");
 					
-					Logger.Error("JSON ARRAY: "+jsonArray.toString()+ " category: "+category.toString());
+					//Logger.Error("JSON ARRAY: "+jsonArray.toString()+ " category: "+category.toString());
 					
 					if(data.has("next_page_token"))
 					{

@@ -42,6 +42,15 @@ public class DataManager {
 		mProviderList.add(new EventFullProvider());
 	}
 	
+	public void enableProvider( SourceType source, boolean enabled ) {
+		Logger.Debug("Enable data source " + source.toString() + " enabled=" + enabled );
+		for (DataProvider provider : this.mProviderList) {
+			if ( provider.getSource() == source ) {
+				provider.setEnabled(enabled);
+			}
+		}
+	}
+	
 	public List<Event> getEventList(Location location, EventCategoryFilter category, String radius, String query, DateFilter date) {
 		List<Event> result = null;
 		
@@ -49,7 +58,7 @@ public class DataManager {
 			for( int i = 0; i < mProviderList.size(); i++ ) {
 				DataProvider provider = mProviderList.get(i);
 				
-				if ( provider.supportEvents() ) {
+				if ( provider.supportEvents() && provider.isEnabled() ) {
 					
 					List<Event> providerList = null;
 					try {
@@ -92,7 +101,7 @@ public class DataManager {
 			for( int i = 0; i < mProviderList.size(); i++ ) {
 				DataProvider provider = mProviderList.get(i);
 				
-				if ( provider.supportPlaces() ) {
+				if ( provider.supportPlaces() && provider.isEnabled() ) {
 					List<Place> providerList = null;
 					try {
 						providerList = provider.getPlaceList(location, category, radius, query);
@@ -134,7 +143,7 @@ public class DataManager {
 		try {
 			for( int i = 0; i < mProviderList.size(); i++ ) {
 				DataProvider provider = mProviderList.get(i);
-				if ( provider.supportEvents() && provider.getSource() == source ) {
+				if ( provider.isEnabled() && provider.supportEvents() && provider.getSource() == source ) {
 					result = provider.getEventDetails(eventId,null);
 					break;
 				}
@@ -151,7 +160,7 @@ public class DataManager {
 		try {
 			for( int i = 0; i < mProviderList.size(); i++ ) {
 				DataProvider provider = mProviderList.get(i);
-				if ( provider.supportPlaces() && provider.getSource() == source ) {
+				if ( provider.isEnabled() && provider.supportPlaces() && provider.getSource() == source ) {
 					result = provider.getPlaceDetails(placeId);
 					break;
 				}
@@ -214,7 +223,7 @@ public class DataManager {
 				for( int i = 0; i < mProviderList.size(); i++ ) {
 					final DataProvider provider = mProviderList.get(i);
 					
-					if ( provider != null && provider.supportPlaces() ) {
+					if ( provider != null && provider.supportPlaces() && provider.isEnabled() ) {
 						Callable<List<Place>> worker = new Callable<List<Place>>() {
 							@Override
 							public List<Place> call() throws Exception {
@@ -300,7 +309,7 @@ public class DataManager {
 				for( int i = 0; i < mProviderList.size(); i++ ) {
 					final DataProvider provider = mProviderList.get(i);
 					
-					if ( provider != null && provider.supportEvents() ) {
+					if ( provider != null && provider.supportEvents() && provider.isEnabled()) {
 						Callable<List<Event>> worker = new Callable<List<Event>>() {
 							@Override
 							public List<Event> call() throws Exception {

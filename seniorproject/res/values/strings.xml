@@ -58,4 +58,9 @@
 	<string name="title_activity_personalization">Personalize your App!!!</string>
 	<string name="interest_prompt">Select Your Interest</string>
     <string name="distance_prompt">Select Radius (Miles)</string>
+    <string name="data_source">Data Source</string>
+    <string name="miami_beach_api">Miami Beach</string>
+    <string name="google_place_api">Google Places</string>
+    <string name="eventful_api">Eventful</string>
+    <string name="facebook_api">Facebook</string>
 </resources>
