@@ -89,7 +89,7 @@ public class PlacesActivity extends FilterActivity {
         
         this.setupFilters();
         
-        this.startNewSearch(false, null);
+        this.startNewSearch(null);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class PlacesActivity extends FilterActivity {
 				@Override
 				public boolean onQueryTextSubmit(String query) {
 					Logger.Debug("process query = " + query);
-					PlacesActivity.this.startNewSearch(true,query);
+					PlacesActivity.this.startNewSearch(query);
 					return true;
 				}
 				
@@ -153,7 +153,7 @@ public class PlacesActivity extends FilterActivity {
     	mPlacesLoader = null;
     }
     
-    private void startNewSearch(boolean useFilters, String query ) {
+    private void startNewSearch( String query ) {
     	this.cancelLoader();    	
     	
     	ListView lv = (ListView)findViewById(android.R.id.list);
@@ -169,9 +169,8 @@ public class PlacesActivity extends FilterActivity {
 		mPlaceList = null;
     	mPlacesLoader = new PlacesLoader(this);
     	
-    	if ( useFilters ) {
-    		this.getSearchFilters();
-    	}
+    	this.getSearchFilters();
+    	
     	mPlacesLoader.mQuery = query;
     	mPlacesLoader.useNextPage = false;
     	
@@ -286,10 +285,9 @@ public class PlacesActivity extends FilterActivity {
     	}
     }
     
-    
     @Override
     protected void onFilterClicked() {
-    	this.startNewSearch(true, null);
+    	this.startNewSearch(null);
 	}   
     
     @Override

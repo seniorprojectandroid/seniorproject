@@ -40,6 +40,15 @@
     <string name="ok">OK</string>
     <string name="title_activity_place_details">Place Details</string>
     <string name="place_image">PlaceImage</string>
+
+    <string name="empty_events">No Events</string>
+    <string name="directions">Directions</string>
+    <string name="navigation">Navigation</string>
+    <string name="title_activity_tour">TourActivity</string>
+    <string name="title_activity_tour_activity_details">TourActivityDetails</string>
+    <string name="previotour">Previus</string>
+    <string name="nexttour">Next</string>
+	<string name="tours">Tours</string>
     <string name="places">Find Places</string>
     <string name="empty_result">No Result</string>
     <string name="fcbk_login">Login</string>
@@ -73,3 +82,4 @@
     <string name="facebook_api">Facebook</string>
 
 </resources>
+

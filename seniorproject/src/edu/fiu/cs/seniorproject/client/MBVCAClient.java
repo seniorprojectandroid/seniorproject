@@ -34,8 +34,12 @@ public class MBVCAClient extends RestClient{
 		super(appId);
 		mConsumer.setTokenWithSecret(AppConfig.MBVCA_TOKEN, AppConfig.MBVCA_TOKEN_SECRET);
 	}
-
+	
 	public String getEventList(Location location, String category,String radiusStr, long startTime, long endTime, String search) {
+		return this.getEventList(location, category, radiusStr, startTime, endTime, search, 1, 25 );
+	}
+
+	public String getEventList(Location location, String category,String radiusStr, long startTime, long endTime, String search, int page, int rows ) {
 		String response = null;
 
 		Bundle params = getBundle();
@@ -64,8 +68,8 @@ public class MBVCAClient extends RestClient{
 		}
 		
 		params.putString("srt", "{\"name\":1}" );
-		params.putString("page", "1");
-		params.putString("rows", "25");
+		params.putString("page", String.valueOf(page));
+		params.putString("rows", String.valueOf(rows));
 		
 		try {
 			response = openUrl( "http://www.miamibeachapi.com/rest/a.pi/events/search", GET, params );

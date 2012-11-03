@@ -25,6 +25,13 @@ public class MBVCAProvider extends DataProvider
 	
 	private final MBVCAClient mMBVCAClient;
 	
+	private int currentPage = 1;
+	private Location currentLocation = null;
+	private String currentRadius = null;
+	private DateFilter currentDateFilter = null;
+	private EventCategoryFilter currentEventCategory = null;
+	private PlaceCategoryFilter currentPlaceFilter = null;
+	
 	public MBVCAProvider()
 	{
 		this.mMBVCAClient  = new MBVCAClient(AppConfig.MBVCA_TOKEN);
@@ -32,11 +39,32 @@ public class MBVCAProvider extends DataProvider
 
 	@Override
 	public List<Event> getEventList(Location location, EventCategoryFilter category, String radius, String query, DateFilter date) {
+		
+		this.currentPage = 1;
+		this.currentLocation = location;
+		this.currentEventCategory = category;
+		this.currentRadius = radius;
+		this.currentDateFilter = date;
+		
 		List<Event> result = null;
 		
 		long[] times = new long[]{0,0};
 		this.getTimeByDateFilter(date, times);
-		String events = mMBVCAClient.getEventList(location, getEventCategory(category), radius, times[0], times[1], query );
+		String events = mMBVCAClient.getEventList(location, getEventCategory(category), radius, times[0], times[1], query, 1, this.eventPageSize );
+		if ( events != null && !events.isEmpty() ) {
+			result = this.parseEventList(events);
+		}
+		return result;
+	}
+	
+	@Override
+	public List<Event> getNextEventPage() {
+		this.currentPage++;
+		List<Event> result = null;
+		
+		long[] times = new long[]{0,0};
+		this.getTimeByDateFilter(this.currentDateFilter, times);
+		String events = mMBVCAClient.getEventList(this.currentLocation, getEventCategory(this.currentEventCategory), this.currentRadius, times[0], times[1], null, this.currentPage, this.eventPageSize );
 		if ( events != null && !events.isEmpty() ) {
 			result = this.parseEventList(events);
 		}
@@ -45,34 +73,38 @@ public class MBVCAProvider extends DataProvider
 
 	@Override
 	public List<Place> getPlaceList(Location location, PlaceCategoryFilter category, String radius, String query) {
+		
+		this.currentPage = 1;
+		this.currentLocation = location;
+		this.currentPlaceFilter = category;
+		this.currentRadius = radius;
+		
 		List<Place> result = null;
 		
 		String places = this.mMBVCAClient.getPlaceList(location, getPlaceCategory(category), "1", query);
 		
 		if ( places != null && !places.isEmpty() ) {
-			try {
-				JSONObject placeObject = new JSONObject(places);
-				if ( placeObject != null && placeObject.has("solodev_view") && !placeObject.isNull("solodev_view")) {
-					JSONArray placeList = placeObject.getJSONArray("solodev_view");
-					if ( placeList != null && placeList.length() > 0 ) {
-						result = new LinkedList<Place>();
-						for( int i = 0; i < placeList.length(); i++ ) {
-							JSONObject iter = placeList.getJSONObject(i);
-							
-							Place place = this.parsePlace(iter);
-							if ( place != null ) {
-								result.add(place);
-							}
-						}
-					}
-				}
-			} catch (JSONException e ) {
-				Logger.Warning("Exception decoding place list on getPlaceList " + e.getMessage());
-			}
+			result = this.parsePlaceList(places);
 		}
 		return result;
 	}
 
+	@Override
+	public List<Place> getNextPlacePage() {
+		
+//		this.currentPage++;
+//		List<Place> result = null;
+//		
+//		String places = this.mMBVCAClient.getPlaceList(this.currentLocation, getPlaceCategory(this.currentPlaceFilter), this.currentRadius, null);
+//		
+//		if ( places != null && !places.isEmpty() ) {
+//			result = this.parsePlaceList(places);
+//		}
+//		return result;
+		// FIXME Enable pagination for business
+		return this.currentPlaceFilter != null ? null : null;
+	}
+	
 	@Override
 	public Event getEventDetails(String eventId, String reference) {
 		Event event = null;
@@ -279,6 +311,32 @@ public class MBVCAProvider extends DataProvider
 		} catch (JSONException e) {
 			Logger.Debug("events = " + events);
 			Logger.Error("Exception decoding json object in MBVCA " + e.getMessage());
+		}
+		return result;
+	}
+	
+	private List<Place> parsePlaceList(String places) {
+		List<Place> result = null;
+		if ( places != null && !places.isEmpty() ) {
+			try {
+				JSONObject placeObject = new JSONObject(places);
+				if ( placeObject != null && placeObject.has("solodev_view") && !placeObject.isNull("solodev_view")) {
+					JSONArray placeList = placeObject.getJSONArray("solodev_view");
+					if ( placeList != null && placeList.length() > 0 ) {
+						result = new LinkedList<Place>();
+						for( int i = 0; i < placeList.length(); i++ ) {
+							JSONObject iter = placeList.getJSONObject(i);
+							
+							Place place = this.parsePlace(iter);
+							if ( place != null ) {
+								result.add(place);
+							}
+						}
+					}
+				}
+			} catch (JSONException e ) {
+				Logger.Warning("Exception decoding place list on getPlaceList " + e.getMessage());
+			}
 		}
 		return result;
 	}
