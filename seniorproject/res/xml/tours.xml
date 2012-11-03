@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<tours>
+	<tour name="restaurants">
+		<place>
+			<name>Puerto Sagua Restaurant</name>
+			<address>700 Collins Avenue, Miami Beach, FL 33139</address>
+			<latitude>25.777078</latitude>
+			<longitude>-80.132626</longitude>
+			<telephone>(305) 673-1115</telephone>
+			<category>Cuban Restaurant</category>			
+		</place>	
+		<place>
+			<name>Avalon Hotel</name>
+			<address>700 Ocean Drive Miami Beach, FL 33139</address>
+			<latitude>25.776953</latitude>
+			<longitude>-80.131516</longitude>
+			<telephone>(305) 538-0133</telephone>
+			<category>Seafood Restaurant</category>			
+		</place>
+		<place>	
+			<name>Mango's Tropical Cafe</name>
+			<address>900 Ocean Drive Miami Beach, FL 33139</address>
+			<latitude>25.779402</latitude>
+			<longitude>-80.130995</longitude> 
+			<telephone>(305) 673-4422</telephone>
+			<category>Caribbean Restaurant</category>			
+		</place>
+		<place>	
+			<name>Pelican Cafe</name>
+			<address>826 Ocean Drive Miami Beach, FL 33139</address>
+			<latitude>25.778590</latitude>
+			<longitude>-80.131211</longitude>  
+			<telephone>(305) 673-1000</telephone>
+			<category>Cafe, Italian Restaurant</category>			
+		</place>	
+	</tour>
+	<tour name="arts">
+		<place>
+			<name>Art Deco Weekend</name>
+			<address>1001 Ocean Drive Miami Beach, FL 33139</address>
+			<latitude>25.780378</latitude>
+			<longitude>-80.130655</longitude>
+			<telephone>(305) 672-2014</telephone>
+			<category>Fair</category>			
+		</place>	
+		<place>
+			<name>Bass Museum of Art</name>
+			<address>2100 Collins Avenue Miami Beach, FL 33139</address>
+			<latitude>25.797360</latitude>
+			<longitude>-80.129324</longitude>
+			<telephone>(305) 673-7530</telephone>
+			<category>Art School, Modern Art Museum</category>			
+		</place>
+		<place>	
+			<name>World Erotic Art Museum</name>
+			<address>1205 Washington Avenue Miami Beach, FL 33139</address>
+			<latitude>25.783372</latitude>
+			<longitude>-80.132037</longitude> 
+			<telephone>(305) 532-9336</telephone>
+			<category>Art Museum</category>			
+		</place>
+		<place>	
+			<name>Uncle Sam's Music</name>
+			<address>1141 Washington Avenue Miami Beach, FL 33139</address>
+			<latitude>25.782660</latitude>
+			<longitude>-80.132199</longitude>  
+			<telephone>(305) 532-0973</telephone>
+			<category>Music Store</category>			
+		</place>
+	</tour>
+</tours>
+

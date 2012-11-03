@@ -52,7 +52,7 @@ public class PlaceDetailsActivity extends MapActivity {
         	String placeId = intent.getStringExtra("id");
         	SourceType source =  (SourceType)intent.getSerializableExtra("source");
         	
-        	(new PlaceDownloader(this)).execute(new PlaceSearchData(placeId, source));
+        	(new PlaceDownloader(this)).execute(new PlaceSearchData(placeId, source));  
         }
 
     }

@@ -52,6 +52,11 @@ public class MainActivity extends Activity {
     	this.startActivity(intent);
     }
     
+    public void onShowToursClick(View view) {
+    	Intent intent = new Intent(this, TourActivity.class);
+    	this.startActivity(intent);
+    }
+    
     public void onSettingsClick(MenuItem view) {
     	Intent intent = new Intent(this, SettingsActivity.class);
     	this.startActivity(intent);

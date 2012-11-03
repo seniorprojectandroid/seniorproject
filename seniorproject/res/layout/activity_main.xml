@@ -53,4 +53,14 @@
         android:onClick="onShowPlacesClick"
         android:text="@string/get_places" />
 
+    <Button
+        android:id="@+id/tours_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/login_button"
+        android:layout_alignBottom="@+id/login_button"
+        android:layout_toLeftOf="@+id/places_button"
+        android:onClick="onShowToursClick"
+        android:text="Tours" />
+
 </RelativeLayout>

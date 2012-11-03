@@ -1,0 +1,105 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+    <LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_margin="5dp"
+	    android:orientation="vertical" >
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_margin="5dp"
+	        android:orientation="horizontal" >
+	        
+	                
+	        <TextView
+	            android:id="@+id/tour_name"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="10dp"
+	            android:textAppearance="?android:attr/textAppearanceMedium"
+	            android:layout_weight="0.6" />
+	    </LinearLayout>
+	    
+	     <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_margin="5dp"
+	        android:orientation="horizontal" >
+	        
+	                
+	        <TextView
+	            android:id="@+id/tour_telephone"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="10dp"
+	            android:textAppearance="?android:attr/textAppearanceMedium"
+	            android:layout_weight="0.6" />
+	    </LinearLayout>
+	
+	    <TextView
+	        android:id="@+id/tour_address"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="20dp" />
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="10dp" >
+		   
+		    <TextView
+		        android:id="@+id/tour_category"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_marginRight="10dp"
+		        android:textColor="#f00"
+		        android:textStyle="italic" />
+	
+		</LinearLayout>
+	    
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="2dp"
+	        android:layout_marginLeft="6dp"
+	        android:layout_marginRight="6dp"
+	        android:orientation="horizontal" >
+
+	        <Button
+	            android:id="@+id/previo"
+	            style="?android:attr/buttonStyleSmall"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:onClick="onPreviusButtonClick"
+	            android:text="@string/previotour" />
+
+	        <Button
+	            android:id="@+id/next"
+	            style="?android:attr/buttonStyleSmall"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:onClick="onNextButtonClick"
+	            android:text="@string/nexttour" />
+		    
+		</LinearLayout>
+		
+	    <com.google.android.maps.MapView
+	        xmlns:android="http://schemas.android.com/apk/res/android"
+	        android:id="@+id/mapview"
+	        android:layout_width="match_parent"
+	        android:layout_height="200dp"
+	        android:layout_margin="8dp"        
+	        android:apiKey="0f7bvw0dRHCH9_Amp0WBvAXmnY95nxeUVef3zHg"
+	        android:clickable="false" />
+	    
+	    
+	   
+	</LinearLayout>
+
+</RelativeLayout>
