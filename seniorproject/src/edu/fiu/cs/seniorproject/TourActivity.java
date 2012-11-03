@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-
-import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.utils.Logger;
 import edu.fiu.cs.seniorproject.utils.XMLParser;
 

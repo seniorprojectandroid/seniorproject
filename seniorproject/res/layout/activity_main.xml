@@ -1,66 +1,117 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/LoginButton"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@drawable/beach_big_bkg"
+    android:orientation="vertical"
+    android:stretchColumns="0,1" >
 
-    <Button
-        android:id="@+id/login_button"
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.3"
+        android:gravity="center_vertical" >
+
+        <TextView
+            android:id="@+id/facebookImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:drawablePadding="2dp"
+            android:drawableTop="@drawable/facebook_dark_96"
+            android:gravity="center"
+            android:onClick="onFacebookLoginButtonClick"
+            android:text="@string/facebook_loginB"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/mapImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:contentDescription="@string/location"
+            android:drawableTop="@drawable/map_96"
+            android:gravity="center"
+            android:onClick="onShowGeoLocationClick"
+            android:text="@string/location"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="52dp"
-        android:onClick="onLoginButtonClick"
-        android:text="@string/login_button_text" />
+        android:layout_weight="0.3"
+        android:gravity="center_vertical" >
 
-    <TextView
-        android:id="@+id/textView2"
+        <TextView
+            android:id="@+id/eventsImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:drawableTop="@drawable/events_96"
+            android:gravity="center"
+            android:onClick="onShowEventsClick"
+            android:text="@string/events_tv"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/placesImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:drawableTop="@drawable/places_96"
+            android:gravity="center"
+            android:onClick="onShowPlacesClick"
+            android:text="@string/places"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/login_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="28dp"
-        android:text="@string/login_wfacebook"
-        tools:context=".MainActivity" />
+        android:layout_weight="0.4"
+        android:gravity="center_vertical" >
 
-    <Button
-        android:id="@+id/show_geolocation"
+        <TextView
+            android:id="@+id/my_eventsImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:drawableTop="@drawable/red_calendar_96"
+            android:gravity="center"
+            android:onClick="onShowMyEventsClick"
+            android:text="@string/my_events_tv2"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/my_placesImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:drawableTop="@drawable/my_places_96"
+            android:gravity="center"
+            android:onClick="onShowMyPlacesClick"
+            android:text="@string/my_places"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </TableRow>
+    <TableRow
+        android:id="@+id/tableRow4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/textView2"
-        android:layout_below="@+id/textView2"
-        android:layout_marginTop="59dp"
-        android:onClick="onShowGeoLocationClick"
-        android:text="@string/show_geolocation" />
-
-    <Button
-        android:id="@+id/events_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/show_geolocation"
-        android:layout_centerHorizontal="true"
-        android:onClick="onShowEventsClick"
-        android:text="@string/events" />
-
-    <Button
-        android:id="@+id/places_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/events_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="21dp"
-        android:onClick="onShowPlacesClick"
-        android:text="@string/get_places" />
-
-    <Button
-        android:id="@+id/tours_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/login_button"
-        android:layout_alignBottom="@+id/login_button"
-        android:layout_toLeftOf="@+id/places_button"
-        android:onClick="onShowToursClick"
-        android:text="Tours" />
-
-</RelativeLayout>
+        android:layout_weight="0.4"
+        android:gravity="center_vertical" >
+        
+        <Button
+	        android:id="@+id/tours_button"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"	        
+	        android:onClick="onShowToursClick"
+	        android:text="@string/tours" />
+    </TableRow>
+</TableLayout>

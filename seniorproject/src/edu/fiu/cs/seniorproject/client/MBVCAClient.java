@@ -16,9 +16,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import edu.fiu.cs.seniorproject.data.Location;
-import edu.fiu.cs.seniorproject.utils.DateUtils;
 import edu.fiu.cs.seniorproject.utils.Logger;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 
 public class MBVCAClient extends RestClient{
 
@@ -34,62 +34,49 @@ public class MBVCAClient extends RestClient{
 		super(appId);
 		mConsumer.setTokenWithSecret(AppConfig.MBVCA_TOKEN, AppConfig.MBVCA_TOKEN_SECRET);
 	}
-
+	
 	public String getEventList(Location location, String category,String radiusStr, long startTime, long endTime, String search) {
+		return this.getEventList(location, category, radiusStr, startTime, endTime, search, 1, 25 );
+	}
+
+	public String getEventList(Location location, String category,String radiusStr, long startTime, long endTime, String search, int page, int rows ) {
 		String response = null;
 
+		Bundle params = getBundle();
+		
+		if ( search != null && !search.isEmpty() ) {
+			params.putString("keyword", search);
+		}
+		
+		if ( location != null ) {
+			params.putString("lat", location.getLatitude() );
+			params.putString("lng", location.getLongitude());
+		}
+		
+		if ( startTime != 0 && endTime != 0 ) {
+			String startStr = DateFormat.format("yyyyMMdd", startTime * 1000 ).toString();
+			String endStr = DateFormat.format("yyyyMMdd", endTime * 1000 ).toString();
+			params.putString("date_filter", startStr + "-" + endStr );
+		}
+		
+		if ( radiusStr != null && !radiusStr.isEmpty() ) {
+			params.putString("radius", radiusStr);
+		}
+		
+		if ( category != null && !category.isEmpty() ) {
+			params.putString("category_filter", category);
+		}
+		
+		params.putString("srt", "{\"name\":1}" );
+		params.putString("page", String.valueOf(page));
+		params.putString("rows", String.valueOf(rows));
+		
 		try {
-			Bundle params = getBundle();
-			JSONObject query = new JSONObject();
-			query.put("calendar_id", 1);
-			
-			if ( category != null && !category.isEmpty() ) {
-				query.put("datatable_category_id", Integer.valueOf( category ) );
-			} else {
-				JSONObject existObject = new JSONObject();
-				existObject.put("$exists", true);
-				query.put("datatable_category_id", existObject );
-			}
-			
-			if ( search != null && !search.isEmpty() ) {
-				query.put("name", "/" + search + "/i" );
-			} else {
-				if ( startTime == 0 ) {
-					startTime = DateUtils.getTodayTimeInMiliseconds();
-					endTime = startTime + DateUtils.ONE_DAY;
-				}
-				JSONObject timeFilter = new JSONObject();
-				timeFilter.put("$gt", startTime);
-				if ( endTime != 0 ) {
-					timeFilter.put("$lt", endTime);
-				}
-				query.put("start_time", timeFilter);
-				
-				if ( location != null ) {
-					float radius = Float.valueOf(radiusStr);
-					if ( radius > 0 ) {
-						this.addLocationFilter(query, location, radius);
-					}
-				}
-			}
-			
-			String queryStr = query.toString();
-
-			Logger.Debug("Query string in MBVCA = " + query);
-			params.putString("qry", queryStr);
-			params.putString("srt", "{\"start_time\":1}" );
-
-
-			try {
-				return openUrl( BASE_API + "search/solodev_view", GET, params );
-			} catch (MalformedURLException e) {
-				Logger.Warning("Malformed exception getting MBVCA events " + e.getMessage() );
-			} catch (IOException e) {
-				Logger.Warning("IO exception getting MBVCA events " + e.getMessage() );
-			}
-		} catch (JSONException e) {
-			response = null;
-			Logger.Error("Exeption encoding url params" + e.getMessage());
+			response = openUrl( "http://www.miamibeachapi.com/rest/a.pi/events/search", GET, params );
+		} catch (MalformedURLException e) {
+			Logger.Warning("Malformed exception getting MBVCA events " + e.getMessage() );
+		} catch (IOException e) {
+			Logger.Warning("IO exception getting MBVCA events " + e.getMessage() );
 		}
 
 		return response;
@@ -104,7 +91,7 @@ public class MBVCAClient extends RestClient{
 			params.putString("qry", query.toString() );
 
 			try {
-				return openUrl( BASE_API + "search/solodev_view", GET, params );
+				response = openUrl( BASE_API + "search/solodev_view", GET, params );
 			} catch (MalformedURLException e) {
 				Logger.Warning("Malformed exception getting MBVCA event detail " + e.getMessage() );
 			} catch (IOException e) {
@@ -148,7 +135,7 @@ public class MBVCAClient extends RestClient{
 			//params.putString("srt", "{\"lat\":1}" );
 
 			try {
-				return openUrl( BASE_API + "search/solodev_view", GET, params );
+				result = openUrl( BASE_API + "search/solodev_view", GET, params );
 			} catch (MalformedURLException e) {
 				Logger.Warning("Malformed exception getting MBVCA places " + e.getMessage() );
 			} catch (IOException e) {
@@ -179,7 +166,7 @@ public class MBVCAClient extends RestClient{
 			params.putString("qry", query.toString() );
 
 			try {
-				return openUrl( BASE_API + "search/solodev_view", GET, params );
+				result = openUrl( BASE_API + "search/solodev_view", GET, params );
 			} catch (MalformedURLException e) {
 				Logger.Warning("Malformed exception getting MBVCA place detail " + e.getMessage() );
 			} catch (IOException e) {
@@ -209,7 +196,7 @@ public class MBVCAClient extends RestClient{
 			params.putString("qry", query.toString() );
 
 			try {
-				return openUrl( BASE_API + "search/solodev_view", GET, params );
+				result = openUrl( BASE_API + "search/solodev_view", GET, params );
 			} catch (MalformedURLException e) {
 				Logger.Warning("Malformed exception getting MBVCA events at place" + e.getMessage() );
 			} catch (IOException e) {

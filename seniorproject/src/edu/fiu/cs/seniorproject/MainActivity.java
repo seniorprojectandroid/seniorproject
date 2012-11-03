@@ -1,8 +1,9 @@
 package edu.fiu.cs.seniorproject;
 
-import android.os.Bundle;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,7 +13,7 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);      
+        setContentView(R.layout.activity_main);
     }
 
     @Override
@@ -21,7 +22,17 @@ public class MainActivity extends Activity {
         return true;
     }
     
-    public void onLoginButtonClick(View view) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                this.onSettingsClick(item);
+                return true;            
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    
+    public void onFacebookLoginButtonClick(View view) {
     	Intent intent = new Intent(this, FacebookLoginActivity.class);
     	this.startActivity(intent);
     }
@@ -31,10 +42,6 @@ public class MainActivity extends Activity {
     	this.startActivity(intent);
     }
     
-    public void onEventMapButtonClick(View view) {
-    	Intent intent = new Intent(this, EventsMapViewActivity.class);
-    	this.startActivity(intent);
-    }
     
     
     public void  onShowEventsClick(View view) {
@@ -60,5 +67,14 @@ public class MainActivity extends Activity {
     public void onSettingsClick(MenuItem view) {
     	Intent intent = new Intent(this, SettingsActivity.class);
     	this.startActivity(intent);
-    }    
+    }   
+    
+    public void onShowMyPlacesClick(View view) {
+    	Intent intent = new Intent(this, MyPlacesActivity.class);
+    	this.startActivity(intent);
+    }
+    public void onShowMyEventsClick (View view) {
+    	Intent intent = new Intent(this, MyEventsActivity.class); 
+    	this.startActivity(intent);
+    }
 }

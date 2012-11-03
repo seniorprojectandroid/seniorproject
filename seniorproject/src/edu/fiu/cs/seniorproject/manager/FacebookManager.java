@@ -155,4 +155,9 @@ public class FacebookManager {
 		return mFacebook;
 	}
 	
+	public String request(String path)throws MalformedURLException, IOException 
+	{
+		return this.getFacebookClient().request(path);
+	}
+	
 }

@@ -40,6 +40,7 @@ public class PlacesActivity extends FilterActivity {
 	private PlacesLoader mPlacesLoader = null;
 	private List<Hashtable<String, String>> mPlaceList = null;
 	private SimpleAdapter listAdapter = null;
+	private Button loadMoreButton = null;
 	
 	private final OnItemClickListener mClickListener = new OnItemClickListener() 
 	{
@@ -73,6 +74,7 @@ public class PlacesActivity extends FilterActivity {
     	if ( lv != null ) {
     		Button button = new Button(this);
     		button.setText("Load More");
+    		this.loadMoreButton = button; 
     		button.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -87,7 +89,7 @@ public class PlacesActivity extends FilterActivity {
         
         this.setupFilters();
         
-        this.startNewSearch(false, null);
+        this.startNewSearch(null);
     }
 
     @Override
@@ -110,7 +112,7 @@ public class PlacesActivity extends FilterActivity {
 				@Override
 				public boolean onQueryTextSubmit(String query) {
 					Logger.Debug("process query = " + query);
-					PlacesActivity.this.startNewSearch(true,query);
+					PlacesActivity.this.startNewSearch(query);
 					return true;
 				}
 				
@@ -125,6 +127,19 @@ public class PlacesActivity extends FilterActivity {
         return true;
     }
     
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                this.onSettingsClick(item);
+                return true;
+            case R.id.map_menuitem:
+            	this.onPlacesMapClick(item);
+            	return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }  
+    
     public void onPlacesMapClick( MenuItem menuItem)
     {
     	this.showPlacesInMapView();
@@ -138,7 +153,7 @@ public class PlacesActivity extends FilterActivity {
     	mPlacesLoader = null;
     }
     
-    private void startNewSearch(boolean useFilters, String query ) {
+    private void startNewSearch( String query ) {
     	this.cancelLoader();    	
     	
     	ListView lv = (ListView)findViewById(android.R.id.list);
@@ -154,9 +169,8 @@ public class PlacesActivity extends FilterActivity {
 		mPlaceList = null;
     	mPlacesLoader = new PlacesLoader(this);
     	
-    	if ( useFilters ) {
-    		this.getSearchFilters();
-    	}
+    	this.getSearchFilters();
+    	
     	mPlacesLoader.mQuery = query;
     	mPlacesLoader.useNextPage = false;
     	
@@ -244,10 +258,16 @@ public class PlacesActivity extends FilterActivity {
 		return placeList;
     }
     
-    private void onDoneLoadingPlaces() {
+    private void onDoneLoadingPlaces(int total) {
     	findViewById(android.R.id.list).setVisibility( mPlaceList != null ? View.VISIBLE : View.GONE);
 		findViewById(android.R.id.empty).setVisibility(mPlaceList == null ? View.VISIBLE : View.GONE);
 		findViewById(android.R.id.progress).setVisibility(View.GONE);
+		
+		if(total == 0)
+		{
+			this.loadMoreButton.setText("no more places!!!");
+			this.loadMoreButton.setEnabled(false);
+		}
     }
     
     private void getSearchFilters() {
@@ -265,12 +285,24 @@ public class PlacesActivity extends FilterActivity {
     	}
     }
     
-    
     @Override
     protected void onFilterClicked() {
-    	this.startNewSearch(true, null);
+    	this.startNewSearch(null);
 	}   
     
+    @Override
+    protected void setupFilters() {
+    	super.setupFilters();
+    	
+    	Spinner spinner = (Spinner)findViewById(R.id.category_spinner);
+    	if ( spinner != null ) {
+    		int selectedIndex = PlaceCategoryFilter.valueOf( SettingsActivity.getDefaultPlaceCategory(this) ).ordinal();
+    		if ( selectedIndex >= 0 ) {
+    			spinner.setSelection(selectedIndex);
+    		}
+    	}
+    }
+
     private class PlacesLoader extends AsyncTask<Void, List<Place>, Integer>
     {
     	protected PlaceCategoryFilter mCategory = PlaceCategoryFilter.RESTAURANT_BARS;
@@ -333,7 +365,7 @@ public class PlacesActivity extends FilterActivity {
 		protected void onPostExecute(Integer total) {
 			Logger.Debug("Total records = " + total );	
 			if ( !this.isCancelled() && mActivityReference != null && mActivityReference.get() != null ) {
-				mActivityReference.get().onDoneLoadingPlaces();
+				mActivityReference.get().onDoneLoadingPlaces(total);
 			}
 		}
     }

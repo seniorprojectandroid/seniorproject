@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import edu.fiu.cs.seniorproject.data.DateFilter;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
@@ -19,7 +19,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.NumberPicker;
+import android.widget.SearchView;
+
+import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
+import edu.fiu.cs.seniorproject.data.DateFilter;
 import edu.fiu.cs.seniorproject.data.Event;
 import edu.fiu.cs.seniorproject.data.EventCategoryFilter;
 import edu.fiu.cs.seniorproject.data.Location;
@@ -28,11 +34,6 @@ import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
 import edu.fiu.cs.seniorproject.manager.DataManager.ConcurrentEventListLoader;
 import edu.fiu.cs.seniorproject.utils.Logger;
-
-import android.widget.NumberPicker;
-import android.widget.SearchView;
-import android.widget.SearchView.OnQueryTextListener;
-import android.widget.Spinner;
 
 public class EventsActivity extends FilterActivity {
 
@@ -60,6 +61,7 @@ public class EventsActivity extends FilterActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.pull_in_from_bottom, R.anim.hold);
         setContentView(R.layout.activity_events);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         AppLocationManager.init(this);
@@ -92,6 +94,7 @@ public class EventsActivity extends FilterActivity {
     protected void onPause() {
     	mPendingEventList = null;
     	this.isInForeground = false;
+    	overridePendingTransition(R.anim.hold, R.anim.pull_out_to_bottom);
     	super.onPause();
     }
     
@@ -122,7 +125,14 @@ public class EventsActivity extends FilterActivity {
     
     public void onEventsMapClick( MenuItem menuItem)
     {
-    	this.showEventsInMapView();
+    	if( mEventList != null)
+    		this.showEventsInMapView();
+    	else
+    	{
+    		Dialog d= new Dialog(this);
+        	d.setTitle(" No events to show in the map!");       
+        	d.show();
+    	}
     }
     
     @Override
@@ -131,7 +141,13 @@ public class EventsActivity extends FilterActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
-                return true;            
+                return true;  
+            case R.id.map_menuitem:
+            	this.onEventsMapClick(item);
+            	return true;
+            case R.id.menu_settings:
+                this.onSettingsClick(item);
+                return true;    
         }
         return super.onOptionsItemSelected(item);
     }  
@@ -273,6 +289,19 @@ public class EventsActivity extends FilterActivity {
     	this.startNewSearch(null);
 	}    
     
+    @Override
+    protected void setupFilters() {
+    	super.setupFilters();
+    	
+    	Spinner spinner = (Spinner)findViewById(R.id.category_spinner);
+    	if ( spinner != null ) {
+    		int selectedIndex = EventCategoryFilter.valueOf( SettingsActivity.getDefaultEventsCategory(this) ).ordinal();
+    		if ( selectedIndex >= 0 ) {
+    			spinner.setSelection(selectedIndex);
+    		}
+    	}
+    }
+
     private void startNewSearch(String query) {
     	this.cancelEventLoader();
     	this.hideFilters();

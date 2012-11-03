@@ -10,20 +10,31 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
     <application
         android:icon="@drawable/main_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity
+            android:name=".PersonalizationActivity"
+            android:label="@string/title_activity_personalization" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.MainActivity" />
+        </activity>
+        
         <activity
             android:name=".FacebookLoginActivity"
             android:label="@string/login_button_text" >
@@ -62,10 +73,19 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.fiu.cs.seniorproject.EventsActivity" />
         </activity>
-        <activity android:name="EventsMapViewActivity" >
+
+        <activity android:name=".EventsMapViewActivity" android:label="@string/events_map_button" >
+             <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.EventsActivity" />
         </activity>
-        <activity android:name="LoginActivity" >
+        
+        <activity android:name=".LoginActivity" android:label="@string/mb_login" >
+             <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.MainActivity" />
         </activity>
+        
         <activity
             android:name=".PlacesActivity"
             android:label="@string/title_activity_places" >
@@ -90,6 +110,28 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.MainActivity" />
+        </activity>
+        
+        <activity android:name=".CalendarActivity" android:label="@string/calendar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".MyEventsActivity"
+            android:label="@string/title_activity_my_events" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.MainActivity" />
+        </activity>
+        
+        <activity
+            android:name=".MyPlacesActivity"
+            android:label="@string/title_activity_my_places" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.fiu.cs.seniorproject.MainActivity" />

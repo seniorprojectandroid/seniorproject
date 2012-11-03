@@ -1,7 +1,12 @@
 package edu.fiu.cs.seniorproject;
 
+import edu.fiu.cs.seniorproject.data.EventCategoryFilter;
+import edu.fiu.cs.seniorproject.data.PlaceCategoryFilter;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
 
@@ -15,21 +20,9 @@ public class SettingsActivity extends PreferenceActivity  {
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();        
-        
-        
-//        addPreferencesFromResource(R.xml.preferences);
-//        
-//        setContentView(R.layout.settings);
-//        getActionBar().setDisplayHomeAsUpEnabled(true);
+
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.settings, menu);
-//        return true;
-//    }
-
-    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -39,10 +32,22 @@ public class SettingsActivity extends PreferenceActivity  {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    public static int getDefaultSearchRadius(Context context) {
+    	SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+    	return pref != null ? Integer.valueOf( pref.getString(SettingsFragment.KEY_DISTANCE_RADIUS, "1")) : 0;
+    }
     
-
+    public static String getDefaultPlaceCategory(Context context) {
+    	String defaultCategory = PlaceCategoryFilter.RESTAURANT_BARS.toString();
+    	SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+    	return pref != null ? pref.getString(SettingsFragment.KEY_DEFAULT_PLACE_CATEGORY, defaultCategory) : defaultCategory;
+    }
     
-
-
+    public static String getDefaultEventsCategory(Context context) {
+    	String defaultCategory = EventCategoryFilter.Music.toString();
+    	SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+    	return pref != null ? pref.getString(SettingsFragment.KEY_DEFAULT_EVENT_CATEGORY, defaultCategory) : defaultCategory;
+    }    
 }
 
