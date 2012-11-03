@@ -42,10 +42,6 @@ public class MainActivity extends Activity {
     	this.startActivity(intent);
     }
     
-//    public void onEventMapButtonClick(View view) {
-//    	Intent intent = new Intent(this, EventsMapViewActivity.class);
-//    	this.startActivity(intent);
-//    }
     
     
     public void  onShowEventsClick(View view) {
@@ -69,7 +65,7 @@ public class MainActivity extends Activity {
     }   
     
     public void onShowMyPlacesClick(View view) {
-    	Intent intent = new Intent(this, MainActivity.class);
+    	Intent intent = new Intent(this, MyPlacesActivity.class);
     	this.startActivity(intent);
     }
     public void onShowMyEventsClick (View view) {

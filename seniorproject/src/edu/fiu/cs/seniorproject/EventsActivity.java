@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import edu.fiu.cs.seniorproject.data.DateFilter;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
@@ -19,7 +19,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.NumberPicker;
+import android.widget.SearchView;
+
+import android.widget.SearchView.OnQueryTextListener;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
+import edu.fiu.cs.seniorproject.data.DateFilter;
 import edu.fiu.cs.seniorproject.data.Event;
 import edu.fiu.cs.seniorproject.data.EventCategoryFilter;
 import edu.fiu.cs.seniorproject.data.Location;
@@ -28,11 +34,6 @@ import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
 import edu.fiu.cs.seniorproject.manager.DataManager.ConcurrentEventListLoader;
 import edu.fiu.cs.seniorproject.utils.Logger;
-
-import android.widget.NumberPicker;
-import android.widget.SearchView;
-import android.widget.SearchView.OnQueryTextListener;
-import android.widget.Spinner;
 
 public class EventsActivity extends FilterActivity {
 
@@ -124,7 +125,14 @@ public class EventsActivity extends FilterActivity {
     
     public void onEventsMapClick( MenuItem menuItem)
     {
-    	this.showEventsInMapView();
+    	if( mEventList != null)
+    		this.showEventsInMapView();
+    	else
+    	{
+    		Dialog d= new Dialog(this);
+        	d.setTitle(" No events to show in the map!");       
+        	d.show();
+    	}
     }
     
     @Override

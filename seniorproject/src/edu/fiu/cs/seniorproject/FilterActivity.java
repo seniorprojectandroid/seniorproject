@@ -65,7 +65,7 @@ public class FilterActivity extends Activity {
         NumberPicker picker = (NumberPicker)findViewById(R.id.radius_picker);
         if ( picker != null ) {
         	picker.setMinValue(1);
-        	picker.setMaxValue(10);
+        	picker.setMaxValue(20);
         	picker.setWrapSelectorWheel(false);
         }
 

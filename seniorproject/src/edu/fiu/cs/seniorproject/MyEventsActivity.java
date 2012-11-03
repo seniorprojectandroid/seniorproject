@@ -3,7 +3,6 @@ package edu.fiu.cs.seniorproject;
 import java.util.ArrayList;
 
 
-
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.SQLException;
@@ -12,6 +11,7 @@ import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import edu.fiu.cs.seniorproject.data.MbGuideDB;
 
 public class MyEventsActivity extends ListActivity {
@@ -22,29 +22,24 @@ public class MyEventsActivity extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-      //  setContentView(R.layout.activity_my_events);
         getEventNames();
         eList2 = new ArrayList<String>();
         eList2.add("Joe");
         eList2.add("Joe2");
         if(eList != null)
         {
-//	        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, 
-//	                android.R.layout.simple_list_item_1, eList2  );
 	        setListAdapter(new ArrayAdapter<String>(this ,
 					android.R.layout.simple_dropdown_item_1line, eList));
-//	        ListView lv = (ListView)findViewById(R.layout.activity_my_events);
-//	        lv.setAdapter(adapter);
+
+        }
+        else
+        {
+        	TextView tv = (TextView)findViewById(android.R.id.text1);
+        	tv.setText("No events");
         }
         
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.activity_my_events, menu);
-//        return true;
-//    }
-//    
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -62,11 +57,9 @@ public class MyEventsActivity extends ListActivity {
             case R.id.menu_settings:
                 this.onSettingsClick(item);
                 return true;
-            case R.id.add_to_calendar:
-            	this.onAddEventToCalendarClick2(item);
-            	return true;
+ 
             case R.id.delete_from_calendar:
-            	this.onDeleteEventFromCalendarAndDBClick2(item);
+            	this.onDeleteAllEventsFromCalendarAndDBClick2(item);
             	return true;
         }
         return super.onOptionsItemSelected(item);
@@ -76,14 +69,12 @@ public class MyEventsActivity extends ListActivity {
     	Intent intent = new Intent(this, SettingsActivity.class);
     	this.startActivity(intent);
     }
+
     
-    public void onAddEventToCalendarClick2(MenuItem view) {
-    	//addEventToCalendarAndDB();
-    }
-    
-    public void onDeleteEventFromCalendarAndDBClick2(MenuItem view) { 	  	
+    public void onDeleteAllEventsFromCalendarAndDBClick2(MenuItem view) { 	  	
     	
-    	//deleteEventToCalendarAndDB();
+    	// Syncronize this to delete the event from both, DB and Calendar
+    	//deleteAllEventsFromCalendarAndDB();
     }
     
     

@@ -4,19 +4,55 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" 
-    android:background="@drawable/miamibeach_background">
+    android:background="@drawable/beach_big_bkg">
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_marginTop="15dp"
+        android:textColor="#000000"
+        android:text="@string/interest_events_tv" />
     
     <Spinner
-        android:id="@+id/spinner1"
+        android:id="@+id/events_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:drawable/btn_dropdown"
         android:clickable="true"
-        android:prompt="@string/interest_prompt"
+        android:prompt="@string/interest_events_prompt"
         android:visibility="visible" />
 
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_marginTop="15dp"
+        android:textColor="#000000"
+        android:text="@string/interest_places" />
+    
+     <Spinner
+        android:id="@+id/places_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/btn_dropdown"
+        android:clickable="true"
+        android:prompt="@string/interest_places_prompt"
+        android:visibility="visible" />
+
+     <TextView
+         android:id="@+id/textView3"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:textSize="20sp"
+         android:layout_marginTop="15dp"
+         android:textColor="#000000"
+         android:text="@string/interest_radius" />
+
     <Spinner
-        android:id="@+id/spinner2"
+        android:id="@+id/distanceradious_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:drawable/btn_dropdown"
@@ -29,7 +65,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:drawable/btn_default"
-        android:text="Submit"
+        android:text="@string/personalization_submit_button"
         android:visibility="visible" />
 
     <Button
@@ -38,7 +74,7 @@
         android:layout_height="wrap_content"
         android:background="@android:drawable/btn_default"
         android:gravity="left|center_vertical|center_horizontal"
-        android:text="Skip"
+        android:text="@string/personalization_skip_button"
         android:visibility="visible" />
 
 </LinearLayout>

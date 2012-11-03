@@ -56,6 +56,14 @@
 	<string name="navigation">Navigation</string>
 	<string name="calendar">Calendar</string>
 	<string name="title_activity_personalization">Personalize your App!!!</string>
-	<string name="interest_prompt">Select Your Interest</string>
+	<string name="interest_events_prompt">Select Your Events Interest</string>
+	<string name="interest_places_prompt">Select Your Places Interest</string>
     <string name="distance_prompt">Select Radius (Miles)</string>
+    <string name="my_events_tv2">My Events</string>
+    <string name="add_place">Add Place</string>
+    <string name="personalization_submit_button">Submit</string>
+    <string name="personalization_skip_button">Skip</string>
+    <string name="interest_events_tv"> Select your events interest: </string>
+    <string name="interest_places"> Select your places interest: </string>
+    <string name="interest_radius"> Select the search radius: </string>
 </resources>

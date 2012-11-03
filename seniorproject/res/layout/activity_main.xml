@@ -85,7 +85,7 @@
             android:drawableTop="@drawable/red_calendar_96"
             android:gravity="center"
             android:onClick="onShowMyEventsClick"
-            android:text="@string/events_tv"
+            android:text="@string/my_events_tv2"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
