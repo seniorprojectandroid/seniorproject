@@ -292,6 +292,19 @@ public class PlacesActivity extends FilterActivity {
     	this.startNewSearch(true, null);
 	}   
     
+    @Override
+    protected void setupFilters() {
+    	super.setupFilters();
+    	
+    	Spinner spinner = (Spinner)findViewById(R.id.category_spinner);
+    	if ( spinner != null ) {
+    		int selectedIndex = PlaceCategoryFilter.valueOf( SettingsActivity.getDefaultPlaceCategory(this) ).ordinal();
+    		if ( selectedIndex >= 0 ) {
+    			spinner.setSelection(selectedIndex);
+    		}
+    	}
+    }
+
     private class PlacesLoader extends AsyncTask<Void, List<Place>, Integer>
     {
     	protected PlaceCategoryFilter mCategory = PlaceCategoryFilter.RESTAURANT_BARS;

@@ -281,6 +281,19 @@ public class EventsActivity extends FilterActivity {
     	this.startNewSearch(null);
 	}    
     
+    @Override
+    protected void setupFilters() {
+    	super.setupFilters();
+    	
+    	Spinner spinner = (Spinner)findViewById(R.id.category_spinner);
+    	if ( spinner != null ) {
+    		int selectedIndex = EventCategoryFilter.valueOf( SettingsActivity.getDefaultEventsCategory(this) ).ordinal();
+    		if ( selectedIndex >= 0 ) {
+    			spinner.setSelection(selectedIndex);
+    		}
+    	}
+    }
+
     private void startNewSearch(String query) {
     	this.cancelEventLoader();
     	this.hideFilters();

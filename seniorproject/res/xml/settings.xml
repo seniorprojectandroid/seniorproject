@@ -4,25 +4,27 @@
         
         <ListPreference
 					android:entries="@array/distanceradius"
-					android:entryValues="@array/listValues"
-					android:key="distanceradius"
+					android:entryValues="@array/radiusvalues"
+					android:key="pref_distanceradius"
+					android:persistent="true"
 					android:summary="Please click to change your default miles radius"
 					android:title="Search Radius" />
         
         <ListPreference
 					android:entries="@array/placescategories"
 					android:entryValues="@array/PlacesValues"
-					android:key="placescategories"
+					android:key="pref_placescategories"
+					android:persistent="true"
 					android:summary="Please click to change your default chice for places"
 					android:title="Places Categories" />
         
         <ListPreference
 					android:entries="@array/eventscategories"
 					android:entryValues="@array/EventsValues"
-					android:key="eventscategories"
+					android:key="pref_eventscategories"
+					android:persistent="true"
 					android:summary="Please click to change your default chice for events"
 					android:title="Events Categories" />        
-        
         
 
     </PreferenceCategory>
