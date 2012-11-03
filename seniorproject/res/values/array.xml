@@ -4,13 +4,17 @@
      <item>1 Mile</item>
      <item>5 Miles</item>
      <item>10 Miles</item>
+     <item>15 Miles</item>
+     <item>20 Miles</item>
      </string-array>
 
-   <integer-array name="listValues">
+   <string-array name="radiusvalues">
      <item>1</item>
      <item>5</item>
      <item>10</item>
-   </integer-array>
+     <item>15</item>
+     <item>20</item>
+   </string-array>
    
    <string-array name="placescategories">
      <item>Restaurant Bars</item>
@@ -70,20 +74,20 @@
      </string-array>
 
    <string-array name="EventsValues">
-		<item>Arts Crafts</item>
-        <item>Business Tech</item>
+		<item>Arts_Crafts</item>
+        <item>Business_Tech</item>
         <item>Comedy</item>
         <item>Community</item>
         <item>Dance</item>
-        <item>Education Campus</item>
-        <item>Fairs Festivals</item>
-        <item>Food Dining</item>
+        <item>Education_Campus</item>
+        <item>Fairs_Festivals</item>
+        <item>Food_Dining</item>
         <item>Music</item>
         <item>Other</item>
-        <item>Performing Arts</item>
+        <item>Performing_Arts</item>
         <item>Shopping</item>
-        <item>Sports Outdoors</item>
-        <item>Visual Arts</item>
+        <item>Sports_Outdoors</item>
+        <item>Visual_Arts</item>
    </string-array>   
    
     <string-array name="time_filters">

@@ -258,8 +258,8 @@ public class MBVCAProvider extends DataProvider
 			JSONObject eventsObject = new JSONObject(events);
 			
 			JSONArray eventList = null;
-			if ( eventsObject != null && eventsObject.has("Events") && !eventsObject.isNull("Events")) {
-				eventList = eventsObject.getJSONArray("Events");
+			if ( eventsObject != null && eventsObject.has("events") && !eventsObject.isNull("events")) {
+				eventList = eventsObject.getJSONArray("events");
 			} else if ( eventsObject != null && eventsObject.has("solodev_view") && !eventsObject.isNull("solodev_view")) {
 				eventList = eventsObject.getJSONArray("solodev_view");
 			}

@@ -12,6 +12,7 @@ import edu.fiu.cs.seniorproject.data.SourceType;
 
 public abstract class DataProvider {
 	 
+	 protected boolean enabled = true;
 	 protected int eventPageSize = 10;
 	 protected int placePageSize = 10;
 	 
@@ -55,5 +56,13 @@ public abstract class DataProvider {
 	 
 	 protected String getPlaceCategory( PlaceCategoryFilter filter ) {
 		 return filter != null ? String.valueOf(filter.Value()) : null;
+	 }
+	 
+	 public boolean isEnabled() {
+		 return this.enabled;
+	 }
+	 
+	 public void setEnabled( boolean value ) {
+		 this.enabled = value;
 	 }
 }

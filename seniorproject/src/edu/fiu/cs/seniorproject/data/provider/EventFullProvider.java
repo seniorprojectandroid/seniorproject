@@ -49,7 +49,14 @@ public class EventFullProvider extends DataProvider
 						JSONObject events = eventsObject.getJSONObject("events");
 						
 						if ( events != null && events.has("event") && !events.isNull("event")) {
-							JSONArray jsonEventList = events.getJSONArray("event");
+							JSONArray jsonEventList = null;
+							
+							try {
+								jsonEventList = events.getJSONArray("event");
+							} catch (JSONException e) {
+								jsonEventList = new JSONArray();
+								jsonEventList.put(events.getJSONObject("event"));
+							}
 							
 							if ( jsonEventList != null && jsonEventList.length() > 0 )
 							{

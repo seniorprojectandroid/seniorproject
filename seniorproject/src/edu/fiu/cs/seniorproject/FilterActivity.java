@@ -67,6 +67,7 @@ public class FilterActivity extends Activity {
         	picker.setMinValue(1);
         	picker.setMaxValue(20);
         	picker.setWrapSelectorWheel(false);
+        	picker.setValue( SettingsActivity.getDefaultSearchRadius(this) );
         }
 
         this.showFilterAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_from_top);
@@ -83,7 +84,6 @@ public class FilterActivity extends Activity {
 			
 			@Override
 			public void onAnimationEnd(Animation animation) {
-				Logger.Debug("Animation completed. Hiding..");
 				setFilterVisible(false);
 			}
 		});
