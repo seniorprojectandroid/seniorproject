@@ -28,12 +28,15 @@ import edu.fiu.cs.seniorproject.data.provider.DataProvider;
 import edu.fiu.cs.seniorproject.data.provider.EventFullProvider;
 import edu.fiu.cs.seniorproject.data.provider.GPProvider;
 import edu.fiu.cs.seniorproject.data.provider.MBVCAProvider;
+import edu.fiu.cs.seniorproject.utils.DataUtils;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class DataManager {
 
 	private LinkedList<DataProvider> mProviderList = new LinkedList<DataProvider>();
 	private static DataManager mSingleton = null;
+	
+	private List<Event> mEventList = null;
 	
 	private DataManager() {
 		//register all the provider
@@ -83,6 +86,7 @@ public class DataManager {
 	}
 	
 	public ConcurrentEventListLoader getConcurrentEventList(Location location, EventCategoryFilter category, String radius, String query, DateFilter date) {
+		this.mEventList = null;
 		ConcurrentEventListLoader loader = new ConcurrentEventListLoader(false);
 		loader.execute(location, category, radius, query, date);
 		return loader;
@@ -184,6 +188,27 @@ public class DataManager {
 			mSingleton = new DataManager();
 		}
 		return mSingleton;
+	}
+	
+	synchronized private List<Event> filterEventList( List<Event> list ) {
+		List<Event> result = null;
+		if ( this.mEventList == null ) {
+			this.mEventList = list;
+			result = list;
+		} else if ( list != null ) {
+			result = new ArrayList<Event>(list.size());
+			for (Event currentEvent : this.mEventList) {
+				for (Event newEvent : list) {
+					if ( !DataUtils.isSameEvent(currentEvent, newEvent)) {
+						result.add(newEvent);
+					}// else {
+					//	Logger.Debug( "Event merged a = " + currentEvent.toString() + " b = " + newEvent.toString() );
+					//}
+				}
+			}
+			this.mEventList.addAll(result);			
+		}
+		return result;
 	}
 	
 	private class BitmapDownloader extends AsyncTask<String, Void, Bitmap> {
@@ -366,7 +391,7 @@ public class DataManager {
 			List<Event> result = null;
 			if ( counter.get() > 0 ) {
 				try {
-					result = mResultQueue.take();
+					result = filterEventList( mResultQueue.take() );
 				} catch (InterruptedException e) {
 					Logger.Error("InterruptedException exception getting result " + e.getMessage());
 				}
