@@ -136,6 +136,24 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.fiu.cs.seniorproject.MainActivity" />
         </activity>
+        <activity
+            android:name=".TourActivity"
+            android:label="@string/title_activity_tour" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".TourActivityDetails"
+            android:label="@string/title_activity_tour_activity_details" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

@@ -10,10 +10,12 @@ import android.view.View;
 
 public class MainActivity extends Activity {
 
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main);    
+        
     }
 
     @Override
@@ -59,6 +61,11 @@ public class MainActivity extends Activity {
     	this.startActivity(intent);
     }
     
+    public void onShowToursClick(View view) {
+    	Intent intent = new Intent(this, TourActivity.class);
+    	this.startActivity(intent);
+    }
+    
     public void onSettingsClick(MenuItem view) {
     	Intent intent = new Intent(this, SettingsActivity.class);
     	this.startActivity(intent);
@@ -69,7 +76,9 @@ public class MainActivity extends Activity {
     	this.startActivity(intent);
     }
     public void onShowMyEventsClick (View view) {
-    	Intent intent = new Intent(this, MyEventsActivity.class); 
+    	Intent intent = new Intent(this,PersonalizationActivity.class); 
     	this.startActivity(intent);
+    
+    	
     }
 }

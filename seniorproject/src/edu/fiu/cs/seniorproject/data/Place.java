@@ -8,6 +8,8 @@ public class Place {
 	private String id;
 	private String name;
 	private Location location;
+	private String telephone;
+	private String category;
 	private String description;
 	private String website;
 	private String image;
@@ -85,6 +87,24 @@ public class Place {
 	public List<Event> getEventsAtPlace()
 	{
 		return this.eventsAtPlace;
+	}
+	
+	public void setTelephone(String telep)
+	{
+		this.telephone = telep;
+	}
+	
+	public String getTelephone() {
+		return this.telephone;
+	}
+	
+	public void setCategory(String cat)
+	{
+		this.category = cat;
+	}
+	
+	public String getCategory() {
+		return this.category;
 	}
 
 }
