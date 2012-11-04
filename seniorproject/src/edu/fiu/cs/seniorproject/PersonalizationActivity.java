@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
+import android.database.SQLException;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -13,16 +15,18 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import edu.fiu.cs.seniorproject.data.MbGuideDB;
 
 
 public class PersonalizationActivity extends Activity implements OnItemSelectedListener
 {
 	private Spinner spinner1, spinner2, spinner3;
 	private Button btnSubmit, btnSkip;	
-	
-	String[] eventsValues;
-	String[] placesValues;
-	String[] radiusValues;
+	private String eCategory, pCategory, radius;
+	private MbGuideDB db = new MbGuideDB(this);
+//	String[] eventsValues;
+//	String[] placesValues;
+//	String[] radiusValues;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -76,8 +80,9 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 	{
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		Editor editor = pref.edit();		
-		Resources res = getResources();  
-		editor.putString(SettingsFragment.KEY_DEFAULT_EVENT_CATEGORY, res.getStringArray(R.array.EventsValues)[pos] );
+		Resources res = getResources(); 
+		eCategory =  res.getStringArray(R.array.EventsValues)[pos];
+		editor.putString(SettingsFragment.KEY_DEFAULT_EVENT_CATEGORY,eCategory );
 		editor.commit();
 
 	}
@@ -87,7 +92,8 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		Editor eventsPrefEditor = pref.edit();		
 		Resources res = getResources(); 
-		eventsPrefEditor.putString(SettingsFragment.KEY_DEFAULT_PLACE_CATEGORY,res.getStringArray(R.array.PlacesValues)[pos] );
+		pCategory = res.getStringArray(R.array.PlacesValues)[pos];
+		eventsPrefEditor.putString(SettingsFragment.KEY_DEFAULT_PLACE_CATEGORY, pCategory );
 		eventsPrefEditor.commit();		
 	}
 	
@@ -96,7 +102,8 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		Editor editor = pref.edit();		
 		Resources res = getResources();  
-		editor.putString(SettingsFragment.KEY_DISTANCE_RADIUS, res.getStringArray(R.array.radiusvalues)[pos]);
+		radius = res.getStringArray(R.array.radiusvalues)[pos];
+		editor.putString(SettingsFragment.KEY_DISTANCE_RADIUS, radius );
 		editor.commit();
 	}
 
@@ -133,6 +140,27 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 					setEventsPref(eventPos);
 					setPlacesPref(placePos);
 					setRadiusPref(radiusPos);
+					
+					try{
+						
+						db.openDatabase();
+						
+						// set flag of other records
+						int res = db.setUserPrefInactiveFlag();
+						
+						Log.i("User_Prerences_Table", "# of rows affected = " + res);
+						
+						
+						// and insert this new record as the actual preferences
+						db.createUserPrefRecord(eCategory, pCategory, radius);
+						
+						db.closeDatabase();
+						
+					}catch(SQLException e){
+						
+						e.printStackTrace();
+					}
+					
 					PersonalizationActivity.this.startActivity(intent);
 			}
 

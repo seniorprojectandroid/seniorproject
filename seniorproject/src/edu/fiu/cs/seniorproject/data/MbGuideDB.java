@@ -21,8 +21,7 @@ public class MbGuideDB {
 	private static final String PLACE_TABLE_NAME = "Place";
 	// private static final String CATEGORY_TABLE_NAME = "Categoty";
 	// private static final String LOCATION_TABLE_NAME = "Location";
-	// private static final String USER_PREFFERENCES_TABLE_NAME =
-	// "User_Prefferences";
+	 private static final String USER_PREFERENCES_TABLE_NAME = "User_Preferences";
 
 	// Event table
 	public static final String EVENT_ID = "event_id";
@@ -68,6 +67,13 @@ public class MbGuideDB {
 	public static final String LOCATION_NAME = "location_name";
 	public static final String LOCATION_LATITUDE = "location_latitude";
 	public static final String LOCATION_LONGITUDE = "location_longitude";
+	
+	// User_Preferences table
+	public static final String PREF_ID = "pref_id";
+	public static final String PREF_EVENT_CATEGORY = "pref_event_category";
+	public static final String PREF_PLACE_CATEGORY = "pref_place_category";
+	public static final String PREF_RADIUS_CATEGORY = "pref_radius_category";
+	public static final String PREF_IS_ACTIVE_FLAG = "pref_is_active_flag";
 
 	public static final int SET_DELETED_FLAG = 1;
 	public static final int NOT_SET_DELETED_FLAG = 0;
@@ -100,11 +106,26 @@ public class MbGuideDB {
 		contentValues.put(EVENT_LOCATION, eventLocation);
 		mbDatabase.insert(EVENT_TABLE_NAME, null, contentValues);
 	}
+	
+	public void createUserPrefRecord(String eCategory, String pCategory, String radius ) throws SQLException {
+		ContentValues contentValues = new ContentValues();
+		
+		if(eCategory != null)
+			contentValues.put(PREF_EVENT_CATEGORY, eCategory);
+		if(pCategory != null)
+			contentValues.put(PREF_PLACE_CATEGORY, pCategory);
+		if(radius != null)
+			contentValues.put(PREF_RADIUS_CATEGORY, radius);
+		mbDatabase.insert(USER_PREFERENCES_TABLE_NAME, null, contentValues);
+	}
+	
+	
 
-	public void createEventRecordVersion2(String eventName,
+   	public void createEventRecordVersion2(String eventName,
 			long eventCalendarID, String eventLocation, long eTimeStarts,
 			long eTimeEnds) throws SQLException {
 		ContentValues contentValues = new ContentValues();
+		
 		contentValues.put(EVENT_NAME, eventName);
 		contentValues.put(EVENT_CALENDAR_ID, eventCalendarID);
 		contentValues.put(EVENT_LOCATION, eventLocation);
@@ -113,8 +134,40 @@ public class MbGuideDB {
 
 		mbDatabase.insert(EVENT_TABLE_NAME, null, contentValues);
 	}
+   	
+   	public void createPlaceRecord(String placeId, String placeName, String placeAddress, String placeLatitude, String placeLongitude, 
+			String placeDescrition, String  placeWebsite, String placeSourceType ) throws SQLException {
+		
+		ContentValues contentValues = new ContentValues();
+		
+		if(placeId != null)
+			contentValues.put(PLACE_ID, placeId);
+		
+		if(placeName != null)
+			contentValues.put(PLACE_NAME, placeName);
+		
+		if(placeAddress != null)
+			contentValues.put(PLACE_ADDRESS, placeAddress);
+		
+		if(placeLatitude != null)
+		contentValues.put(PLACE_LATITUDE, placeLatitude);
+		
+		if(placeLongitude != null)
+			contentValues.put(PLACE_LONGITUDE, placeLongitude);
+		
+		if(placeDescrition != null)		
+			contentValues.put(PLACE_DESCRIPTION, placeDescrition);
+		
+		if(placeWebsite != null)	
+			contentValues.put(PLACE_WEBSITE, placeWebsite);
+		
+		if( placeSourceType != null)
+			contentValues.put(PLACE_SOURCE_TYPE, placeSourceType);
+		
+		mbDatabase.insert(PLACE_TABLE_NAME, null, contentValues);
+	}
 
-	public boolean exists(String s) throws SQLException {
+	public boolean existsEvent(String s) throws SQLException {
 		String[] columns = new String[] { EVENT_NAME, EVENT_CALENDAR_ID,
 				EVENT_LOCATION }; // KEY_ROW_ID,
 		Cursor c = mbDatabase.query(EVENT_TABLE_NAME, columns, EVENT_NAME
@@ -234,37 +287,7 @@ public class MbGuideDB {
 		return events;
 	}
 
-	public void createPlaceRecord(String placeId, String placeName, String placeAddress, String placeLatitude, String placeLongitude, 
-			String placeDescrition, String  placeWebsite, String placeSourceType ) throws SQLException {
-		
-		ContentValues contentValues = new ContentValues();
-		
-		if(placeId != null)
-			contentValues.put(PLACE_ID, placeId);
-		
-		if(placeName != null)
-			contentValues.put(PLACE_NAME, placeName);
-		
-		if(placeAddress != null)
-			contentValues.put(PLACE_ADDRESS, placeAddress);
-		
-		if(placeLatitude != null)
-		contentValues.put(PLACE_LATITUDE, placeLatitude);
-		
-		if(placeLongitude != null)
-			contentValues.put(PLACE_LONGITUDE, placeLongitude);
-		
-		if(placeDescrition != null)		
-			contentValues.put(PLACE_DESCRIPTION, placeDescrition);
-		
-		if(placeWebsite != null)	
-			contentValues.put(PLACE_WEBSITE, placeWebsite);
-		
-		if( placeSourceType != null)
-			contentValues.put(PLACE_SOURCE_TYPE, placeSourceType);
-		
-		mbDatabase.insert(PLACE_TABLE_NAME, null, contentValues);
-	}
+	
 	
 	public boolean existsPlace(String placeId) throws SQLException {
 		Cursor cursor = mbDatabase.rawQuery("SELECT * FROM " + PLACE_TABLE_NAME
@@ -276,7 +299,7 @@ public class MbGuideDB {
 				return true;
 			}
 		}
-		cursor.close();
+	
 		return false;
 	}
 	
@@ -347,41 +370,96 @@ public class MbGuideDB {
 					PLACE_TIME_CLOSES + " INTEGER, " +
 					PLACE_HAS_EVENT_FLAG +" INTEGER DEFAULT (0), " +
 					PLACE_EVENT_ID + " TEXT );";
-
 		
+		private static final String createUserPrefTableQuery = "CREATE TABLE "
+				+ USER_PREFERENCES_TABLE_NAME + " ( " +
+				PREF_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+				PREF_EVENT_CATEGORY + " TEXT, " + 
+				PREF_PLACE_CATEGORY + " TEXT, " +
+				PREF_RADIUS_CATEGORY + " TEXT, "+
+				PREF_IS_ACTIVE_FLAG +" INTEGER DEFAULT (0) );";					
 
 
 		public MbGuideHelper(Context context) {
 
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
-			// TODO Auto-generated constructor stub
+			
 		}
 
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			// Still Using VERSION 2
-			// db.execSQL(createEventTableQuery1);
-			// db.execSQL(createTestTableQuery);
-
-			// Next Will Use VERSION 3
 			db.execSQL(createEventTableQuery);
 			db.execSQL(createPlaceTableQuery);
+			db.execSQL(createUserPrefTableQuery);
 		}
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			db.execSQL("DROP TABLE IF EXISTS " + EVENT_TABLE_NAME);
 			onCreate(db);
-
-			// db.execSQL("DROP TABLE IF EXISTS "+TEST_TABLE_NAME );
-			// onCreate(db);
-
 			db.execSQL("DROP TABLE IF EXISTS " + PLACE_TABLE_NAME);
+			onCreate(db);
+			db.execSQL("DROP TABLE IF EXISTS "+USER_PREFERENCES_TABLE_NAME );
 			onCreate(db);
 
 		}
 
 	}
 
+	public boolean isUserPrefSet() throws SQLException{
+		
+			//Cursor cursor = mbDatabase.rawQuery("SELECT * FROM " + USER_PREFERENCES_TABLE_NAME, null);
+			Cursor cursor = mbDatabase.rawQuery("SELECT "+ PREF_ID +" FROM " + USER_PREFERENCES_TABLE_NAME, null);
+			if (cursor != null) {
+				if (cursor.getCount() > 0) {
+					cursor.close();
+					return true;
+				}
+			}
+		
+		return false;
+	}
 
+	public int setUserPrefInactiveFlag() throws SQLException{
+		
+		String updateFilter = PREF_IS_ACTIVE_FLAG + " = " + NOT_SET_DELETED_FLAG ;
+		ContentValues args = new ContentValues();
+		args.put(PREF_IS_ACTIVE_FLAG, SET_DELETED_FLAG);
+		int affectedRows = mbDatabase.update(USER_PREFERENCES_TABLE_NAME, args,updateFilter, null);
+		return affectedRows;
+	}
+	
+	public int getEventCategoryCount()
+	{
+		
+		int count =0;
+		return count;
+	}
+	public int getPlaceCategoryCount()
+	{
+		int count =0;
+		return count;
+	}
+	public int getRadiusCount()
+	{
+		int count =0;
+		return count;
+	}
+	
+	public String selectPrefEventCategory()
+	{
+		String eCategory = "";
+		return eCategory;
+	}
+	public String selectPrefPlaceCategory()
+	{
+		String pCategory = "";
+		return pCategory;
+	}
+	public String selectPrefRadius()
+	{
+		String radius = "";
+		return radius;
+	}
+	
 }
