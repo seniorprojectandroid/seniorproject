@@ -28,7 +28,7 @@ public class DataUtils {
 		
 		if ( a != null && b != null ) {
 			a = a.toLowerCase();
-			a = b.toLowerCase();
+			b = b.toLowerCase();
 			
 			int m[][] = getMatrix(b.length() + 1);
 			
@@ -78,6 +78,9 @@ public class DataUtils {
 //				Logger.Debug("compare events nameA=" + a.toString() + " nameB=" + b.toString() + " lcs=" + lcs + " distance=" + distance[0] );
 //			}
 			result = ( lcs / minLength >= 0.8 && distance[0] <= 100.0);
+			if ( result ) {
+				Logger.Debug("compare events nameA=" + aName + " nameB=" + bName + " lcs=" + lcs + " distance=" + distance[0] );
+			}
 		}
 		return result;
 	}
