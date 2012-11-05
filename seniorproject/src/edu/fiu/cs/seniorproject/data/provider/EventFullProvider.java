@@ -269,21 +269,30 @@ public class EventFullProvider extends DataProvider
 					
 					StringBuilder myAddress = new StringBuilder(110);	
 					
-					if ( iter.has("venue_address") )
+					if ( iter.has("venue_address") && !iter.isNull("venue_address") )
 					{
-						myAddress.append(iter.getString("venue_address")+",");
+						myAddress.append(iter.getString("venue_address"));
+					} else if ( iter.has("address") && !iter.isNull("address"))
+					{
+						myAddress.append(iter.getString("address"));
 					}
-					else if ( iter.has("city_name"))
+						
+					if ( iter.has("city_name") && !iter.isNull("city_name"))
 					{
-						myAddress.append(iter.getString("city_name")+",");
+						if ( myAddress.length() > 0 ) myAddress.append(",");
+						myAddress.append(iter.getString("city_name"));
 					}
-					else if( iter.has("region_abbr"))
+					
+					if( iter.has("region_abbr") && !iter.isNull("region_abbr"))
 					{
-						myAddress.append(iter.getString("region_abbr")+",");
+						if ( myAddress.length() > 0 ) myAddress.append(",");
+						myAddress.append(iter.getString("region_abbr"));
 					}
-					else if( iter.has("postal_code"))
+					
+					if( iter.has("postal_code") && !iter.isNull("postal_code"))
 					{
-						myAddress.append(iter.getString("postal_code")+",");
+						if ( myAddress.length() > 0 ) myAddress.append(",");
+						myAddress.append(iter.getString("postal_code"));
 					}
 					
 					eventLocation.setAddress(myAddress.toString());
@@ -340,21 +349,30 @@ public class EventFullProvider extends DataProvider
 					
 					StringBuilder myAddress = new StringBuilder(110);	
 					
-					if ( iter.has("venue_address") )
+					if ( iter.has("venue_address") && !iter.isNull("venue_address") )
 					{
-						myAddress.append(iter.getString("venue_address")+",");
+						myAddress.append(iter.getString("venue_address"));
+					} else if ( iter.has("address") && !iter.isNull("address"))
+					{
+						myAddress.append(iter.getString("address"));
 					}
-					else if ( iter.has("city_name"))
+						
+					if ( iter.has("city_name") && !iter.isNull("city_name"))
 					{
-						myAddress.append(iter.getString("city_name")+",");
+						if ( myAddress.length() > 0 ) myAddress.append(",");
+						myAddress.append(iter.getString("city_name"));
 					}
-					else if( iter.has("region_abbr"))
+					
+					if( iter.has("region_abbr") && !iter.isNull("region_abbr"))
 					{
-						myAddress.append(iter.getString("region_abbr")+",");
+						if ( myAddress.length() > 0 ) myAddress.append(",");
+						myAddress.append(iter.getString("region_abbr"));
 					}
-					else if( iter.has("postal_code"))
+					
+					if( iter.has("postal_code") && !iter.isNull("postal_code"))
 					{
-						myAddress.append(iter.getString("postal_code")+",");
+						if ( myAddress.length() > 0 ) myAddress.append(",");
+						myAddress.append(iter.getString("postal_code"));
 					}
 					
 					placeLocation.setAddress(myAddress.toString());
@@ -372,7 +390,14 @@ public class EventFullProvider extends DataProvider
 				if ( iter.has("events") && !iter.isNull("events") )
 				{
 					JSONObject events = iter.getJSONObject("events");
-					JSONArray jsonEventList = events.getJSONArray("event");
+					JSONArray jsonEventList = null;
+					
+					try {
+						jsonEventList = events.getJSONArray("event");
+					} catch (JSONException e) {
+						jsonEventList = new JSONArray();
+						jsonEventList.put( events.getJSONObject("event") );
+					}
 					
 					List<Event> myEventList = null;
 					
@@ -407,8 +432,16 @@ public class EventFullProvider extends DataProvider
 	
 	@Override
 	protected String getEventCategory(EventCategoryFilter filter) {
-		// FIXME Should match general categories into Eventfull categories
-		return null;
+		String result = null;
+		if ( filter != null && filter != EventCategoryFilter.NONE ) {
+			final String[] categoryList = new String[]{ "art", "business,technology", "others", "community", "music", "learning_education", "festivals_parades", "food", "music", "others", "performing_arts", "others", "outdoors_recreation", "art,performing_arts" };
+			int index = filter.ordinal();
+			
+			if ( index < categoryList.length ) {
+				result = categoryList[index];
+			}
+		}
+		return result;
 	}
 	
 	@Override
@@ -453,7 +486,7 @@ public class EventFullProvider extends DataProvider
 			result = nextMonthStart + "00-" + nextMonthEnd + "23";
 			break;
 			
-			default:
+		default:
 				result="All";
 		}
 		return result;

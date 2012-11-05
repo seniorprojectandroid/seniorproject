@@ -81,4 +81,8 @@ public class Event
 		this.image = url;
 	}
 
+	@Override
+	public String toString() {
+		return "Event id=" + this.id + " name=" + this.name + " " + super.toString();
+	}
 }

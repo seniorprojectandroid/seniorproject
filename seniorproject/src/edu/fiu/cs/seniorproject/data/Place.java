@@ -107,4 +107,9 @@ public class Place {
 		return this.category;
 	}
 
+	@Override
+	public String toString() {
+		String l = this.location != null ? this.location.getLatitude() + ":" + this.location.getLongitude() + " addrees=" + this.location.getAddress() : "Unknow";
+		return "Place id=" + this.id + " name=" + this.name + " loc=" + l + " " + super.toString();
+	}
 }

@@ -48,7 +48,7 @@ public class GPProvider extends DataProvider {
 	
 	private Hashtable<String,String> getCategories()
 	{
-		this.categories.put(PlaceCategoryFilter.RESTAURANT_BARS.toString(), "restaurant");
+		this.categories.put(PlaceCategoryFilter.RESTAURANT_BARS.toString(), "restaurant|bar");
 		this.categories.put(PlaceCategoryFilter.HOTEL.toString(), "lodging");
 		this.categories.put(PlaceCategoryFilter.BAKERY.toString(), "bakery");
 		this.categories.put(PlaceCategoryFilter.DENTISTS.toString(), "dentist");
@@ -517,7 +517,7 @@ public class GPProvider extends DataProvider {
 		String radiusInMeters = String.valueOf( Double.valueOf(radius) * 1609.34 );
 		result = getPlaces(location, categ, radiusInMeters, query);
 
-		if (result != null && result.length() > 0) 
+		if (result != null && !result.isEmpty() ) 
 		{
 			try {
 				data = new JSONObject(result);
@@ -680,7 +680,7 @@ public class GPProvider extends DataProvider {
 	 
 	 protected String getPlaceCategory( PlaceCategoryFilter filter )
 	 {
-		 return filter != null ? String.valueOf(filter.Value()) : null;
+		 return filter != null ? this.getCategory(filter.toString()) : null;
 	 }
 	 
 	 protected String getEventCategory( EventCategoryFilter filter ) {

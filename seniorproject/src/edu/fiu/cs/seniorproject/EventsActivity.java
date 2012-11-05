@@ -68,8 +68,9 @@ public class EventsActivity extends FilterActivity {
         
         this.setupFilters();
         
-        mEventLoader = new EventLoader(this);
-        this.loadEvents();
+        //mEventLoader = new EventLoader(this);
+        //this.loadEvents();
+        this.startNewSearch(null);
     }
 
     @Override
@@ -308,7 +309,7 @@ public class EventsActivity extends FilterActivity {
     	mEventLoader = new EventLoader(this);
     	this.getSearchFilters();
     	this.mEventLoader.mQuery = query;
-    	this.loadEvents();    	
+    	this.loadEvents();
     }
     
     // Method to show all events in a MapView 
@@ -352,7 +353,9 @@ public class EventsActivity extends FilterActivity {
 				List<Event> iter = null;
 				while ( (iter = this.mLoader.getNext()) != null ) {
 					total += iter.size();
-					Logger.Debug("Add new set of data size = " + iter.size());
+					
+					String source = iter.size() > 0 ? iter.get(0).getSource().toString() : "Unknow";
+					Logger.Debug("Add new set of data from " + source + " size = " + iter.size());
 					
 					if ( iter.size() > 0 ) {
 						this.publishProgress(iter);
