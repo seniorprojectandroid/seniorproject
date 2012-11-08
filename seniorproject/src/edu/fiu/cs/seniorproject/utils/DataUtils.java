@@ -56,7 +56,26 @@ public class DataUtils {
 		int minLength = min(a.getName().length(), b.getName().length());
 		
 		//Logger.Debug("compare events nameA=" + a.getName() + " nameB=" + b.getName() + " lcs=" + lcs + " distance=" + distance[0] );
-		return ( lcs / minLength >= 0.8 && distance[0] <= 50.0 && Math.abs( Long.valueOf( a.getTime() ) - Long.valueOf( b.getTime() ) ) <= 30 * 60 );
+		return ( ( (lcs / minLength >= 0.8 && distance[0] <= 100.0) || (lcs == minLength && distance[0] <= 500.0) ) && Math.abs( Long.valueOf( a.getTime() ) - Long.valueOf( b.getTime() ) ) <= 30 * 60 );
+	}
+	
+	public static boolean isSameAddress(String addressA, String addressB) {
+		boolean result = false;
+		
+		if ( addressA != null && addressB != null && !addressA.isEmpty() && !addressB.isEmpty() ) {
+			if ( Character.isDigit(addressA.charAt(0)) && Character.isDigit(addressB.charAt(0))) {
+				int index = addressA.indexOf(',');	// get the street only
+				if ( index > 0 ) {
+					addressA = addressA.substring(0, index);
+				}
+				index = addressB.indexOf(','); // get the street only
+				if ( index > 0 ) {
+					addressB = addressB.substring(0, index);
+				}
+				result = addressA.equals(addressB);
+			}
+		}
+		return result;
 	}
 	
 	public static boolean isSamePlace( Place a, Place b) {
@@ -73,13 +92,14 @@ public class DataUtils {
 		} else {
 			int lcs = LongestCommonSubsecuence(aName, bName);
 			int minLength = min(aName.length(), bName.length());
+			boolean hasSameStreet = isSameAddress(a.getLocation().getAddress(), b.getLocation().getAddress());
 			
 //			if ( a.getName().equals("Delano Hotel") && b.getName().equals("Delano Hotel") ) {
 //				Logger.Debug("compare events nameA=" + a.toString() + " nameB=" + b.toString() + " lcs=" + lcs + " distance=" + distance[0] );
 //			}
-			result = ( lcs / minLength >= 0.8 && distance[0] <= 100.0);
+			result = ( (hasSameStreet && lcs >= minLength / 2 ) || (lcs == minLength && distance[0] < 1000 ) || ( lcs / minLength >= 0.8 && distance[0] <= 100.0) );
 			if ( result ) {
-				Logger.Debug("compare events nameA=" + aName + " nameB=" + bName + " lcs=" + lcs + " distance=" + distance[0] );
+				Logger.Debug("compare places nameA=" + aName + " nameB=" + bName + " lcs=" + lcs + " distance=" + distance[0] );
 			}
 		}
 		return result;
