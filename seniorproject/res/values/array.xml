@@ -91,7 +91,6 @@
    </string-array>   
    
     <string-array name="time_filters">
-        <item>NOME</item>
         <item>TODAY</item>
         <item>THIS WEEK</item>
         <item>THIS WEEKEND</item>

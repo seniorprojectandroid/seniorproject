@@ -28,12 +28,16 @@ import edu.fiu.cs.seniorproject.data.provider.DataProvider;
 import edu.fiu.cs.seniorproject.data.provider.EventFullProvider;
 import edu.fiu.cs.seniorproject.data.provider.GPProvider;
 import edu.fiu.cs.seniorproject.data.provider.MBVCAProvider;
+import edu.fiu.cs.seniorproject.utils.DataUtils;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class DataManager {
 
 	private LinkedList<DataProvider> mProviderList = new LinkedList<DataProvider>();
 	private static DataManager mSingleton = null;
+	
+	private List<Event> mEventList = null;
+	private List<Place> mPlaceList = null;
 	
 	private DataManager() {
 		//register all the provider
@@ -54,6 +58,7 @@ public class DataManager {
 	public List<Event> getEventList(Location location, EventCategoryFilter category, String radius, String query, DateFilter date) {
 		List<Event> result = null;
 		
+		this.mEventList = null;
 		if ( mProviderList.size() > 0 ) {
 			for( int i = 0; i < mProviderList.size(); i++ ) {
 				DataProvider provider = mProviderList.get(i);
@@ -83,6 +88,7 @@ public class DataManager {
 	}
 	
 	public ConcurrentEventListLoader getConcurrentEventList(Location location, EventCategoryFilter category, String radius, String query, DateFilter date) {
+		this.mEventList = null;
 		ConcurrentEventListLoader loader = new ConcurrentEventListLoader(false);
 		loader.execute(location, category, radius, query, date);
 		return loader;
@@ -97,6 +103,7 @@ public class DataManager {
 	public List<Place> getPlaceList(Location location, PlaceCategoryFilter category, String radius, String query) {
 		List<Place> result = null;
 		
+		this.mPlaceList = null;
 		if ( mProviderList.size() > 0 ) {
 			for( int i = 0; i < mProviderList.size(); i++ ) {
 				DataProvider provider = mProviderList.get(i);
@@ -124,7 +131,7 @@ public class DataManager {
 	}
 	
 	public ConcurrentPlaceListLoader getConcurrentPlaceList(Location location, PlaceCategoryFilter category, String radius, String query) {
-		Logger.Debug("get concurrent place list");
+		this.mPlaceList = null;
 		ConcurrentPlaceListLoader loader = new ConcurrentPlaceListLoader(false);
 		loader.execute(location, category, radius, query);
 		return loader;
@@ -184,6 +191,62 @@ public class DataManager {
 			mSingleton = new DataManager();
 		}
 		return mSingleton;
+	}
+	
+	synchronized private List<Event> filterEventList( List<Event> list ) {
+		List<Event> result = null;
+		if ( this.mEventList == null ) {
+			this.mEventList = list;
+			result = list;
+		} else if ( list != null ) {
+			result = new ArrayList<Event>(list.size());
+			
+			for (Event newEvent : list) {
+				boolean alreadyExist = false;
+				
+				for (Event currentEvent : this.mEventList) {
+					if ( DataUtils.isSameEvent(currentEvent, newEvent)) {
+						Logger.Debug( "Event merged a = " + currentEvent.toString() + " b = " + newEvent.toString() );
+						alreadyExist = true;
+						break;
+					}
+				}
+				
+				if ( !alreadyExist ) {
+					result.add(newEvent);
+				}
+			}
+			
+			this.mEventList.addAll(result);
+		}
+		return result;
+	}
+	
+	synchronized private List<Place> filterPlaceList( List<Place> list ) {
+		List<Place> result = null;
+		if ( this.mPlaceList == null ) {
+			this.mPlaceList = list;
+			result = list;
+		} else if ( list != null ){
+			result = new ArrayList<Place>(list.size());			
+			for(Place newPlace : list ){
+				boolean alreadyExist = false;
+				
+				for (Place currentPlace : this.mPlaceList) {
+					if ( DataUtils.isSamePlace(currentPlace, newPlace)) {
+						Logger.Debug("Place merged a=" + currentPlace.toString() + " b=" + newPlace.toString());
+						alreadyExist = true;
+						break;
+					}
+				}
+				
+				if ( !alreadyExist ) {
+					result.add(newPlace);
+				}
+			}
+			this.mPlaceList.addAll(result);
+		}
+		return result;
 	}
 	
 	private class BitmapDownloader extends AsyncTask<String, Void, Bitmap> {
@@ -280,7 +343,8 @@ public class DataManager {
 			List<Place> result = null;
 			if ( counter.get() > 0 ) {
 				try {
-					result = mResultQueue.take();
+					List<Place> list = mResultQueue.take();
+					result = filterPlaceList( list );
 				} catch (InterruptedException e) {
 					Logger.Error("InterruptedException exception getting result " + e.getMessage());
 				}
@@ -366,7 +430,8 @@ public class DataManager {
 			List<Event> result = null;
 			if ( counter.get() > 0 ) {
 				try {
-					result = mResultQueue.take();
+					List<Event> list = mResultQueue.take();
+					result = filterEventList( list );
 				} catch (InterruptedException e) {
 					Logger.Error("InterruptedException exception getting result " + e.getMessage());
 				}

@@ -168,6 +168,7 @@ public class RestClient {
 	        in.close();
         } catch (Exception e) {
         	Logger.Error("Exception reading from network. " + e.getMessage() );
+        	return null;
         }
         return sb.toString();
     }

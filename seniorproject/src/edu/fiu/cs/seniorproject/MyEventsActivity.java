@@ -35,7 +35,9 @@ public class MyEventsActivity extends ListActivity {
         else
         {
         	TextView tv = (TextView)findViewById(android.R.id.text1);
-        	tv.setText("No events");
+        	if ( tv != null ) {
+        		tv.setText("No events");
+        	}
         }
         
     }

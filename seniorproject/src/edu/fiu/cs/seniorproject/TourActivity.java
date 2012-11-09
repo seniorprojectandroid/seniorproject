@@ -120,5 +120,14 @@ public class TourActivity extends Activity{
 	    	}
     	
     }// end showEventList
+    
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		 tours = null;	
+		 mTourList = null;	
+		 parser = null;
+	}
 	
 }// end TourActivity

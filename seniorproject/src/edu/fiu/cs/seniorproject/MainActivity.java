@@ -3,17 +3,40 @@ package edu.fiu.cs.seniorproject;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.SQLException;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import edu.fiu.cs.seniorproject.data.MbGuideDB;
 
 public class MainActivity extends Activity {
 
+	MbGuideDB db;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main); 
+        db = new MbGuideDB(this);
+        
+        try
+        {
+        	db.openDatabase();
+        	
+        	if(!db.isUserPrefSet())
+        	{
+        		  Intent intent = new Intent(this, PersonalizationActivity.class);
+        	      startActivity(intent);
+        	}
+        	db.closeDatabase();
+        }
+        catch(SQLException s)
+        {
+        	s.printStackTrace();
+        	
+        }
+      
+        
     }
 
     @Override
@@ -74,7 +97,10 @@ public class MainActivity extends Activity {
     	this.startActivity(intent);
     }
     public void onShowMyEventsClick (View view) {
-    	Intent intent = new Intent(this, MyEventsActivity.class); 
+    	Intent intent = new Intent(this,MyEventsActivity.class); 
+    	//Intent intent = new Intent(this,PersonalizationActivity.class); 
     	this.startActivity(intent);
+    
+    	
     }
 }

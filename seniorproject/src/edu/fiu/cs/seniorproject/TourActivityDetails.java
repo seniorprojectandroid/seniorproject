@@ -17,7 +17,7 @@ public class TourActivityDetails extends MapActivity {
 	
 	private List<Place> tours = null;		
 	private XMLParser parser = null;	
-	XmlResourceParser stringXmlContent = null;	
+	private XmlResourceParser stringXmlContent = null;	
 	private int cont = 1;
 	
     @Override
@@ -116,5 +116,12 @@ public class TourActivityDetails extends MapActivity {
 	protected boolean isRouteDisplayed() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		 tours = null;		
+		 parser = null;
+		 stringXmlContent = null;
 	}
 }
