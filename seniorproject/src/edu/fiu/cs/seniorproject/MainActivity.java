@@ -97,8 +97,8 @@ public class MainActivity extends Activity {
     	this.startActivity(intent);
     }
     public void onShowMyEventsClick (View view) {
-    	//Intent intent = new Intent(this,MyEventsActivity.class); 
-    	Intent intent = new Intent(this,PersonalizationActivity.class); 
+    	Intent intent = new Intent(this,MyEventsActivity.class); 
+    	//Intent intent = new Intent(this,PersonalizationActivity.class); 
     	this.startActivity(intent);
     
     	
