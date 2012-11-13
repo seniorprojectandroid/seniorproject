@@ -1,19 +1,29 @@
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/beach_big_bkg"
     android:orientation="vertical"
     android:stretchColumns="0,1" >
-
-    <TableRow
+    
+    
+    
+ <TableLayout
+    android:layout_weight="0.2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/beach_big_bkg"
+    android:orientation="vertical"
+    android:stretchColumns="0,1" >   
+    
+      <TableRow
         android:id="@+id/tableRow1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.3"
+        android:layout_weight="0.2"
         android:gravity="center_vertical" >
-
-        <TextView
+    
+      <TextView
             android:id="@+id/facebookImageButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -36,14 +46,13 @@
             android:onClick="onShowGeoLocationClick"
             android:text="@string/location"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-
     </TableRow>
 
     <TableRow
         android:id="@+id/tableRow2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="0.3"
+        android:layout_weight="0.2"
         android:gravity="center_vertical" >
 
         <TextView
@@ -67,14 +76,13 @@
             android:onClick="onShowPlacesClick"
             android:text="@string/places"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-
     </TableRow>
 
     <TableRow
         android:id="@+id/tableRow3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="0.4"
+        android:layout_weight="0.2"
         android:gravity="center_vertical" >
 
         <TextView
@@ -98,20 +106,64 @@
             android:onClick="onShowMyPlacesClick"
             android:text="@string/my_places"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-
     </TableRow>
+
     <TableRow
         android:id="@+id/tableRow4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="0.4"
+        android:layout_weight="0.2"
         android:gravity="center_vertical" >
-        
+
         <Button
-	        android:id="@+id/tours_button"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"	        
-	        android:onClick="onShowToursClick"
-	        android:text="@string/tours" />
+            android:id="@+id/tours_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onShowToursClick"
+            android:text="@string/tours" />
     </TableRow>
-</TableLayout>
+    </TableLayout>
+    
+    
+
+
+
+
+   
+
+       
+<TableLayout
+    android:layout_weight="0.8"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/beach_big_bkg"
+    android:orientation="vertical"
+    android:stretchColumns="0,1" > 
+    
+    <TableRow
+        android:id="@+id/tableRow5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"
+        android:gravity="center_vertical"
+        android:orientation="vertical" >
+
+        <HorizontalScrollView
+            android:id="@+id/horizontalScrollView1"            
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            
+            <LinearLayout 
+                android:id="@+id/child_linear_layout"
+                android:orientation="horizontal"
+				android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            
+            </LinearLayout>
+ 		</HorizontalScrollView>
+           
+       
+    </TableRow>
+    
+    </TableLayout>
+</LinearLayout>

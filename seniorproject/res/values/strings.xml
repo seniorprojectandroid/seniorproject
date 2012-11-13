@@ -59,7 +59,7 @@
 	<string name="empty_events">No Events</string>
 	<string name="directions">Directions</string>
 	<string name="navigation">Navigation</string>
-	<string name="calendar">Calendar</string>
+	<string name="calendar">TODO</string>
 	<string name="title_activity_personalization">Personalize your App!!!</string>
 	<string name="interest_events_prompt">Select Your Events Interest</string>
 	<string name="interest_places_prompt">Select Your Places Interest</string>
@@ -76,6 +76,8 @@
     <string name="google_place_api">Google Places</string>
     <string name="eventful_api">Eventful</string>
     <string name="facebook_api">Facebook</string>
+    <string name="sample_text">Sample Text</string>
+    <string name="sample_image">Sample Image</string>
 
 </resources>
 
