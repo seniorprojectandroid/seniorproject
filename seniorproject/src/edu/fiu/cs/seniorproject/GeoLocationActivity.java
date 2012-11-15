@@ -1,5 +1,6 @@
 package edu.fiu.cs.seniorproject;
 
+import com.facebook.PlacePickerFragment;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -14,6 +15,7 @@ import edu.fiu.cs.seniorproject.utils.Logger;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -76,9 +78,19 @@ public class GeoLocationActivity extends MapActivity {
     public void onCheckinClick(View view) {
     	
     	if ( currentLocation.getLatitude() != null && currentLocation.getLongitude() != null ) {
-	    	Intent intent = new Intent(this, CheckinActivity.class);
+	    	
+    		Intent intent = new Intent(this, FbPlacePicker.class);
 	    	intent.putExtra("latitude", currentLocation.getLatitude());
 	    	intent.putExtra("longitude", currentLocation.getLongitude());
+	    	intent.putExtra(PlacePickerFragment.RADIUS_IN_METERS_BUNDLE_KEY, 100);
+	    	intent.putExtra(PlacePickerFragment.SHOW_SEARCH_BOX_BUNDLE_KEY, false);
+	    	
+	    	android.location.Location location = new android.location.Location(LocationManager.GPS_PROVIDER);
+	    	location.setLatitude(Double.valueOf(AppLocationManager.MIAMI_BEACH_LATITUDE));
+			location.setLongitude(Double.valueOf(AppLocationManager.MIAMI_BEACH_LONGITUDE));
+			
+			intent.putExtra(PlacePickerFragment.LOCATION_BUNDLE_KEY, location);
+			
 	    	this.startActivity(intent);
     	} else {
     		Toast.makeText(this, "Waiting for location..", Toast.LENGTH_SHORT ).show();
