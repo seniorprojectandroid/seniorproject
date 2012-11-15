@@ -5,7 +5,12 @@ import java.util.List;
 
 import com.facebook.FacebookActivity;
 import com.facebook.PickerFragment.OnDoneButtonClickedListener;
+import com.facebook.PickerFragment.OnSelectionChangedListener;
+import com.facebook.GraphPlace;
+import com.facebook.HttpMethod;
 import com.facebook.PlacePickerFragment;
+import com.facebook.Request;
+import com.facebook.Response;
 import com.facebook.SessionState;
 
 import edu.fiu.cs.seniorproject.utils.Logger;
@@ -14,10 +19,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.view.Menu;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class FbPlacePicker extends FacebookActivity {
 
 	private PlacePickerFragment placePickerFragment = null;
+	private GraphPlace selectedPlace = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,11 +50,17 @@ public class FbPlacePicker extends FacebookActivity {
 			  manager.beginTransaction().replace(R.id.picker_fragment, this.placePickerFragment).commit();
 		  }		
 		  
+		  this.placePickerFragment.setOnSelectionChangedListener(new OnSelectionChangedListener() {
+				@Override
+				public void onSelectionChanged() {
+					updateSelectedPlace();
+				}
+			});
+		  
 		  this.placePickerFragment.setOnDoneButtonClickedListener(new OnDoneButtonClickedListener() {
-			
 			@Override
 			public void onDoneButtonClicked() {
-				// TODO Auto-generated method stub
+				checkIn();
 				Logger.Debug("On done");
 			}
 		});
@@ -79,6 +93,45 @@ public class FbPlacePicker extends FacebookActivity {
     private void loadPlaces() {
     	if ( this.getSession() != null && this.getSession().isOpened() && this.placePickerFragment.getSession() != null ) {
     		this.placePickerFragment.loadData(true);
+    	}
+    }
+    
+    private void updateSelectedPlace() {
+    	this.selectedPlace = this.placePickerFragment.getSelection();
+    	
+    	if ( this.selectedPlace != null ) {
+    		TextView tv = (TextView)findViewById(R.id.location);
+    		if ( tv != null ) {
+    			tv.setText(this.selectedPlace.getName());
+    		}
+    	}
+    }
+    
+    private void checkIn() {
+    	if ( this.selectedPlace == null ) {
+    		Toast.makeText(this, "Select a place first", Toast.LENGTH_SHORT).show();
+    	} else {
+    		TextView tv = (TextView)findViewById(R.id.message);
+    		if ( tv != null ) {
+    			if ( tv.getText().toString().equals("") ) {
+    				Toast.makeText(this, "Write a message!!", Toast.LENGTH_SHORT).show();
+    			} else {
+    				
+    				Bundle params = new Bundle();
+    				params.putString("message", tv.getText().toString() );
+    				params.putString("place", this.selectedPlace.getId() );
+    				
+    				Request request = new Request(getSession(), "me/feed", params, HttpMethod.POST, new Request.Callback() {
+						
+						@Override
+						public void onCompleted(Response response) {
+							Logger.Debug("Response completed " + response.getError() );	
+							FbPlacePicker.this.finish();
+						}
+					});
+    				Request.executeBatchAsync(request);
+    			}
+    		}
     	}
     }
 }
