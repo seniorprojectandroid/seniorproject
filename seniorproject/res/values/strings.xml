@@ -79,5 +79,9 @@
     <string name="facebook_api">Facebook</string>
     <string name="fb_app_id">378790605525916</string>
     <string name="title_activity_fb_place_picker">Pick a Place</string>
-
+    <string name="title_activity_fb_request">Sent Request</string>
+    <string name="title">Title</string>
+    <string name="message">Message</string>
+    <string name="post">Post</string>
+	<string name="invite">Invite</string>
 </resources>
