@@ -83,5 +83,7 @@
     <string name="title">Title</string>
     <string name="message">Message</string>
     <string name="post">Post</string>
-	<string name="invite">Invite</string>
+    <string name="invite">Invite</string>
+    <string name="title_activity_fb_publish_feed">Publish Feed</string>
+	<string name="share">Share</string>
 </resources>

@@ -18,4 +18,9 @@
         android:orderInCategory="100"
         android:title="@string/invite"        
         android:showAsAction="never" />
+    
+    <item android:id="@+id/share"
+        android:orderInCategory="100"
+        android:title="@string/share"        
+        android:showAsAction="never" />
 </menu>

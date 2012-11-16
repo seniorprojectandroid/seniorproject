@@ -101,6 +101,9 @@ public class EventDetailsActivity extends MapActivity {
             case R.id.invite_friends:
                 this.onInviteFriends(item);
                 return true;  
+            case R.id.share:
+                this.onShareEvent(item);
+                return true;  
         }
         return super.onOptionsItemSelected(item);
     }
@@ -130,6 +133,15 @@ public class EventDetailsActivity extends MapActivity {
 	    	Intent intent = new Intent(this, FbRequestActivity.class);
 	    	intent.putExtra("title", "Invite Dialog");
 	    	intent.putExtra("message", "Would you like to join me at " + this.currentEvent.getName() );
+	    	this.startActivity(intent);
+    	}
+    }
+    
+    public void onShareEvent(MenuItem menu) {
+    	if ( this.currentEvent != null ) {
+	    	Intent intent = new Intent(this, FbPublishFeedActivity.class);
+	    	intent.putExtra("title", "Miami Beach Events");
+	    	intent.putExtra("message", "I was at " + this.currentEvent.getName() );
 	    	this.startActivity(intent);
     	}
     }
