@@ -14,6 +14,7 @@ import com.facebook.android.FacebookError;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -35,6 +36,7 @@ public class FbRequestActivity extends FacebookActivity {
         	this.closeSession();
         }
         
+        Resources resources = getResources();
         Intent intent = this.getIntent();
         if ( intent != null ) {
         	TextView tv = (TextView)findViewById(R.id.title);
@@ -43,7 +45,7 @@ public class FbRequestActivity extends FacebookActivity {
 	        	if ( intent.hasExtra("title")) {
 	        		tv.setText(intent.getStringExtra("title") );
 	        	} else {
-	        		tv.setText("Join me!!!");
+	        		tv.setText(resources.getString(R.string.join_me));
 	        	}
         	}
         	
@@ -52,7 +54,7 @@ public class FbRequestActivity extends FacebookActivity {
         		if ( intent.hasExtra("message")) {
 	        		tv.setText(intent.getStringExtra("message") );
 	        	} else {
-	        		tv.setText("Would you like to join me at Miami Beach!!!!");
+	        		tv.setText(resources.getString(R.string.join_invite) + resources.getString(R.string.miami_beach));
 	        	}
         	}
         }
@@ -113,12 +115,12 @@ public class FbRequestActivity extends FacebookActivity {
 			
 			@Override
 			public void onFacebookError(FacebookError e) {
-				Toast.makeText(FbRequestActivity.this, "Error posting request. Try Again!!", Toast.LENGTH_SHORT).show();
+				Toast.makeText(FbRequestActivity.this, getResources().getString(R.string.error_posting_request), Toast.LENGTH_SHORT).show();
 			}
 			
 			@Override
 			public void onError(DialogError e) {
-				Toast.makeText(FbRequestActivity.this, "Error posting request. Try Again!!", Toast.LENGTH_SHORT).show();
+				Toast.makeText(FbRequestActivity.this, getResources().getString(R.string.error_posting_request), Toast.LENGTH_SHORT).show();
 			}
 			
 			@Override

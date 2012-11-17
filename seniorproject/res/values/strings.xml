@@ -86,4 +86,10 @@
     <string name="invite">Invite</string>
     <string name="title_activity_fb_publish_feed">Publish Feed</string>
 	<string name="share">Share</string>
+	<string name="join_me">Join Me!!!</string>
+	<string name="miami_beach">Miami Beach</string>
+	<string name="join_invite">Would you like to join me at </string>
+	<string name="select_place_first">Select a place first</string>
+	<string name="write_message">Write a message!!</string>
+	<string name="error_posting_request">Error posting request. Try Again Later!!!</string>
 </resources>

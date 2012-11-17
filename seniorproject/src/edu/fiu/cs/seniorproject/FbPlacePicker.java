@@ -18,6 +18,7 @@ import com.facebook.SessionState;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.view.Menu;
@@ -139,13 +140,14 @@ public class FbPlacePicker extends FacebookActivity {
     }
     
     private void checkIn() {
+    	Resources resources = this.getResources();
     	if ( this.selectedPlace == null ) {
-    		Toast.makeText(this, "Select a place first", Toast.LENGTH_SHORT).show();
+    		Toast.makeText(this, resources.getString(R.string.select_place_first), Toast.LENGTH_SHORT).show();
     	} else {
     		TextView tv = (TextView)findViewById(R.id.message);
     		if ( tv != null ) {
     			if ( tv.getText().toString().equals("") ) {
-    				Toast.makeText(this, "Write a message!!", Toast.LENGTH_SHORT).show();
+    				Toast.makeText(this, resources.getString(R.string.write_message), Toast.LENGTH_SHORT).show();
     			} else {
     				
     				Bundle params = new Bundle();

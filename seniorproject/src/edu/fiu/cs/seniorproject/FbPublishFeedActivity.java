@@ -13,6 +13,7 @@ import com.facebook.SessionState;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +31,7 @@ public class FbPublishFeedActivity extends FacebookActivity {
         	this.closeSession();
         }
         
+        Resources resources = getResources();
         Intent intent = this.getIntent();
         if ( intent != null ) {
         	TextView tv = (TextView)findViewById(R.id.title);
@@ -38,7 +40,7 @@ public class FbPublishFeedActivity extends FacebookActivity {
 	        	if ( intent.hasExtra("title")) {
 	        		tv.setText(intent.getStringExtra("title") );
 	        	} else {
-	        		tv.setText("Join me!!!");
+	        		tv.setText(resources.getString(R.string.join_me));
 	        	}
         	}
         	
@@ -47,7 +49,7 @@ public class FbPublishFeedActivity extends FacebookActivity {
         		if ( intent.hasExtra("message")) {
 	        		tv.setText(intent.getStringExtra("message") );
 	        	} else {
-	        		tv.setText("Would you like to join me at Miami Beach!!!!");
+	        		tv.setText(resources.getString(R.string.join_invite) + resources.getString(R.string.miami_beach));
 	        	}
         	}
         }
@@ -104,8 +106,8 @@ public class FbPublishFeedActivity extends FacebookActivity {
     private void publishFeed() {
 		Bundle params = new Bundle();
     	
-		params.putString("name", "Miami Beach Guide");
-		params.putString("link", "https://developers.facebook.com/android");
+		params.putString("name", getResources().getString(R.string.app_name) );
+		params.putString("link", "https://www.facebook.com/apps/application.php?id=" + getResources().getString(R.string.fb_app_id));
     	TextView tv = (TextView)findViewById(R.id.title);
     	if ( tv != null ) {
     		params.putString("caption", tv.getText().toString());
