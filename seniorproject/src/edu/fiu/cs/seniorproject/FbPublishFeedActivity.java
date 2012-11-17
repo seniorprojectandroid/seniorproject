@@ -56,6 +56,7 @@ public class FbPublishFeedActivity extends FacebookActivity {
         
         List<String> permissions = new ArrayList<String>(1);
         permissions.add("publish_stream");
+        permissions.add("publish_actions");
         
         this.openSessionForPublish(getResources().getString(R.string.fb_app_id), permissions );
     }
@@ -77,7 +78,8 @@ public class FbPublishFeedActivity extends FacebookActivity {
     		this.publishFeed();
     	} else {
     		List<String> permissions = new ArrayList<String>(1);
-            permissions.add("publish_stream");            
+    		permissions.add("publish_stream");
+            permissions.add("publish_actions");      
             this.openSessionForPublish(getResources().getString(R.string.fb_app_id), permissions );  
     	}
     }
@@ -105,17 +107,38 @@ public class FbPublishFeedActivity extends FacebookActivity {
     
     private void publishFeed() {
 		Bundle params = new Bundle();
-    	
-		params.putString("name", getResources().getString(R.string.app_name) );
-		params.putString("link", "https://www.facebook.com/apps/application.php?id=" + getResources().getString(R.string.fb_app_id));
-    	TextView tv = (TextView)findViewById(R.id.title);
+		
+		TextView tv = (TextView)findViewById(R.id.title);
     	if ( tv != null ) {
     		params.putString("caption", tv.getText().toString());
+    		Logger.Debug("caption = " + tv.getText().toString());
     	}
+    	
     	tv = (TextView)findViewById(R.id.message);
     	if ( tv != null ) {
     		params.putString("description", tv.getText().toString());
+    		Logger.Debug("description = " + tv.getText().toString());
     	}
+    	
+    	params.putString("name", getResources().getString(R.string.app_name) );
+		
+    	Intent intent = this.getIntent();
+    	
+    	String link = "https://play.google.com/store/apps/details?id=com.facebook.katana&hl=e";
+    	if ( intent != null && intent.hasExtra("link") ) {
+    		link = intent.getStringExtra("link");
+    		//params.putString("link", "https://www.facebook.com/apps/application.php?id=" + getResources().getString(R.string.fb_app_id));
+    	}
+    	
+    	String picture = "https://raw.github.com/seniorprojectandroid/seniorproject/master/seniorproject/res/drawable/app_icon_fullsize.png";
+    	if ( intent != null && intent.hasExtra("picture") ) {
+    		link = intent.getStringExtra("picture");
+    	}
+    	
+    	params.putString("link", link );
+    	params.putString("picture", picture );
+    	
+    	Logger.Debug("all params set!!!");
     	
     	Request request = new Request(getSession(), "me/feed", params, HttpMethod.POST, new Request.Callback() {
 			@Override
