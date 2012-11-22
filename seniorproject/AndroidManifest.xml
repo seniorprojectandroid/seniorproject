@@ -161,20 +161,16 @@
         <activity
             android:name=".FbRequestActivity"
             android:label="@string/title_activity_fb_request" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.MainActivity" />
         </activity>
         <activity
             android:name=".FbPublishFeedActivity"
             android:label="@string/title_activity_fb_publish_feed" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+             <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.fiu.cs.seniorproject.MainActivity" />
         </activity>
     </application>
 

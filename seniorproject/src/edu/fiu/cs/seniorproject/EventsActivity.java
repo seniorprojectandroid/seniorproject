@@ -5,8 +5,10 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
@@ -17,9 +19,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.SearchView;
@@ -233,8 +237,13 @@ public class EventsActivity extends FilterActivity {
 			Hashtable<String, String> entry = new Hashtable<String, String>();
 			entry.put("event_id", event.getId());
 			entry.put("source", event.getSource().toString() );
-			entry.put("name", event.getName() );						
+			entry.put("name", event.getName() );			
 			entry.put("time", DateFormat.format("EEEE, MMMM dd, h:mmaa", Long.valueOf( event.getTime() ) * 1000 ).toString() );
+			
+			String image = event.getImage();
+			if ( image != null && !image.isEmpty()) {
+				entry.put("image", event.getImage());
+			}
 			
 			Location location = event.getLocation();
 			
@@ -271,7 +280,7 @@ public class EventsActivity extends FilterActivity {
 	
 						this.mEventList = this.buildEventMap(eventList);
 						
-						 this.listAdapter = new SimpleAdapter(this, this.mEventList, R.layout.event_row, from, to);
+						 this.listAdapter = new EventListSimpleAdapter(this, this.mEventList, R.layout.event_row, from, to);
 						lv.setAdapter(this.listAdapter);
 		    			lv.setVisibility(View.VISIBLE);
 		    			lv.setOnItemClickListener(mClickListener);
@@ -427,4 +436,36 @@ public class EventsActivity extends FilterActivity {
 			Logger.Debug("Total events = " + total );
 		}		
     }    
+
+    private class EventListSimpleAdapter extends SimpleAdapter {
+
+		public EventListSimpleAdapter(Context context, List<? extends Map<String, ?>> data, int resource, String[] from, int[] to) {
+			super(context, data, resource, from, to);			
+		}
+    	
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			View result = super.getView(position, convertView, parent);
+			
+			if ( result != null ) {
+				Object item = this.getItem(position);
+				
+				if ( item != null ) {
+					@SuppressWarnings("unchecked")
+					Hashtable<String, String> entry = (Hashtable<String, String>)item;
+					
+					if ( entry != null && entry.containsKey("image")) {
+						String image = (String)entry.get("image");
+						if ( image != null && !image.isEmpty() ) {
+							ImageView iv = (ImageView)result.findViewById(R.id.eventIcon);
+							if ( iv != null ) {
+								DataManager.getSingleton().downloadBitmap(image, iv);
+							}
+						}
+					}
+				}
+			}
+			return result;
+		}
+    }
 }
