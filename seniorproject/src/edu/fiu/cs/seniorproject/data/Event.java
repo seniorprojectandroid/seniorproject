@@ -78,7 +78,7 @@ public class Event
 	}
 
 	public void setUrl(String url) {
-		this.image = url;
+		this.url = url;
 	}
 
 	@Override
