@@ -442,6 +442,37 @@ public class EventFullProvider extends DataProvider
 					place.setEventsAtPlace(myEventList);
 				}// end if
 				
+				JSONObject imageObject = null;
+				if ( iter.has("images") && !iter.isNull("images")) {
+					imageObject = iter.getJSONObject("images");
+					
+					if ( imageObject.has("image") && !imageObject.isNull("image")) {
+						
+						try {
+							JSONArray imageList = imageObject.getJSONArray("image");
+							if ( imageList != null && imageList.length() > 0 ) {
+								imageObject = imageList.getJSONObject(0);
+							} 
+						} catch (JSONException e) {
+							imageObject = imageObject.getJSONObject("image");
+						}
+					}
+				} else if ( iter.has("image") && !iter.isNull("image")) {
+					imageObject = iter.getJSONObject("image");
+				}
+				
+				if ( imageObject != null ) {
+					if(imageObject.has("medium") && !imageObject.isNull("medium"))
+					{
+						JSONObject medium = imageObject.getJSONObject("medium");
+						if (medium != null && medium.has("url") && !medium.isNull("url") ) {
+							place.setImage( medium.getString("url") );
+						}
+					}
+					else if(imageObject.has("url") && !imageObject.isNull("url")) {
+						place.setImage( imageObject.getString("url"));
+					}
+				}
 			}
 		} catch (JSONException e ) {
 			place = null;
