@@ -66,11 +66,12 @@
 	        android:text="@string/places" />
 	    
 	     <LinearLayout
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:id="@android:id/list"
-	        android:layout_marginTop="10dp" >
-		   
+	         android:id="@android:id/list"
+	         android:layout_width="match_parent"
+	         android:layout_height="wrap_content"
+	         android:layout_marginTop="10dp"
+	         android:orientation="vertical"
+	         android:paddingBottom="10dp" >
 		    
 		    <TextView
 		        android:id="@android:id/empty"

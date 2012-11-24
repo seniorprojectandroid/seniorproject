@@ -14,6 +14,8 @@ import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -158,7 +160,13 @@ public class PlaceDetailsActivity extends MapActivity {
 			// create PLACE description.
 			TextView description = (TextView) findViewById(R.id.place_description);
 			if (description != null) {
-				description.setText(place.getDescription());
+				String descStr = place.getDescription();
+				
+				if ( descStr != null && !descStr.isEmpty() && !descStr.equals("null") ) {
+					description.setText(descStr);
+				} else {
+					description.setVisibility(View.GONE);
+				}
 			}
 
 			if (place.getImage() != null && !place.getImage().isEmpty()) {
@@ -244,15 +252,32 @@ public class PlaceDetailsActivity extends MapActivity {
 		TextView tv = (TextView) findViewById(android.R.id.empty);
 		if (eventList != null && eventList.size() > 0) {
 
-			tv.setVisibility(View.GONE);
+			tv.setText(R.string.events);
+			//tv.setVisibility(View.GONE);
 			LinearLayout ll = (LinearLayout) findViewById(android.R.id.list);
 
 			if (ll != null) {
 				for (int i = 0; i < eventList.size(); i++) {
 					Event event = eventList.get(i);
 					tv = new TextView(this);
-					tv.setText(event.getName());
-					ll.addView(tv);
+					
+					String eventName = event.getName().trim();
+					Logger.Debug("Add event with name = " + event.toString() );
+					tv.setText(eventName);
+					
+					final String eventId = event.getId();
+					final SourceType source = event.getSource();
+					tv.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							Intent intent = new Intent(PlaceDetailsActivity.this, EventDetailsActivity.class);
+							intent.putExtra("event_id", eventId);
+							intent.putExtra("source", source);
+							PlaceDetailsActivity.this.startActivity(intent);
+						}
+					});
+					ll.addView(tv, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT );
 				}
 			}
 		} else {

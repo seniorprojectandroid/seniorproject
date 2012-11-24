@@ -78,6 +78,8 @@
     <string name="facebook_api">Facebook</string>
     <string name="sample_text">Sample Text</string>
     <string name="sample_image">Sample Image</string>
+    <string name="place_suggestion">We think you may like these places</string>
+    <string name="event_suggestion">We think you may like these events</string>
 
 </resources>
 

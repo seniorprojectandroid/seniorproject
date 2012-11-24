@@ -341,7 +341,9 @@ public class PlacesActivity extends FilterActivity {
 				while ( (iter = mLoader.getNext()) != null ) {
 					int iterSize = iter.size();
 					total += iterSize;
-					Logger.Debug("Add new set of data size = " + iterSize);
+					
+					String source = iter.size() > 0 ? iter.get(0).getSource().toString() : "Unknow";
+					Logger.Debug("Add new set of data from " + source + " size = " + iterSize);
 					
 					if ( iterSize > 0 ) {
 						this.publishProgress(iter);

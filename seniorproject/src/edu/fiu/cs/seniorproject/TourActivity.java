@@ -85,7 +85,7 @@ public class TourActivity extends Activity{
 		return fillMaps;
     }// buildEventMap
     
-    private void showEventList( List<String> tourList ) {
+    public void showEventList( List<String> tourList ) {
     		if (this.mTourList == null ) {
 	    		
 	    		if (  tourList != null && tourList.size() > 0) {

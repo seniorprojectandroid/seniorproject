@@ -155,7 +155,7 @@ public class GPClient extends RestClient{
 	{
 		Bundle bundle = new Bundle();
 		bundle.putString("key", this.appId);
-		bundle.putString("sensor", "false");
+		bundle.putString("sensor", "true");
 		return bundle;
 	}
 	

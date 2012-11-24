@@ -256,11 +256,27 @@ public class MBVCAProvider extends DataProvider
 				if ( iter.has("lat") && iter.has("lng")) {
 					Location location = new Location(String.valueOf( iter.getDouble("lat") ),String.valueOf(iter.getDouble("lng")) );
 					
-					if ( iter.has("prem_full_address")) {
-						location.setAddress(iter.getString("prem_full_address"));
-					} else if ( iter.has("mail_full_address")) {
-						location.setAddress("mail_full_address");
+					StringBuilder sb = new StringBuilder();
+					if ( iter.has("prem_full_address") && !iter.isNull("prem_full_address")) {
+						sb.append(iter.getString("prem_full_address"));
+					} 
+					
+					if ( iter.has("prem_city") && !iter.isNull("prem_city")) {
+						if ( sb.length() > 0 ) sb.append(",");
+						sb.append(iter.getString("prem_city"));
 					}
+					
+					if ( iter.has("prem_state") && !iter.isNull("prem_state")) {
+						if ( sb.length() > 0 ) sb.append(",");
+						sb.append(iter.getString("prem_state"));
+					}
+					
+					if ( iter.has("prem_zip") && !iter.isNull("prem_zip")) {
+						if ( sb.length() > 0 ) sb.append(",");
+						sb.append(iter.getString("prem_zip"));
+					}
+					
+					location.setAddress(sb.toString());
 					place.setLocation(location);
 				}
 				
@@ -343,7 +359,7 @@ public class MBVCAProvider extends DataProvider
 	
 	@Override
 	protected String getEventCategory( EventCategoryFilter filter ) {
-		 return filter == EventCategoryFilter.NONE ? null : String.valueOf(filter.Value());
+		 return filter == EventCategoryFilter.NONE ? null : super.getEventCategory(filter);
 	 }
 	
 	@Override

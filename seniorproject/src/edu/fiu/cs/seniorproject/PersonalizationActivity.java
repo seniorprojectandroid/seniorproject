@@ -24,9 +24,16 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 	private Button btnSubmit, btnSkip;	
 	private String eCategory, pCategory, radius;
 	private MbGuideDB db = new MbGuideDB(this);
-//	String[] eventsValues;
-//	String[] placesValues;
-//	String[] radiusValues;
+
+	private OnClickListener skipListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			setFlag();
+			Intent skipIntent = new Intent(PersonalizationActivity.this, MainActivity.class);
+			startActivity(skipIntent);
+		}
+	};
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -36,7 +43,10 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 		addItemsOnSpinner1();
 		addItemsOnSpinner2();
 		addItemsOnSpinner3();
-		addListenerOnButton();		
+		addListenerOnButton();	
+		
+		btnSkip = (Button) findViewById(R.id.btnSkip);	
+		btnSkip.setOnClickListener(skipListener);
 	}
 
 	public void addItemsOnSpinner1() {
@@ -118,15 +128,18 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 	public void addListenerOnButton() {
 		
 		btnSubmit = (Button) findViewById(R.id.btnSubmit);
-		btnSkip = (Button) findViewById(R.id.btnSkip);		
-		btnSkip.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(PersonalizationActivity.this, MainActivity.class);
-				PersonalizationActivity.this.startActivity(intent);	
-			}
-			
-		});
+		
+		
+		
+//		btnSkip.setOnClickListener(new OnClickListener(){
+//			@Override
+//			public void onClick(View v) {
+//				
+//				Intent intent = new Intent(PersonalizationActivity.this, MainActivity.class);
+//				PersonalizationActivity.this.startActivity(intent);	
+//			}
+//			
+//		});
 
 		btnSubmit.setOnClickListener(new OnClickListener() {
 
@@ -141,31 +154,27 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 					setPlacesPref(placePos);
 					setRadiusPref(radiusPos);
 					
-					try{
-						
-						db.openDatabase();
-						
-						// set flag of other records
-						int res = db.setUserPrefInactiveFlag();
-						
-						Log.i("User_Prerences_Table", "# of rows affected = " + res);
-						
-						
-						// and insert this new record as the actual preferences
-						db.createUserPrefRecord(eCategory, pCategory, radius);
-						
-						db.closeDatabase();
-						
-					}catch(SQLException e){
-						
-						e.printStackTrace();
-					}
-					
+					setFlag();
 					PersonalizationActivity.this.startActivity(intent);
 			}
 
 		});
 
+	}
+	
+	private void setFlag()
+	{
+		try{						
+			db.openDatabase();				
+			int res = db.setUserPrefInactiveFlag();						
+			Log.i("User_Prerences_Table", "# of rows affected = " + res);						
+							db.createUserPrefRecord(eCategory, pCategory, radius);						
+			db.closeDatabase();
+			
+		}catch(SQLException e){						
+			e.printStackTrace();
+		}					
+		
 	}
 
 

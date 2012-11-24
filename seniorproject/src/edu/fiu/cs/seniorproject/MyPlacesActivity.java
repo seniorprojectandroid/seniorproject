@@ -23,9 +23,9 @@ public class MyPlacesActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         this.listPlaceNames();
     
-        
-	        setListAdapter(new ArrayAdapter<String>(this ,
-					android.R.layout.simple_dropdown_item_1line, pList));
+        if ( pList != null ) {
+	        setListAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line, pList));
+        }
         
     }
 
@@ -91,6 +91,7 @@ public class MyPlacesActivity extends ListActivity {
     	    mb.closeDatabase();
     	}catch(SQLException e)
     	 {
+    		pList = null;
     		e.printStackTrace();
     	 }    	
     	
