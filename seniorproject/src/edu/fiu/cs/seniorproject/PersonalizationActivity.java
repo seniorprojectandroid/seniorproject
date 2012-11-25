@@ -29,6 +29,12 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 
 		@Override
 		public void onClick(View v) {
+			int eventPos = spinner1.getSelectedItemPosition();
+			int placePos = spinner2.getSelectedItemPosition();
+			int radiusPos = spinner3.getSelectedItemPosition();
+			setEventsPref(eventPos);
+			setPlacesPref(placePos);
+			setRadiusPref(radiusPos);
 			setFlag();
 			Intent skipIntent = new Intent(PersonalizationActivity.this, MainActivity.class);
 			startActivity(skipIntent);
