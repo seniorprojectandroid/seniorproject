@@ -35,6 +35,7 @@ import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
 import edu.fiu.cs.seniorproject.manager.DataManager.ConcurrentEventListLoader;
+import edu.fiu.cs.seniorproject.utils.BitmapSimpleAdapter;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class EventsActivity extends FilterActivity {
@@ -231,10 +232,16 @@ public class EventsActivity extends FilterActivity {
 		{
 			Event event = eventList.get(i);
 			Hashtable<String, String> entry = new Hashtable<String, String>();
+			entry.put("id", event.getId());
 			entry.put("event_id", event.getId());
 			entry.put("source", event.getSource().toString() );
-			entry.put("name", event.getName() );						
+			entry.put("name", event.getName() );			
 			entry.put("time", DateFormat.format("EEEE, MMMM dd, h:mmaa", Long.valueOf( event.getTime() ) * 1000 ).toString() );
+			
+			String image = event.getImage();
+			if ( image != null && !image.isEmpty()) {
+				entry.put("image", event.getImage());
+			}
 			
 			Location location = event.getLocation();
 			
@@ -271,7 +278,7 @@ public class EventsActivity extends FilterActivity {
 	
 						this.mEventList = this.buildEventMap(eventList);
 						
-						 this.listAdapter = new SimpleAdapter(this, this.mEventList, R.layout.event_row, from, to);
+						 this.listAdapter = new BitmapSimpleAdapter(this, this.mEventList, R.layout.event_row, from, to);
 						lv.setAdapter(this.listAdapter);
 		    			lv.setVisibility(View.VISIBLE);
 		    			lv.setOnItemClickListener(mClickListener);
@@ -427,5 +434,5 @@ public class EventsActivity extends FilterActivity {
 			}
 			Logger.Debug("Total events = " + total );
 		}		
-    }    
+    }
 }

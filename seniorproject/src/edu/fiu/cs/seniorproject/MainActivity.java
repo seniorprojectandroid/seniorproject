@@ -1,7 +1,6 @@
 package edu.fiu.cs.seniorproject;
 
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +9,6 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,15 +18,8 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import edu.fiu.cs.seniorproject.data.DateFilter;
 import edu.fiu.cs.seniorproject.data.Event;
-import edu.fiu.cs.seniorproject.data.EventCategoryFilter;
-import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.MbGuideDB;
-import edu.fiu.cs.seniorproject.manager.AppLocationManager;
-import edu.fiu.cs.seniorproject.manager.DataManager;
-import edu.fiu.cs.seniorproject.manager.DataManager.ConcurrentEventListLoader;
-import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class MainActivity extends Activity {
 

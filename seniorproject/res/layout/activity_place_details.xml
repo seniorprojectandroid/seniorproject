@@ -107,6 +107,13 @@
 	            android:layout_height="wrap_content"
 	            android:onClick="onNavigationClick"
 	            android:text="@string/navigation" />
+
+	        <Button
+	            android:id="@+id/checkin"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:onClick="onCheckIn"
+	            android:text="@string/checkin" />
 		    
 		</LinearLayout>
 		

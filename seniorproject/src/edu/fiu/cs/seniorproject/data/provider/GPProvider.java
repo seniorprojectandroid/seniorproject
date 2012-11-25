@@ -599,7 +599,11 @@ public class GPProvider extends DataProvider {
 							{
 								place.setId(eachPlace.getString("reference"));
 							} 
-						
+							if(eachPlace.has("icon") && eachPlace.getString("icon") != null)
+							{
+								place.setImage(eachPlace.getString("icon"));
+							}
+							
 							place.setLocation(loc);
 							place.setSource(SourceType.GOOGLE_PLACE);
 							placeList.add(place);

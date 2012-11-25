@@ -186,6 +186,14 @@ public class DataManager {
 		}
 	}
 	
+	public void downloadBitmap( String url, IBitmapDownloaderListener listener ) {
+		try {
+			(new BitmapDownloader(listener)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,url);
+		} catch (Exception e) {
+			Logger.Error("exception downloading bitmap " + e.getMessage());
+		}
+	}
+
 	public static DataManager getSingleton() {
 		if ( mSingleton == null ) {
 			mSingleton = new DataManager();
@@ -249,13 +257,26 @@ public class DataManager {
 		return result;
 	}
 	
+	public interface IBitmapDownloaderListener {
+		void OnCompleted(Bitmap bm);
+		void OnFail();
+	}
+	
 	private class BitmapDownloader extends AsyncTask<String, Void, Bitmap> {
 
 		private final WeakReference<ImageView> mImageView;
+		private final WeakReference<IBitmapDownloaderListener> mListener;
 		
 		public BitmapDownloader(ImageView target) {
 			mImageView = new WeakReference<ImageView>(target);
+			mListener = null;
 		}
+		
+		public BitmapDownloader(IBitmapDownloaderListener listener) {
+			mImageView = null;
+			mListener = new WeakReference<IBitmapDownloaderListener>(listener);
+		}
+		
 		@Override
 		protected Bitmap doInBackground(String... params) {
 			return RestClient.downloadBitmap(params[0]);
@@ -263,7 +284,15 @@ public class DataManager {
 		
 		@Override
 		protected void onPostExecute(Bitmap bm) {
-			if ( bm != null && mImageView != null && mImageView.get() != null ) {
+			if ( mListener != null && mListener.get() != null ) {
+				IBitmapDownloaderListener listener = mListener.get();
+				if ( bm != null ) {
+					listener.OnCompleted(bm);
+				} else {
+					listener.OnFail();
+				}
+			}
+			else if ( bm != null && mImageView != null && mImageView.get() != null ) {
 				mImageView.get().setImageBitmap(bm);
 			}
 		}

@@ -15,6 +15,7 @@ import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
 import edu.fiu.cs.seniorproject.manager.DataManager.ConcurrentPlaceListLoader;
+import edu.fiu.cs.seniorproject.utils.BitmapSimpleAdapter;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 import android.os.AsyncTask;
@@ -197,7 +198,7 @@ public class PlacesActivity extends FilterActivity {
 	
 					this.mPlaceList = this.buildPlaceList(places);
 					
-					this.listAdapter = new SimpleAdapter(this, this.mPlaceList, R.layout.place_row, from, to);
+					this.listAdapter = new BitmapSimpleAdapter(this, this.mPlaceList, R.layout.place_row, from, to);
 					lv.setAdapter(this.listAdapter);
 	    			lv.setVisibility(View.VISIBLE);
 	    			lv.setOnItemClickListener(mClickListener);
@@ -237,6 +238,10 @@ public class PlacesActivity extends FilterActivity {
 			map.put("id", place.getId());
 			map.put("name", place.getName());
 			map.put("source", place.getSource().toString());
+			
+			if ( place.getImage() != null ) {
+				map.put("image", place.getImage());
+			}
 			
 			Location location = place.getLocation();
 			if ( location != null && currentLocation != null ) {		
