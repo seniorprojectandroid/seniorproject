@@ -1,10 +1,12 @@
 package edu.fiu.cs.seniorproject;
 
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import edu.fiu.cs.seniorproject.utils.JsonParser;
 import edu.fiu.cs.seniorproject.utils.Logger;
 import edu.fiu.cs.seniorproject.utils.XMLParser;
 
@@ -27,9 +29,15 @@ public class TourActivity extends Activity{
 	
 	private List<String> tours = null;	
 	private List<Hashtable<String, String>> mTourList = null;	
+	
 	private XMLParser parser = null;
 	
+	
+	private JsonParser json = null;
+	
 	XmlResourceParser stringXmlContent = null;
+	
+	ByteArrayOutputStream byteJson = null;
    
 	 private final OnItemClickListener mClickListener = new OnItemClickListener() {
 			@Override
@@ -56,7 +64,14 @@ public class TourActivity extends Activity{
         parser = new XMLParser();
    		stringXmlContent = parser.getXMLFromSRC(this,R.xml.tours);
    		tours = parser.getTourName(stringXmlContent);
-   		this.showEventList(tours);       
+   		this.showEventList(tours);  
+   		
+   		
+//   		tours = new ArrayList<String>();  
+//        json = new JsonParser();
+//        byteJson = json.getJsonFromSRC(this);
+//   		tours = json.getToursName(byteJson);
+//   		this.showEventList(tours);  
         
     }// end onCreate
 

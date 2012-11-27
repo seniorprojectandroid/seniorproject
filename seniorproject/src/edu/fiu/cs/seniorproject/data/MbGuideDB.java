@@ -94,7 +94,8 @@ public class MbGuideDB {
 	}
 
 	public void closeDatabase() throws SQLException {
-		mbHelper.getWritableDatabase();
+		mbDatabase.close();
+		mbHelper.close();
 
 	}
 

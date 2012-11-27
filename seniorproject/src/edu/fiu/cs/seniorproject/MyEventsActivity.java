@@ -26,21 +26,23 @@ public class MyEventsActivity extends ListActivity {
         eList2 = new ArrayList<String>();
         eList2.add("Joe");
         eList2.add("Joe2");
-        if(eList != null)
-        {
-	        setListAdapter(new ArrayAdapter<String>(this ,
-					android.R.layout.simple_dropdown_item_1line, eList));
-
-        }
-        else
-        {
-        	TextView tv = (TextView)findViewById(android.R.id.text1);
-        	if ( tv != null ) {
-        		tv.setText("No events");
-        	}
-        }
+        this.showEventsList(eList2);
         
-    }
+    }// end onCreate
+    
+    public void showEventsList(ArrayList<String> List)  
+    {
+    	if ( List != null ) {
+	        setListAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line, List));
+        }
+    	 else
+         {
+         	TextView tv = (TextView)findViewById(android.R.id.text1);
+         	if ( tv != null ) {
+         		tv.setText("No events");
+         	}
+         }
+    }// end showPlaceList
 
     
     @Override

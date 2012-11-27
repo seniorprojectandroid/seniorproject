@@ -23,11 +23,16 @@ public class MyPlacesActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         this.listPlaceNames();
     
-        if ( pList != null ) {
-	        setListAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line, pList));
-        }
+       this.showPlaceList(pList);
         
-    }
+    }// end onCreate
+    
+    public void showPlaceList(ArrayList<String> List)  
+    {
+    	if ( List != null ) {
+	        setListAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line, List));
+        }
+    }// end showPlaceList
 
 
 	@Override
@@ -110,5 +115,6 @@ public class MyPlacesActivity extends ListActivity {
     		e.printStackTrace();
     	 }    	
     	
-    }
+    }  	
+    
 }

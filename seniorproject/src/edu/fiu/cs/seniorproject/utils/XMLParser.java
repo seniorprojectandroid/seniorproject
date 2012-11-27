@@ -89,12 +89,33 @@ public class XMLParser
 							
 								name = parser.getName();
 								
+								if ( name.equals("image")) {
+									if ( parser.next() == XmlPullParser.TEXT ) {
+										place.setImage(parser.getText());
+										parser.nextTag();
+									}
+								}
+								
+								if ( name.equals("imageBase64")) {
+									if ( parser.next() == XmlPullParser.TEXT ) {
+										place.setImageBase64(parser.getText());
+										parser.nextTag();
+									}
+								}
+								
 								if ( name.equals("name")) {
 									if ( parser.next() == XmlPullParser.TEXT ) {
 										place.setName( parser.getText() );
 										parser.nextTag();
 									}
-								}					
+								}
+								
+								if ( name.equals("description")) {
+									if ( parser.next() == XmlPullParser.TEXT ) {
+										place.setDescription(parser.getText() );
+										parser.nextTag();
+									}
+								}	
 								
 								if (name.equals("address"))
 								{

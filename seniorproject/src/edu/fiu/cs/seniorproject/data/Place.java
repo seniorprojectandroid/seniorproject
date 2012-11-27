@@ -13,6 +13,7 @@ public class Place {
 	private String description;
 	private String website;
 	private String image;
+	private String imageBase64;
 	private SourceType source = SourceType.MBVCA;	// default source to Miami beach api
 	private List<Event> eventsAtPlace = null;
 
@@ -111,5 +112,13 @@ public class Place {
 	public String toString() {
 		String l = this.location != null ? this.location.getLatitude() + ":" + this.location.getLongitude() + " addrees=" + this.location.getAddress() : "Unknow";
 		return "Place id=" + this.id + " name=" + this.name + " loc=" + l + " " + super.toString();
+	}
+
+	public String getImageBase64() {
+		return imageBase64;
+	}
+
+	public void setImageBase64(String imageBase64) {
+		this.imageBase64 = imageBase64;
 	}
 }
