@@ -28,7 +28,7 @@ public class EventFullProvider extends DataProvider
 {
 	private EventfulRestClient myRestClient;
 	
-	private final static String IMAGE_BASE_URL = "http://www.eventful.com";	
+	//private final static String IMAGE_BASE_URL = "http://www.eventful.com";	
 	
 	private int currentPage = 1;
 	private Location currentLocation = null;
@@ -311,18 +311,38 @@ public class EventFullProvider extends DataProvider
 					}										
 				}
 				
-				if ( iter.has("image") && !iter.isNull("image"))
-				{
-					JSONObject imageObject = iter.getJSONObject("image");								
-					if(imageObject != null && imageObject.has("small"))
-					{
-						JSONObject small = imageObject.getJSONObject("small");
-						if (small != null && small.has("url") && !small.getString("url").isEmpty() && !small.getString("url").equals("null"))
-						{
-							event.setImage( IMAGE_BASE_URL + small.getString("url"));
+				JSONObject imageObject = null;
+				if ( iter.has("images") && !iter.isNull("images")) {
+					imageObject = iter.getJSONObject("images");
+					
+					if ( imageObject.has("image") && !imageObject.isNull("image")) {
+						
+						try {
+							JSONArray imageList = imageObject.getJSONArray("image");
+							if ( imageList != null && imageList.length() > 0 ) {
+								imageObject = imageList.getJSONObject(0);
+							} 
+						} catch (JSONException e) {
+							imageObject = imageObject.getJSONObject("image");
 						}
-					}										
+					}
+				} else if ( iter.has("image") && !iter.isNull("image")) {
+					imageObject = iter.getJSONObject("image");
 				}
+				
+				if ( imageObject != null ) {
+					if(imageObject.has("medium") && !imageObject.isNull("medium"))
+					{
+						JSONObject medium = imageObject.getJSONObject("medium");
+						if (medium != null && medium.has("url") && !medium.isNull("url") ) {
+							event.setImage( medium.getString("url") );
+						}
+					}
+					else if(imageObject.has("url") && !imageObject.isNull("url")) {
+						event.setImage( imageObject.getString("url"));
+					}
+				}
+				
 				event.setSource(SourceType.EVENTFUL);
 			}
 		} catch ( JSONException e ) {
@@ -422,6 +442,37 @@ public class EventFullProvider extends DataProvider
 					place.setEventsAtPlace(myEventList);
 				}// end if
 				
+				JSONObject imageObject = null;
+				if ( iter.has("images") && !iter.isNull("images")) {
+					imageObject = iter.getJSONObject("images");
+					
+					if ( imageObject.has("image") && !imageObject.isNull("image")) {
+						
+						try {
+							JSONArray imageList = imageObject.getJSONArray("image");
+							if ( imageList != null && imageList.length() > 0 ) {
+								imageObject = imageList.getJSONObject(0);
+							} 
+						} catch (JSONException e) {
+							imageObject = imageObject.getJSONObject("image");
+						}
+					}
+				} else if ( iter.has("image") && !iter.isNull("image")) {
+					imageObject = iter.getJSONObject("image");
+				}
+				
+				if ( imageObject != null ) {
+					if(imageObject.has("medium") && !imageObject.isNull("medium"))
+					{
+						JSONObject medium = imageObject.getJSONObject("medium");
+						if (medium != null && medium.has("url") && !medium.isNull("url") ) {
+							place.setImage( medium.getString("url") );
+						}
+					}
+					else if(imageObject.has("url") && !imageObject.isNull("url")) {
+						place.setImage( imageObject.getString("url"));
+					}
+				}
 			}
 		} catch (JSONException e ) {
 			place = null;

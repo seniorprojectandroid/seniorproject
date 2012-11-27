@@ -13,7 +13,7 @@ public class MbGuideDB {
 
 	// Database Name and Version
 	private static final String DATABASE_NAME = "MB_Guide_DB";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 5;
 
 	// Database Tables
 	private static final String EVENT_TABLE_NAME = "Event";

@@ -7,6 +7,7 @@ import java.util.List;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.PlacePickerFragment;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -147,6 +149,28 @@ public class PlaceDetailsActivity extends MapActivity {
 		}
 	}
 
+	public void onCheckIn(View view) {
+		Logger.Debug("On check in click");
+		if (this.currentPlace != null && this.currentPlace.getLocation() != null) {
+			Intent intent = new Intent(this, FbPlacePicker.class);
+			
+			Location currentLocation = this.currentPlace.getLocation();
+	    	intent.putExtra("latitude", currentLocation.getLatitude());
+	    	intent.putExtra("longitude", currentLocation.getLongitude());
+	    	intent.putExtra(PlacePickerFragment.RADIUS_IN_METERS_BUNDLE_KEY, 50);
+	    	intent.putExtra(PlacePickerFragment.SHOW_SEARCH_BOX_BUNDLE_KEY, false);
+	    	intent.putExtra(PlacePickerFragment.SEARCH_TEXT_BUNDLE_KEY, this.currentPlace.getName() );
+	    	
+	    	android.location.Location location = new android.location.Location(LocationManager.GPS_PROVIDER);
+	    	location.setLatitude(Double.valueOf(currentLocation.getLatitude()));
+			location.setLongitude(Double.valueOf(currentLocation.getLongitude()));
+			
+			intent.putExtra(PlacePickerFragment.LOCATION_BUNDLE_KEY, location);
+			
+	    	this.startActivity(intent);
+		}
+	}
+		
 	public void showPlace(Place place) {
 
 		if (place != null) {

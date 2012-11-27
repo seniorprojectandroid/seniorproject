@@ -16,8 +16,10 @@ import android.text.format.DateFormat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.SearchView;
@@ -33,14 +35,17 @@ import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
 import edu.fiu.cs.seniorproject.manager.DataManager.ConcurrentEventListLoader;
+import edu.fiu.cs.seniorproject.utils.BitmapSimpleAdapter;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class EventsActivity extends FilterActivity {
 
 	private EventLoader mEventLoader = null;
 	private List<Hashtable<String, String>> mEventList = null;
-	private boolean isInForeground = false;
+	private boolean isInForeground = false;	
 	private List<Event> mPendingEventList = null;	
+	private Button loadMoreButton = null;
+	private SimpleAdapter listAdapter = null;
 	
 	private final OnItemClickListener mClickListener = new OnItemClickListener() {
 		@Override
@@ -64,6 +69,23 @@ public class EventsActivity extends FilterActivity {
         overridePendingTransition(R.anim.pull_in_from_bottom, R.anim.hold);
         setContentView(R.layout.activity_events);
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        
+        ListView lv = (ListView)findViewById(android.R.id.list);
+    	
+    	if ( lv != null ) {
+    		Button button = new Button(this);
+    		button.setText("Load More");
+    		this.loadMoreButton = button; 
+    		button.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					getMoreEvents();
+				}
+			});    		
+    		lv.addFooterView(button);
+    	}
+        
+        
         AppLocationManager.init(this);
         
         this.setupFilters();
@@ -86,9 +108,16 @@ public class EventsActivity extends FilterActivity {
     	
     	if ( this.mPendingEventList != null ) {
     		this.showEventList(mPendingEventList);
-    		this.onDoneLoadingEvents();
+    		this.onDoneLoadingEvents(1);
     		mPendingEventList = null;
     	}
+    }
+    
+    private void getMoreEvents() {
+    	this.cancelEventLoader();
+    	mEventLoader = new EventLoader(this);
+    	mEventLoader.useNextPage = true;
+    	mEventLoader.execute();
     }
     
     @Override
@@ -181,10 +210,16 @@ public class EventsActivity extends FilterActivity {
     	}
     }
     
-    private void onDoneLoadingEvents() {
+    private void onDoneLoadingEvents(int total) {
     	findViewById(android.R.id.list).setVisibility( mEventList != null ? View.VISIBLE : View.GONE);
 		findViewById(android.R.id.empty).setVisibility(mEventList == null ? View.VISIBLE : View.GONE);
 		findViewById(android.R.id.progress).setVisibility(View.GONE);
+		
+		if(total == 0)
+		{
+			this.loadMoreButton.setText("no more events!!!");
+			this.loadMoreButton.setEnabled(false);
+		}
     }
     
     private List<Hashtable<String, String>> buildEventMap(List<Event> eventList ) {
@@ -197,10 +232,16 @@ public class EventsActivity extends FilterActivity {
 		{
 			Event event = eventList.get(i);
 			Hashtable<String, String> entry = new Hashtable<String, String>();
+			entry.put("id", event.getId());
 			entry.put("event_id", event.getId());
 			entry.put("source", event.getSource().toString() );
-			entry.put("name", event.getName() );						
+			entry.put("name", event.getName() );			
 			entry.put("time", DateFormat.format("EEEE, MMMM dd, h:mmaa", Long.valueOf( event.getTime() ) * 1000 ).toString() );
+			
+			String image = event.getImage();
+			if ( image != null && !image.isEmpty()) {
+				entry.put("image", event.getImage());
+			}
 			
 			Location location = event.getLocation();
 			
@@ -237,8 +278,8 @@ public class EventsActivity extends FilterActivity {
 	
 						this.mEventList = this.buildEventMap(eventList);
 						
-						SimpleAdapter adapter = new SimpleAdapter(this, this.mEventList, R.layout.event_row, from, to);
-						lv.setAdapter(adapter);
+						 this.listAdapter = new BitmapSimpleAdapter(this, this.mEventList, R.layout.event_row, from, to);
+						lv.setAdapter(this.listAdapter);
 		    			lv.setVisibility(View.VISIBLE);
 		    			lv.setOnItemClickListener(mClickListener);
 		    		}
@@ -252,7 +293,7 @@ public class EventsActivity extends FilterActivity {
 	    			List<Hashtable<String, String>> eventMap = this.buildEventMap(eventList);
 	        		if ( eventMap != null ) {
 	        			this.mEventList.addAll(eventMap);
-	        			((SimpleAdapter)lv.getAdapter()).notifyDataSetChanged();
+	        			this.listAdapter.notifyDataSetChanged();
 	        		}
 	    		}    		
 	    	}
@@ -329,6 +370,7 @@ public class EventsActivity extends FilterActivity {
     	protected DateFilter mDataFilter = DateFilter.TODAY;
     	protected String mSearchRadius = "1";	// one mile by default
     	protected String mQuery = null;
+    	protected boolean useNextPage = false;
     	
     	public EventLoader(EventsActivity activity) {
     		mActivityReference = new WeakReference<EventsActivity>(activity);
@@ -347,7 +389,11 @@ public class EventsActivity extends FilterActivity {
 			Location location = new Location( String.valueOf( currentLocation.getLatitude() ), String.valueOf(currentLocation.getLongitude()) );
 			
 			Integer total = 0;
-			this.mLoader = DataManager.getSingleton().getConcurrentEventList(location, mCategoryFilter, mSearchRadius, mQuery, mDataFilter );
+			
+			if(!this.useNextPage)
+				this.mLoader = DataManager.getSingleton().getConcurrentEventList(location, mCategoryFilter, mSearchRadius, mQuery, mDataFilter );
+			else
+				this.mLoader = DataManager.getSingleton().getConcurrentNextEventList();
 			
 			if ( this.mLoader != null ) {
 				List<Event> iter = null;
@@ -364,6 +410,7 @@ public class EventsActivity extends FilterActivity {
 			}
 			return total;
 		}
+    	
     	
 		@Override
 		protected void onProgressUpdate(List<Event>... eventList) {
@@ -382,10 +429,10 @@ public class EventsActivity extends FilterActivity {
 			if ( !this.isCancelled() && mActivityReference != null ) {
 				EventsActivity activity = this.mActivityReference.get();
 				if ( activity != null ) {
-					activity.onDoneLoadingEvents();
+					activity.onDoneLoadingEvents(total);
 				}
 			}
 			Logger.Debug("Total events = " + total );
 		}		
-    }    
+    }
 }

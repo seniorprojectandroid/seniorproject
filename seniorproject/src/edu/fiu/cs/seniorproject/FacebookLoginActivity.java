@@ -1,87 +1,53 @@
 package edu.fiu.cs.seniorproject;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.MalformedURLException;
+import com.facebook.GraphUser;
+import com.facebook.Request;
+import com.facebook.FacebookActivity;
+import com.facebook.Response;
+import com.facebook.SessionState;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.widget.TextView;
 
-import com.facebook.android.*;
-import com.facebook.android.AsyncFacebookRunner.RequestListener;
-import com.facebook.android.Facebook.*;
-
-import edu.fiu.cs.seniorproject.utils.Logger;
-
-public class FacebookLoginActivity extends Activity {
-
-    private Facebook facebook = null;
-    private AsyncFacebookRunner mAsyncRunner = null;
+public class FacebookLoginActivity extends FacebookActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_layout);
-
-        facebook = new Facebook("378790605525916");
-        mAsyncRunner = new AsyncFacebookRunner(facebook);
+        this.openSession();       
         
-        facebook.authorize(this, new DialogListener() {
-            @Override
-            public void onComplete(Bundle values) {
-            	Logger.Info("authorize completed!!!");
-            }
-
-            @Override
-            public void onFacebookError(FacebookError error) {
-            	Logger.Error("Error authorizing facebook!!!");
-            }
-
-            @Override
-            public void onError(DialogError e) {
-            	Logger.Error("Error showing dialog!!!");
-            }
-
-            @Override
-            public void onCancel() {
-            	Logger.Warning("User canceled to authorization!!!");
-            }
-        });
-    }
-
+        SessionState state = this.getSessionState();
+        if ( state != null && state.isOpened() ) {
+        	this.getUserInfo();
+        }
+    }  
+  
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        facebook.authorizeCallback(requestCode, resultCode, data);
+    protected void onSessionStateChange(SessionState state, Exception exception) {
+      // user has either logged in or not ...
+      if (state.isOpened()) {
+    	  this.getUserInfo();
+      }
     }
-    
-    public void onLogoutButtonClick(View view) {
-    	
-    	  mAsyncRunner.logout(view.getContext(), new RequestListener() {
+
+    private void getUserInfo() {
+    	// make request to the /me API
+        Request request = Request.newMeRequest(this.getSession(), new Request.GraphUserCallback() {
 			
-			public void onMalformedURLException(MalformedURLException e, Object state) {
-				Logger.Error("onMalformedURLException");
-			}
-			
-			public void onIOException(IOException e, Object state) {
-				Logger.Error("onIOException");
-			}
-			
-			public void onFileNotFoundException(FileNotFoundException e, Object state) {
-				Logger.Error("onFileNotFoundException");
-			}
-			
-			public void onFacebookError(FacebookError e, Object state) {
-				Logger.Error("onFacebookError");
-			}
-			
-			public void onComplete(String response, Object state) {
-				Logger.Info("logout completed");
-			}
+        	 // callback after Graph API response with user object
+            @Override
+            public void onCompleted(GraphUser user, Response response) {
+              if (user != null) {
+                TextView welcome = (TextView) findViewById(R.id.textView2);
+                
+                if ( welcome != null ) {
+                	welcome.setText("Hello " + user.getName() + "!");
+                }
+              }
+            }
 		});
-    	
+        Request.executeBatchAsync(request);
     }
 }
 

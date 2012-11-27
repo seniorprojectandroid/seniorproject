@@ -98,6 +98,12 @@ public class EventDetailsActivity extends MapActivity {
             case R.id.delete_from_calendar:
                 this.onDeleteEventFromCalendarAndDBClick(item);
                 return true;  
+            case R.id.invite_friends:
+                this.onInviteFriends(item);
+                return true;  
+            case R.id.share:
+                this.onShareEvent(item);
+                return true;  
         }
         return super.onOptionsItemSelected(item);
     }
@@ -122,7 +128,24 @@ public class EventDetailsActivity extends MapActivity {
     	deleteEventToCalendarAndDB();
     }
     
-
+    public void onInviteFriends(MenuItem menu) {
+    	if ( this.currentEvent != null ) {
+	    	Intent intent = new Intent(this, FbRequestActivity.class);
+	    	intent.putExtra("title", "Invite Dialog");
+	    	intent.putExtra("message", "Would you like to join me at " + this.currentEvent.getName() );
+	    	this.startActivity(intent);
+    	}
+    }
+    
+    public void onShareEvent(MenuItem menu) {
+    	if ( this.currentEvent != null ) {
+	    	Intent intent = new Intent(this, FbPublishFeedActivity.class);
+	    	intent.putExtra("title", "Miami Beach Events");
+	    	intent.putExtra("message", "I was at " + this.currentEvent.getName() );
+	    	this.startActivity(intent);
+    	}
+    }
+    
     public void onDirectionsClick(View view) {
     	Logger.Debug("On direction click");
     	if ( this.currentEvent != null && this.currentEvent.getLocation() != null ) {

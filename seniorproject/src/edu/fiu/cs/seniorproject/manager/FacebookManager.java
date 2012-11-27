@@ -1,32 +1,32 @@
 package edu.fiu.cs.seniorproject.manager;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-
-import com.facebook.android.DialogError;
-import com.facebook.android.Facebook;
-import com.facebook.android.Facebook.DialogListener;
-import com.facebook.android.FacebookError;
-
-import edu.fiu.cs.seniorproject.config.AppConfig;
-import edu.fiu.cs.seniorproject.data.Location;
-import edu.fiu.cs.seniorproject.data.Place;
-import edu.fiu.cs.seniorproject.data.SourceType;
-import edu.fiu.cs.seniorproject.utils.Logger;
+//import java.io.IOException;
+//import java.net.MalformedURLException;
+//import java.util.LinkedList;
+//import java.util.List;
+//
+//import org.json.JSONArray;
+//import org.json.JSONException;
+//import org.json.JSONObject;
+//
+//import android.app.Activity;
+//import android.content.Context;
+//import android.content.Intent;
+//import android.os.Bundle;
+//
+//import com.facebook.android.DialogError;
+//import com.facebook.android.Facebook;
+//import com.facebook.android.Facebook.DialogListener;
+//import com.facebook.android.FacebookError;
+//
+//import edu.fiu.cs.seniorproject.config.AppConfig;
+//import edu.fiu.cs.seniorproject.data.Location;
+//import edu.fiu.cs.seniorproject.data.Place;
+//import edu.fiu.cs.seniorproject.data.SourceType;
+//import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class FacebookManager {
-	
+	/*
 	public interface IRequestResult {
 		void onComplete( boolean success );
 	}
@@ -159,5 +159,5 @@ public class FacebookManager {
 	{
 		return this.getFacebookClient().request(path);
 	}
-	
+	*/
 }

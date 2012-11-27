@@ -222,13 +222,22 @@ public class MBVCAProvider extends DataProvider
 					event.setTime(String.valueOf(iter.getInt("start_time")));
 				}
 				
-				if ( iter.has("image")) {
-					String image = iter.getString("image");
-					
-					if ( !image.isEmpty() && !image.equals("null")) {
-						event.setImage( IMAGE_BASE_URL + iter.getString("image"));
-					}
-				}				
+				String image = null;
+				if ( iter.has("image_url")) {
+					image = iter.getString("image_url");			
+				} else if ( iter.has("image")) {
+					image = iter.getString("image");
+				}
+				
+				if ( image != null && !image.isEmpty() && !image.equals("null")) {
+					event.setImage( IMAGE_BASE_URL + image);
+				}
+								
+				if ( iter.has("event_url") && !iter.isNull("event_url")) {
+					event.setUrl( iter.getString("event_url"));
+				} else if ( iter.has("url") && !iter.isNull("url")) {
+					event.setUrl( IMAGE_BASE_URL + iter.getString("url"));
+				}
 				
 				event.setSource(SourceType.MBVCA);
 			} 
@@ -280,15 +289,20 @@ public class MBVCAProvider extends DataProvider
 					place.setLocation(location);
 				}
 				
-				if ( iter.has("image")) {
-					String image = iter.getString("image");
-					
-					if ( !image.isEmpty() && !image.equals("null")) {
-						place.setImage( IMAGE_BASE_URL + iter.getString("image"));
-					}
+				String image = null;
+				if ( iter.has("image_url")) {
+					image = iter.getString("image_url");			
+				} else if ( iter.has("image")) {
+					image = iter.getString("image");
 				}
 				
-				if ( iter.has("url")) {
+				if ( image != null && !image.isEmpty() && !image.equals("null")) {
+					place.setImage( IMAGE_BASE_URL + image);
+				}
+								
+				if ( iter.has("place_url") && !iter.isNull("place_url")) {
+					place.setWebsite( iter.getString("place_url"));
+				} else if ( iter.has("url") && !iter.isNull("url")) {
 					place.setWebsite( IMAGE_BASE_URL + iter.getString("url"));
 				}
 				

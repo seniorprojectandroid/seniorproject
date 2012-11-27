@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">Miami Beach Guide</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
@@ -44,7 +45,7 @@
     <string name="title_activity_tour_activity_details">TourActivityDetails</string>
     <string name="previotour">Previus</string>
     <string name="nexttour">Next</string>
-	<string name="tours">Tours</string>
+    <string name="tours">Tours</string>
     <string name="places">Find Places</string>
     <string name="empty_result">No Result</string>
     <string name="fcbk_login">Login</string>
@@ -59,10 +60,17 @@
 	<string name="empty_events">No Events</string>
 	<string name="directions">Directions</string>
 	<string name="navigation">Navigation</string>
-	<string name="calendar">Calendar</string>
+	<string name="calendar">TODO</string>
 	<string name="title_activity_personalization">Personalize your App!!!</string>
 	<string name="interest_events_prompt">Select Your Events Interest</string>
 	<string name="interest_places_prompt">Select Your Places Interest</string>
+    <string name="empty_events">No Events</string>
+    <string name="directions">Directions</string>
+    <string name="navigation">Navigation</string>
+    <string name="calendar">Calendar</string>
+    <string name="title_activity_personalization">Personalize your App!!!</string>
+    <string name="interest_events_prompt">Select Your Events Interest</string>
+    <string name="interest_places_prompt">Select Your Places Interest</string>
     <string name="distance_prompt">Select Radius (Miles)</string>
     <string name="my_events_tv2">My Events</string>
     <string name="add_place">Add Place</string>
@@ -76,6 +84,23 @@
     <string name="google_place_api">Google Places</string>
     <string name="eventful_api">Eventful</string>
     <string name="facebook_api">Facebook</string>
-
+    <string name="sample_text">Sample Text</string>
+    <string name="sample_image">Sample Image</string>
+    <string name="place_suggestion">We think you may like these places</string>
+    <string name="event_suggestion">We think you may like these events</string>
+    <string name="fb_app_id">378790605525916</string>
+    <string name="title_activity_fb_place_picker">Pick a Place</string>
+    <string name="title_activity_fb_request">Sent Request</string>
+    <string name="title">Title</string>
+    <string name="message">Message</string>
+    <string name="post">Post</string>
+    <string name="invite">Invite</string>
+    <string name="title_activity_fb_publish_feed">Publish Feed</string>
+	<string name="share">Share</string>
+	<string name="join_me">Join Me!!!</string>
+	<string name="miami_beach">Miami Beach</string>
+	<string name="join_invite">Would you like to join me at </string>
+	<string name="select_place_first">Select a place first</string>
+	<string name="write_message">Write a message!!</string>
+	<string name="error_posting_request">Error posting request. Try Again Later!!!</string>
 </resources>
-

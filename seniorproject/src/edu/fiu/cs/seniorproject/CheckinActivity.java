@@ -1,31 +1,30 @@
 package edu.fiu.cs.seniorproject;
 
-import java.util.List;
+//import java.util.List;
 
-import edu.fiu.cs.seniorproject.data.Location;
-import edu.fiu.cs.seniorproject.data.Place;
-import edu.fiu.cs.seniorproject.manager.FacebookManager;
-import edu.fiu.cs.seniorproject.manager.FacebookManager.IRequestResult;
+//import edu.fiu.cs.seniorproject.data.Location;
+//import edu.fiu.cs.seniorproject.data.Place;
+//import edu.fiu.cs.seniorproject.manager.FacebookManager;
 import edu.fiu.cs.seniorproject.utils.Logger;
 import android.app.Activity;
-import android.app.ProgressDialog;
+//import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
+//import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
+//import android.view.View;
+//import android.widget.AdapterView;
+//import android.widget.AdapterView.OnItemClickListener;
+//import android.widget.ArrayAdapter;
+//import android.widget.ListView;
+//import android.widget.Toast;
 
 public class CheckinActivity extends Activity {
 
-	private FacebookManager fManager = null;
-	private List<Place> mPlaceList = null;
-	private ProgressDialog mProgress = null;
+	//private FacebookManager fManager = null;
+	//private List<Place> mPlaceList = null;
+	//private ProgressDialog mProgress = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -40,6 +39,7 @@ public class CheckinActivity extends Activity {
         
         Logger.Debug("latitude = " + latitude + " longitude = " + longitude );   
         
+        /*
         fManager = new FacebookManager();
         fManager.login(this, new String[] {"publish_stream"}, new IRequestResult() {
 			
@@ -62,7 +62,7 @@ public class CheckinActivity extends Activity {
 				}
 				
 			}
-        });
+        });*/
         
     }// end onCreate // 25.7593282,-80.371674
 
@@ -89,13 +89,14 @@ public class CheckinActivity extends Activity {
     	this.startActivity(intent);
     } 
     
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-        fManager.authorizeCallback(requestCode, resultCode, data);
-    }
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data)
+//    {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        fManager.authorizeCallback(requestCode, resultCode, data);
+//    }
     
+    /*
     private class FeedPublisher extends AsyncTask<Integer, Void, Void>
     {
     	@Override
@@ -103,7 +104,7 @@ public class CheckinActivity extends Activity {
 	   	 {
     		int myIndex = params[0];
     		Place myPlace = mPlaceList.get(myIndex);
-    		fManager.PostFeed("Testing checkin!!!", myPlace.getId());
+    		//fManager.PostFeed("Testing checkin!!!", myPlace.getId());
 			return null;	
 	   	 }
     	
@@ -113,14 +114,16 @@ public class CheckinActivity extends Activity {
     		 Toast.makeText(CheckinActivity.this, "Checkin Posted..", Toast.LENGTH_SHORT ).show();
     	 }
     }// end FeedPublisher
-    
+    */
+    /*
     private class PlaceDownloader extends AsyncTask<Location, Void, List<Place>>
     {
     	 @Override
     	 protected List<Place> doInBackground(Location... params)
     	 {
-    		 Location mylocation = params[0];
-    		 return fManager.getPlacesAtLocation(mylocation, 150);   		 
+    		 //Location mylocation = params[0];
+    		 //return fManager.getPlacesAtLocation(mylocation, 150);   	
+    		 return null;
     	 }
     	 
     	 @Override
@@ -161,4 +164,5 @@ public class CheckinActivity extends Activity {
     	 }// end onPostExecute
     	 
     }// end PlaceDownloader
+    */
 }
