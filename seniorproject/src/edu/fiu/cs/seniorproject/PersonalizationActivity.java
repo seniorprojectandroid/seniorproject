@@ -20,9 +20,9 @@ import edu.fiu.cs.seniorproject.data.MbGuideDB;
 
 public class PersonalizationActivity extends Activity implements OnItemSelectedListener
 {
-	private Spinner spinner1, spinner2, spinner3;
+	private Spinner spinner1, spinner2, spinner3, spinner4;
 	private Button btnSubmit, btnSkip;	
-	private String eCategory, pCategory, radius;
+	private String eCategory, pCategory, radius, time;
 	private MbGuideDB db = new MbGuideDB(this);
 
 	private OnClickListener skipListener = new OnClickListener() {
@@ -30,9 +30,12 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 		@Override
 		public void onClick(View v) {
 			int eventPos = spinner1.getSelectedItemPosition();
+			int timePos = spinner4.getSelectedItemPosition();
 			int placePos = spinner2.getSelectedItemPosition();
 			int radiusPos = spinner3.getSelectedItemPosition();
+			
 			setEventsPref(eventPos);
+		//	setTimePref(timePos);
 			setPlacesPref(placePos);
 			setRadiusPref(radiusPos);
 			setFlag();
@@ -49,6 +52,7 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 		addItemsOnSpinner1();
 		addItemsOnSpinner2();
 		addItemsOnSpinner3();
+		addItemsOnSpinner4();
 		addListenerOnButton();	
 		
 		btnSkip = (Button) findViewById(R.id.btnSkip);	
@@ -66,7 +70,7 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 		// Apply the adapter to the spinner
 		spinner1.setAdapter(adapter);
 		spinner1.setOnItemSelectedListener(this);		
-	}
+	}	
 
 	public void addItemsOnSpinner2() {
 		
@@ -90,6 +94,19 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 		spinner3.setAdapter(adapter);	
 		spinner3.setOnItemSelectedListener(this);
 		
+	}
+	
+	public void addItemsOnSpinner4() {
+
+		spinner4 = (Spinner) findViewById(R.id.time_spinner);
+		// Create an ArrayAdapter using the string array and a default spinner layout
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+		        R.array.time_filters, android.R.layout.simple_spinner_item);
+		// Specify the layout to use when the list of choices appears
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		// Apply the adapter to the spinner
+		spinner4.setAdapter(adapter);
+		spinner4.setOnItemSelectedListener(this);		
 	}
 	
 	private void setEventsPref(int pos)
@@ -120,6 +137,16 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 		Resources res = getResources();  
 		radius = res.getStringArray(R.array.radiusvalues)[pos];
 		editor.putString(SettingsFragment.KEY_DISTANCE_RADIUS, radius );
+		editor.commit();
+	}
+	
+	private void setTimePref(int pos)
+	{
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		Editor editor = pref.edit();		
+		Resources res = getResources();  
+		time = res.getStringArray(R.array.time_filters)[pos];
+		editor.putString(SettingsFragment.TIME, time );
 		editor.commit();
 	}
 

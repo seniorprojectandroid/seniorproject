@@ -79,6 +79,7 @@
     <string name="interest_events_tv"> Select your events interest: </string>
     <string name="interest_places"> Select your places interest: </string>
     <string name="interest_radius"> Select the search radius: </string>
+     <string name="interest_time"> Select the time period: </string>
     <string name="data_source">Data Source</string>
     <string name="miami_beach_api">Miami Beach</string>
     <string name="google_place_api">Google Places</string>
@@ -103,4 +104,6 @@
 	<string name="select_place_first">Select a place first</string>
 	<string name="write_message">Write a message!!</string>
 	<string name="error_posting_request">Error posting request. Try Again Later!!!</string>
+	<string name="tours">Tours</string>
+	<string name="time_prompt">Select Time Period</string>
 </resources>

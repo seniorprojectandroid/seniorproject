@@ -8,12 +8,13 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class MbGuideDB {
 
 	// Database Name and Version
 	private static final String DATABASE_NAME = "MB_Guide_DB";
-	private static final int DATABASE_VERSION = 5;
+	private static final int DATABASE_VERSION = 6;
 
 	// Database Tables
 	private static final String EVENT_TABLE_NAME = "Event";
@@ -98,14 +99,14 @@ public class MbGuideDB {
 
 	}
 
-	public void createEventRecord(String eventName, long eventCalendarID,
-			String eventLocation) throws SQLException {
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(EVENT_NAME, eventName);
-		contentValues.put(EVENT_CALENDAR_ID, eventCalendarID);
-		contentValues.put(EVENT_LOCATION, eventLocation);
-		mbDatabase.insert(EVENT_TABLE_NAME, null, contentValues);
-	}
+//	public void createEventRecord(String eventName, long eventCalendarID,
+//			String eventLocation) throws SQLException {
+//		ContentValues contentValues = new ContentValues();
+//		contentValues.put(EVENT_NAME, eventName);
+//		contentValues.put(EVENT_CALENDAR_ID, eventCalendarID);
+//		contentValues.put(EVENT_LOCATION, eventLocation);
+//		mbDatabase.insert(EVENT_TABLE_NAME, null, contentValues);
+//	}
 	
 	public void createUserPrefRecord(String eCategory, String pCategory, String radius ) throws SQLException {
 		ContentValues contentValues = new ContentValues();
@@ -120,13 +121,32 @@ public class MbGuideDB {
 	}
 	
 	
+	private String cleanString(String s)
+	{
+		String cs="";
+		int len = s.length();
+		for(int i=0; i<len; i++)
+		{
+			char c = s.charAt(i);
+			if(c== '\'')
+				cs += "";
+			else		
+				cs +=c;		
+		}
+		
+		Log.i("event name",String.format("Event NAME: ", s));	
+		Log.i("cleanned name",String.format(" cleanned Event NAME: ", cs));	
+		
+		return cs;
+	}
 
    	public void createEventRecordVersion2(String eventName,
 			long eventCalendarID, String eventLocation, long eTimeStarts,
 			long eTimeEnds) throws SQLException {
 		ContentValues contentValues = new ContentValues();
 		
-		contentValues.put(EVENT_NAME, eventName);
+		String cName = cleanString(eventName);
+		contentValues.put(EVENT_NAME, cName);
 		contentValues.put(EVENT_CALENDAR_ID, eventCalendarID);
 		contentValues.put(EVENT_LOCATION, eventLocation);
 		contentValues.put(EVENT_TIME_STARTS, eTimeStarts);
@@ -166,57 +186,58 @@ public class MbGuideDB {
 		
 		mbDatabase.insert(PLACE_TABLE_NAME, null, contentValues);
 	}
+//
+//	public boolean existsEvent(String s) throws SQLException {
+//		String[] columns = new String[] { EVENT_NAME, EVENT_CALENDAR_ID,
+//				EVENT_LOCATION }; // KEY_ROW_ID,
+//		Cursor c = mbDatabase.query(EVENT_TABLE_NAME, columns, EVENT_NAME
+//				+ " = " + "'s'", null, null, null, null);
+//		if (c != null) {
+//			c.close();
+//			return true;
+//		} else {
+//			return false;
+//		}
+//	}
+//
+//	public boolean existsVersion2(String s) throws SQLException {
+//		String[] columns = new String[] { EVENT_NAME, EVENT_CALENDAR_ID,
+//				EVENT_LOCATION }; // KEY_ROW_ID,
+//		Cursor c = mbDatabase.query(EVENT_TABLE_NAME, columns, EVENT_NAME
+//				+ " = " + "'s'", null, null, null, null);
+//		String sTrimmed = s.trim();
+//		int iName = c.getColumnIndex(EVENT_NAME);
+//
+//		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+//			if (sTrimmed.equalsIgnoreCase(c.getString(iName).trim())) {
+//				c.close();
+//				return true;
+//			}
+//		}
+//
+//		c.close();
+//		return false;
+//	}
 
-	public boolean existsEvent(String s) throws SQLException {
-		String[] columns = new String[] { EVENT_NAME, EVENT_CALENDAR_ID,
-				EVENT_LOCATION }; // KEY_ROW_ID,
-		Cursor c = mbDatabase.query(EVENT_TABLE_NAME, columns, EVENT_NAME
-				+ " = " + "'s'", null, null, null, null);
-		if (c != null) {
-			c.close();
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public boolean existsVersion2(String s) throws SQLException {
-		String[] columns = new String[] { EVENT_NAME, EVENT_CALENDAR_ID,
-				EVENT_LOCATION }; // KEY_ROW_ID,
-		Cursor c = mbDatabase.query(EVENT_TABLE_NAME, columns, EVENT_NAME
-				+ " = " + "'s'", null, null, null, null);
-		String sTrimmed = s.trim();
-		int iName = c.getColumnIndex(EVENT_NAME);
-
-		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-			if (sTrimmed.equalsIgnoreCase(c.getString(iName).trim())) {
-				c.close();
-				return true;
-			}
-		}
-
-		c.close();
-		return false;
-	}
-
-	public boolean existsVersion3_ussingFlag(String name) throws SQLException {
-		Cursor cursor = mbDatabase.rawQuery("SELECT * FROM " + EVENT_TABLE_NAME
-				+ " WHERE " + EVENT_NAME + " = '" + name + "' " + "AND "
-				+ EVENT_IS_DELETED_FLAG + " = " + NOT_SET_DELETED_FLAG, null);
-
-		if (cursor != null) {
-			if (cursor.getCount() > 0) {
-				cursor.close();
-				return true;
-			}
-		}
-		cursor.close();
-		return false;
-	}
+//	public boolean existsVersion3_ussingFlag(String name) throws SQLException {
+//		Cursor cursor = mbDatabase.rawQuery("SELECT * FROM " + EVENT_TABLE_NAME
+//				+ " WHERE " + EVENT_NAME + " = '" + name + "' " + "AND "
+//				+ EVENT_IS_DELETED_FLAG + " = " + NOT_SET_DELETED_FLAG, null);
+//
+//		if (cursor != null) {
+//			if (cursor.getCount() > 0) {
+//				cursor.close();
+//				return true;
+//			}
+//		}
+//		cursor.close();
+//		return false;
+//	}
 
 	public boolean existsVersion3(String name) throws SQLException {
+		String cName = cleanString(name);
 		Cursor cursor = mbDatabase.rawQuery("SELECT * FROM " + EVENT_TABLE_NAME
-				+ " WHERE " + EVENT_NAME + " = '" + name + "' ", null);
+				+ " WHERE " + EVENT_NAME + " = '" + cName + "' ", null);
 
 		if (cursor != null) {
 			if (cursor.getCount() > 0) {
@@ -239,6 +260,7 @@ public class MbGuideDB {
 
 	// this version will delete the event physically from the dataase
 	public int deleteEvent(long calEventID) throws SQLException {
+		
 		return mbDatabase.delete(EVENT_TABLE_NAME, EVENT_CALENDAR_ID + " = "
 				+ calEventID, null);
 	}
@@ -256,7 +278,8 @@ public class MbGuideDB {
 	// }
 	//
 
-	public long getEventCalendarID(String eCalName) throws SQLException {
+	public long getEventCalendarID(String name) throws SQLException {
+		String eCalName = cleanString(name);
 		long eCalID = -1;
 		Cursor c = mbDatabase.rawQuery("SELECT * FROM " + EVENT_TABLE_NAME
 				+ " WHERE " + EVENT_NAME + " = '" + eCalName + "'", null);
