@@ -22,7 +22,7 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 {
 	private Spinner spinner1, spinner2, spinner3, spinner4;
 	private Button btnSubmit, btnSkip;	
-	private String eCategory, pCategory, radius, time;
+	private String eCategory, pCategory, radius; //, time;
 	private MbGuideDB db = new MbGuideDB(this);
 
 	private OnClickListener skipListener = new OnClickListener() {
@@ -30,7 +30,7 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 		@Override
 		public void onClick(View v) {
 			int eventPos = spinner1.getSelectedItemPosition();
-			int timePos = spinner4.getSelectedItemPosition();
+			//int timePos = spinner4.getSelectedItemPosition();
 			int placePos = spinner2.getSelectedItemPosition();
 			int radiusPos = spinner3.getSelectedItemPosition();
 			
@@ -140,15 +140,15 @@ public class PersonalizationActivity extends Activity implements OnItemSelectedL
 		editor.commit();
 	}
 	
-	private void setTimePref(int pos)
-	{
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		Editor editor = pref.edit();		
-		Resources res = getResources();  
-		time = res.getStringArray(R.array.time_filters)[pos];
-		editor.putString(SettingsFragment.TIME, time );
-		editor.commit();
-	}
+//	private void setTimePref(int pos)
+//	{
+//		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//		Editor editor = pref.edit();		
+//		Resources res = getResources();  
+//		time = res.getStringArray(R.array.time_filters)[pos];
+//		editor.putString(SettingsFragment.TIME, time );
+//		editor.commit();
+//	}
 
 	 public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 	    

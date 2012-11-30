@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import edu.fiu.cs.seniorproject.utils.JsonParser;
 import edu.fiu.cs.seniorproject.utils.Logger;
 import edu.fiu.cs.seniorproject.utils.XMLParser;
 
@@ -33,7 +32,7 @@ public class TourActivity extends Activity{
 	private XMLParser parser = null;
 	
 	
-	private JsonParser json = null;
+	//private JsonParser json = null;
 	
 	XmlResourceParser stringXmlContent = null;
 	

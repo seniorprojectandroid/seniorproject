@@ -23,4 +23,9 @@
         android:orderInCategory="100"
         android:title="@string/share"        
         android:showAsAction="never" />
+    
+    <item android:id="@+id/post_tweet"
+        android:orderInCategory="100"
+        android:title="@string/post_tweet"        
+        android:showAsAction="never" />
 </menu>
