@@ -33,11 +33,11 @@ public class TourActivity extends Activity{
 	private XMLParser parser = null;
 	
 	
-	private JsonParser json = null;
+//	private JsonParser json = null;
 	
 	XmlResourceParser stringXmlContent = null;
 	
-	ByteArrayOutputStream byteJson = null;
+	//ByteArrayOutputStream byteJson = null;
    
 	 private final OnItemClickListener mClickListener = new OnItemClickListener() {
 			@Override

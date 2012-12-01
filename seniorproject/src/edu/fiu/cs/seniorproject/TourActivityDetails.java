@@ -1,6 +1,11 @@
 package edu.fiu.cs.seniorproject;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
+
+import edu.fiu.cs.seniorproject.data.Event;
+import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.Place;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
@@ -13,12 +18,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.FragmentManager;
 import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.text.format.DateFormat;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -29,9 +38,12 @@ public class TourActivityDetails extends Activity {
 	private List<Place> tours = null;		
 	private XMLParser parser = null;	
 	private XmlResourceParser stringXmlContent = null;	
-	
+	private String tourName = null;
 	private PlaceListPagerAdapter mAdapter;
 	private ViewPager mPager;
+	
+	
+	private List<Hashtable<String, String>> mPlaceList = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,11 +55,13 @@ public class TourActivityDetails extends Activity {
         Intent intent = getIntent();
         
         if ( intent != null && intent.hasExtra("tour")) {
-        	String tourName = intent.getStringExtra("tour");         	
+        	tourName = intent.getStringExtra("tour");         	
         	tours = new ArrayList<Place>();  
             parser = new XMLParser();
        		stringXmlContent = parser.getXMLFromSRC(this,R.xml.tours);
        		tours = parser.getTourByName(stringXmlContent, tourName);   
+       		
+       		this.mPlaceList = this.buildPlaceMap(tours);
        		
        		this.mAdapter = new PlaceListPagerAdapter(this.getFragmentManager(), this.tours);
        		
@@ -93,6 +107,72 @@ public class TourActivityDetails extends Activity {
 	}
 	
 	
+	
+	 @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	Logger.Debug("click on menu item = " + item.getItemId());
+        switch (item.getItemId()) {
+            
+            case R.id.map_menuitem:
+            	this.onEventsMapClick(item);
+            	return true;
+            case R.id.menu_settings:
+                this.onSettingsClick(item);
+                return true;    
+        }
+        return super.onOptionsItemSelected(item);
+    }  
+	 
+	 public void onSettingsClick(MenuItem view) {
+	    	Intent intent = new Intent(this, SettingsActivity.class);
+	    	this.startActivity(intent);
+	 } 
+	 
+	 public void onEventsMapClick( MenuItem menuItem)
+    {
+		 
+    	if( tourName != null)
+    		this.showEventsInMapView();
+    	else
+    	{
+    		Dialog d= new Dialog(this);
+        	d.setTitle(" No tour to show in the map!");       
+        	d.show();
+    	}
+    }
+	 
+ // Method to show all events in a MapView 
+    // It populates the static field locationsList
+    public void showEventsInMapView(){    	
+    	EventsMapViewActivity.locationsList = mPlaceList;
+    	EventsMapViewActivity.actvtitle = this.tourName;
+    	Intent intent = new Intent(this, EventsMapViewActivity.class);
+    	TourActivityDetails.this.startActivity(intent);
+    }
+    
+    private List<Hashtable<String, String>> buildPlaceMap(List<Place> placeList ) {
+    	List<Hashtable<String, String>> fillMaps = new ArrayList<Hashtable<String, String>>(placeList.size());
+				
+		for(int i = 0; i<placeList.size(); i++)
+		{
+			Place place = placeList.get(i);
+			Hashtable<String, String> entry = new Hashtable<String, String>();
+			entry.put("name", place.getName() );
+			
+			Location location = place.getLocation();
+			
+			if ( location != null ) {				
+				entry.put("latitude", location.getLatitude());
+				entry.put("longitude", location.getLongitude());
+			}
+			fillMaps.add(entry);
+		}
+		return fillMaps;
+    }// end buildPlaceMap
+    
+    
+	
+	// this is for the fragment
 	public class PlaceListPagerAdapter extends FragmentStatePagerAdapter {
 		private List<Place> mPlaceList;
 		
