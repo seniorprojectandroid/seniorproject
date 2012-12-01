@@ -1,14 +1,14 @@
 package edu.fiu.cs.seniorproject;
 
-import edu.fiu.cs.seniorproject.data.EventCategoryFilter;
-import edu.fiu.cs.seniorproject.data.PlaceCategoryFilter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
+import android.view.MenuItem;
+import edu.fiu.cs.seniorproject.data.EventCategoryFilter;
+import edu.fiu.cs.seniorproject.data.PlaceCategoryFilter;
 
 
 public class SettingsActivity extends PreferenceActivity  {
@@ -21,7 +21,14 @@ public class SettingsActivity extends PreferenceActivity  {
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();        
 
+    }   
+    
+    @Override
+    protected void onPause() {
+        super.onPause();
+
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

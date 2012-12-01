@@ -158,12 +158,43 @@ public class DataManager {
 		return result;
 	}
 	
+	public List<Place> getPlaceList2(Location location, PlaceCategoryFilter category, String radius, String query) {
+		
+		List<Place> result = null;		
+		this.mPlaceList = null;
+		if ( mProviderList.size() > 0 ) {
+		//	for( int i = 0; i < mProviderList.size(); i++ ) {
+				DataProvider provider = mProviderList.get(0);
+				
+				if ( provider.supportPlaces() && provider.isEnabled() ) {
+				//	List<Place> providerList = null;
+					try {
+						result = provider.getPlaceList(location, category, radius, query);
+					} catch (Exception e) {
+						result = null;
+						Logger.Error("Exception getting place list " + e.getMessage() );
+					}
+					
+					//if ( providerList != null && providerList.size() > 0 )					{
+					//	if ( result == null ) {
+					//		result = providerList;
+					//	} else {
+					//		result.addAll(providerList);
+					//	}
+					//}
+				}
+			//}
+		}
+		return result;
+	}
+	
 	public ConcurrentPlaceListLoader getConcurrentPlaceList(Location location, PlaceCategoryFilter category, String radius, String query) {
 		this.mPlaceList = null;
 		ConcurrentPlaceListLoader loader = new ConcurrentPlaceListLoader(false);
 		loader.execute(location, category, radius, query);
 		return loader;
 	}
+	
 	
 	public ConcurrentPlaceListLoader getConcurrentNextPlaceList() {
 		Logger.Debug("get concurrent place list");

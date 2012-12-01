@@ -36,7 +36,7 @@ import edu.fiu.cs.seniorproject.data.SourceType;
 import edu.fiu.cs.seniorproject.manager.AppLocationManager;
 import edu.fiu.cs.seniorproject.manager.DataManager;
 import edu.fiu.cs.seniorproject.manager.DataManager.ConcurrentEventListLoader;
-import edu.fiu.cs.seniorproject.manager.DataManager.ConcurrentPlaceListLoader;
+
 import edu.fiu.cs.seniorproject.utils.Logger;
 //import android.location.Location;
 public class MainActivity extends Activity {
@@ -88,8 +88,7 @@ public class MainActivity extends Activity {
         {
         	s.printStackTrace();
         	
-        }
-      
+        }      
         
     }
 
@@ -210,56 +209,45 @@ public class MainActivity extends Activity {
     	 int pSize = placeList.size();
     	 int mSize = 0;
 		if (placeList != null &&  pSize> 0) {
-			this.mPlaceList = this.buildPlaceList(placeList);
-			
+			this.mPlaceList = this.buildPlaceList(placeList);			
 			if(size < pSize)
 				mSize = size;
 			else
-				mSize = pSize;
-				
-			for (int i = 0; i < mSize; i++) {
-				
+				mSize = pSize;				
+			for (int i = 0; i < mSize; i++) {				
 				View v = (View) inflater.inflate(R.layout.image_box_linear,	null);
 				ImageView iv = (ImageView) v.findViewById(R.id.image);
-				TextView mtv = (TextView) v.findViewById(R.id.text);
-				if (iv != null) {					
-
+				TextView mtv = (TextView) v.findViewById(R.id.text);				
+				if (iv != null && placeList.get(i).getImage() != null) {		
+					DataManager.getSingleton().downloadBitmap(placeList.get(i).getImage(),iv);
 			    	final Hashtable<String, String> map = mPlaceList.get(i);
 			    	iv.setOnClickListener(new OnClickListener() {
-		                public void onClick(View v) {             
-		                		
-		                		if ( map != null && map.containsKey("id") && map.containsKey("source")) 
-		        				{
+			    		
+		                public void onClick(View v) {       
+		                		if ( map != null && map.containsKey("id") && map.containsKey("source"))		        				{
 		        					Intent intent = new Intent(MainActivity.this, PlaceDetailsActivity.class);
 		        					intent.putExtra("id", map.get("id"));
 		        					intent.putExtra("source", SourceType.valueOf(map.get("source")));
 		        					startActivity(intent);
-		        				}	    			
-		    				                              
+		        				} 			                         
 		                }
-		            });       	
-			    	
-			    	
-			    			 //DataManager.getSingleton().downloadBitmap(eventList.get(i).getImage(),iv);
+		            });    				  
 			    	if(placeList.get(i) != null){
-			    		String pName = placeList.get(i).getName();
-			    		
+			    		String pName = placeList.get(i).getName();			    		
 			    		int spaceIdx = 0;
 			    		if(pName.contains(" ")){
 			    			spaceIdx = pName.indexOf(' ');
 			    			String shortName = pName.substring(0, spaceIdx);
 			    			mtv.setText(shortName);
-			    		}
-			    		else 
+			    		}else 
 			    			mtv.setText(pName);	
 			    	}else
 			    		mtv.setText("Hello " + i);
 					if (hotBmList != null)
 						iv.setImageBitmap(getHotelBitmapList().get(i));
-					//
-				}
+					}
 				ly.addView(v);
-			}
+				}
 		}
     }
     
@@ -487,13 +475,9 @@ public class MainActivity extends Activity {
     private class PlacesLoader extends AsyncTask<Void, List<Place>, Integer>
     {
     	protected PlaceCategoryFilter mCategory = PlaceCategoryFilter.RESTAURANT_BARS;
-    	protected String mSearchRadius = "1";
-    	protected String mQuery = null;
-    	protected boolean useNextPage = false;
-    	
-    	private final WeakReference<MainActivity> mActivityReference;
-    	private ConcurrentPlaceListLoader mLoader = null;
-    	
+    	protected String mSearchRadius = "10";
+    	protected String mQuery = null;  	
+    	private final WeakReference<MainActivity> mActivityReference;    	
     	public PlacesLoader( MainActivity activity) {
     		mActivityReference = new WeakReference<MainActivity>(activity);
     	}
@@ -501,34 +485,13 @@ public class MainActivity extends Activity {
 		@Override
 		protected Integer doInBackground(Void... params) {
 			android.location.Location currentLocation = AppLocationManager.getCurrentLocation();
-			Location location = new Location( String.valueOf( currentLocation.getLatitude() ), String.valueOf(currentLocation.getLongitude()) );
-			
-			Integer total = 0;
-			
-			if ( useNextPage ) {
-				mLoader = DataManager.getSingleton().getConcurrentNextPlaceList();
-			} else {
-				mLoader = DataManager.getSingleton().getConcurrentPlaceList(location, mCategory, mSearchRadius, mQuery);
-			}
-			
-			if ( mLoader != null ) {
-				List<Place> iter = null;
-				while ( (iter = mLoader.getNext()) != null ) {
-					int iterSize = iter.size();
-					total += iterSize;
-					
-					String source = iter.size() > 0 ? iter.get(0).getSource().toString() : "Unknow";
-					Logger.Debug("Add new set of data from " + source + " size = " + iterSize);
-					
-					if ( iterSize > 0 ) {
-						this.publishProgress(iter);
-					}
-				}
-			}
-			return total;
-			//return DataManager.getSingleton().getPlaceList(location, null, "500", null);
-		}
-		
+			Location location = new Location( String.valueOf( currentLocation.getLatitude() ), String.valueOf(currentLocation.getLongitude()) );			
+			Integer total = 0;			
+			List<Place> pList;
+				pList = DataManager.getSingleton().getPlaceList(location, mCategory, mSearchRadius, mQuery);
+						this.publishProgress(pList);
+			return total;		
+		}		
 		@Override
 		protected void onProgressUpdate(List<Place>... placeList) {
 			if ( !this.isCancelled() && placeList != null && mActivityReference != null && mActivityReference.get() != null ) {
@@ -536,15 +499,12 @@ public class MainActivity extends Activity {
 					mActivityReference.get().showPlaceList(placeList[i]);
 				}
 			}
-		}
-    	
+		}    	
 		@Override
 		protected void onPostExecute(Integer total) {
 			Logger.Debug("Total records = " + total );	
-
 		}
-    }
-    
+    }    
     public void showPlacesInMapView()
     {
     	PlacesMapViewActivity.placesLocationsList = mPlaceList;
