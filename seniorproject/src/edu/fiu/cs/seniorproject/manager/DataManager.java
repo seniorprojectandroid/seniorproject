@@ -55,13 +55,41 @@ public class DataManager {
 		}
 	}
 	
+	public List<Event> getEventListFromMB(Location location, EventCategoryFilter category, String radius, String query, DateFilter date) {
+
+		List<Event> providerList = null;
+		this.mEventList = null;
+		if ( mProviderList.size() > 0 ) 
+		{
+			
+			DataProvider provider = mProviderList.get(0);
+			
+			if (provider.isEnabled() ) 
+			{					
+					
+					try {
+						providerList = provider.getEventList(location, category, radius, query, date);
+					} 
+					catch ( Exception e ) 
+					{
+						providerList = null;
+						Logger.Error("Exception getting event list " + e.getMessage());
+					}			
+				
+			}
+		}		
+		return providerList;
+	}
+	
 	public List<Event> getEventList(Location location, EventCategoryFilter category, String radius, String query, DateFilter date) {
 		List<Event> result = null;
 		
 		this.mEventList = null;
 		if ( mProviderList.size() > 0 ) {
+			
 			for( int i = 0; i < mProviderList.size(); i++ ) {
 				DataProvider provider = mProviderList.get(i);
+				
 				
 				if ( provider.supportEvents() && provider.isEnabled() ) {
 					

@@ -59,6 +59,24 @@
         android:clickable="true"
         android:prompt="@string/distance_prompt"
         android:visibility="visible" />
+    
+         <TextView
+         android:id="@+id/textView4"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:textSize="20sp"
+         android:layout_marginTop="15dp"
+         android:textColor="#000000"
+         android:text="@string/interest_time" />
+
+    <Spinner
+        android:id="@+id/time_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/btn_dropdown"
+        android:clickable="true"
+        android:prompt="@string/time_prompt"
+        android:visibility="visible" />
 
     <Button
         android:id="@+id/btnSubmit"

@@ -1,7 +1,11 @@
 package edu.fiu.cs.seniorproject;
 
 
+
+import java.lang.ref.WeakReference;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import android.app.Activity;
@@ -9,18 +13,32 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import edu.fiu.cs.seniorproject.data.DateFilter;
 import edu.fiu.cs.seniorproject.data.Event;
+import edu.fiu.cs.seniorproject.data.EventCategoryFilter;
+import edu.fiu.cs.seniorproject.data.Location;
 import edu.fiu.cs.seniorproject.data.MbGuideDB;
-
+import edu.fiu.cs.seniorproject.data.Place;
+import edu.fiu.cs.seniorproject.data.PlaceCategoryFilter;
+import edu.fiu.cs.seniorproject.data.SourceType;
+import edu.fiu.cs.seniorproject.manager.AppLocationManager;
+import edu.fiu.cs.seniorproject.manager.DataManager;
+import edu.fiu.cs.seniorproject.manager.DataManager.ConcurrentEventListLoader;
+import edu.fiu.cs.seniorproject.manager.DataManager.ConcurrentPlaceListLoader;
+import edu.fiu.cs.seniorproject.utils.Logger;
+//import android.location.Location;
 public class MainActivity extends Activity {
 
 	MbGuideDB db;
@@ -31,17 +49,28 @@ public class MainActivity extends Activity {
 	HorizontalScrollView hv;
 	HorizontalScrollView hv2;
 	EventsActivity mAct;
-	List <Event>mEventList;
+	List <Event>mEventListm;
+	
+	private EventLoader mEventLoader = null;
+	private PlacesLoader mPlacesLoader = null;
+	private List<Hashtable<String, String>> mEventList = null;
+	private List<Hashtable<String, String>> mPlaceList = null;
+	
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main); 
         addBitmaps();
-       
-        hv = (HorizontalScrollView)findViewById(R.id.horizontalScrollView1);
-        hv2 = (HorizontalScrollView)findViewById(R.id.horizontalScrollView2);
-        printPlaces();
-        printEvents();
+        AppLocationManager.init(this);     
+  
+        mEventLoader = new EventLoader(this);
+        if(mEventLoader != null)
+        	mEventLoader.execute();
+        
+        mPlacesLoader = new PlacesLoader(this);
+        if(mPlacesLoader != null)
+        	mPlacesLoader.execute();    
 
         db = new MbGuideDB(this);
         try
@@ -133,56 +162,150 @@ public class MainActivity extends Activity {
     	Intent intent = new Intent(this,PersonalizationActivity.class); 
     	this.startActivity(intent);	
     }
+    private List<Hashtable<String, String>> buildPlaceList( List<Place> places ) {
+    	List<Hashtable<String, String>> placeList = new ArrayList<Hashtable<String,String>>(places.size());
+		
+		float[] distanceResults = new float[1];
+		android.location.Location currentLocation = AppLocationManager.getCurrentLocation();
+		DecimalFormat df = new DecimalFormat("#.#");
+		
+		for( int i = 0; i < places.size(); i++ ) {
+			Hashtable<String, String> map = new Hashtable<String, String>();
+			
+			Place place = places.get(i);
+			map.put("id", place.getId());
+			map.put("name", place.getName());
+			map.put("source", place.getSource().toString());
+			
+			if ( place.getImage() != null ) {
+				map.put("image", place.getImage());
+			}
+			
+			Location location = place.getLocation();
+			if ( location != null && currentLocation != null ) {		
+
+				// Adding the location to the Hashtable List map so it can be used to show all
+				// places in PlacesMapView Activity
+				map.put("latitude", location.getLatitude());
+				map.put("longitude",location.getLongitude());
+				
+				map.put("address", location.getAddress() != null ? location.getAddress() : "No Address");
+				
+				android.location.Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()), distanceResults);
+				double miles = distanceResults[0] / 1609.34;	// i mile = 1.60934km								
+				map.put("distance", df.format(miles) + "mi" );
+				
+				placeList.add(map);
+			}
+		}
+		return placeList;
+    }
     
-    private void printPlaces()
+    private void showPlaceList(List<Place> placeList)
     {
+    	 hv2 = (HorizontalScrollView)findViewById(R.id.horizontalScrollView2);
     	 LayoutInflater inflater = (LayoutInflater)this.getLayoutInflater();
     	 LinearLayout ly = (LinearLayout)findViewById(R.id.child_linear_layout);
     	 int size  = getHotelBitmapList().size();
-    	 
-	    for(int i=0; i<size; i++)
-	    {
-	    	View v = (View)inflater.inflate(R.layout.image_box_linear, null);
-	    	ImageView iv =(ImageView) v.findViewById(R.id.image);
-	    	TextView mtv = (TextView) v.findViewById(R.id.text);       	
-	    	
-	    	if(iv!=null){
-	    		if(hotBmList!= null)
-	    			iv.setImageBitmap(getHotelBitmapList().get(i));
-	    		mtv.setText("Hello "+i);
-	    	}   
-	    	ly.addView(v);
-	    }
+    	 int pSize = placeList.size();
+    	 int mSize = 0;
+		if (placeList != null &&  pSize> 0) {
+			this.mPlaceList = this.buildPlaceList(placeList);
+			
+			if(size < pSize)
+				mSize = size;
+			else
+				mSize = pSize;
+				
+			for (int i = 0; i < mSize; i++) {
+				
+				View v = (View) inflater.inflate(R.layout.image_box_linear,	null);
+				ImageView iv = (ImageView) v.findViewById(R.id.image);
+				TextView mtv = (TextView) v.findViewById(R.id.text);
+				if (iv != null) {					
+
+			    	final Hashtable<String, String> map = mPlaceList.get(i);
+			    	iv.setOnClickListener(new OnClickListener() {
+		                public void onClick(View v) {             
+		                		
+		                		if ( map != null && map.containsKey("id") && map.containsKey("source")) 
+		        				{
+		        					Intent intent = new Intent(MainActivity.this, PlaceDetailsActivity.class);
+		        					intent.putExtra("id", map.get("id"));
+		        					intent.putExtra("source", SourceType.valueOf(map.get("source")));
+		        					startActivity(intent);
+		        				}	    			
+		    				                              
+		                }
+		            });       	
+			    	
+			    	
+			    			 //DataManager.getSingleton().downloadBitmap(eventList.get(i).getImage(),iv);
+			    	if(placeList.get(i) != null){
+			    		String pName = placeList.get(i).getName();
+			    		
+			    		int spaceIdx = 0;
+			    		if(pName.contains(" ")){
+			    			spaceIdx = pName.indexOf(' ');
+			    			String shortName = pName.substring(0, spaceIdx);
+			    			mtv.setText(shortName);
+			    		}
+			    		else 
+			    			mtv.setText(pName);	
+			    	}else
+			    		mtv.setText("Hello " + i);
+					if (hotBmList != null)
+						iv.setImageBitmap(getHotelBitmapList().get(i));
+					//
+				}
+				ly.addView(v);
+			}
+		}
     }
     
-    private void printEvents()
-    {
-    	 LayoutInflater inflater = (LayoutInflater)this.getLayoutInflater();
-    	 LinearLayout ly = (LinearLayout)findViewById(R.id.child_linear_layout2);
+    private void showEventList(List<Event> eventList)
+    {    	
     	 int size  = getHotelBitmapList().size();
-    	 
-    	 mAct = new EventsActivity();
-        // mEventList = EventsActivity.mPendingEventList;
-       
-    	 
-	    for(int i=0; i<size; i++)
+    	if(eventList!=null && eventList.size()>0){ 
+    		this.mEventList = this.buildEventMap(eventList);
+    		 hv = (HorizontalScrollView)findViewById(R.id.horizontalScrollView1);
+        	 LayoutInflater inflater = (LayoutInflater)this.getLayoutInflater();
+        	 LinearLayout ly = (LinearLayout)findViewById(R.id.child_linear_layout2);
+        int mSize = 0;
+        if(eventList.size()<size)
+        	mSize = eventList.size();
+        else
+        	mSize = size;
+	    for(int i=0; i<mSize; i++)
 	    {
 	    	View v = (View)inflater.inflate(R.layout.image_box_linear, null);
 	    	ImageView iv =(ImageView) v.findViewById(R.id.image);
+	    	
+	    	final Hashtable<String, String> map = mEventList.get(i);
+	    	iv.setOnClickListener(new OnClickListener() {
+                public void onClick(View v) {               
+                	if ( map != null ) {
+    					Intent intent = new Intent(MainActivity.this, EventDetailsActivity.class);
+    					intent.putExtra("event_id", map.get("event_id"));
+    					intent.putExtra("source", SourceType.valueOf(map.get("source")));
+    					MainActivity.this.startActivity(intent);
+    				}                              
+                }
+            });
 	    	TextView mtv = (TextView) v.findViewById(R.id.text);       	
 	    	
 	    	if(iv!=null){
 	    		if(restBmList!= null)
 	    			iv.setImageBitmap(getRestaurantBitmapList().get(i));
-	    		  if(mEventList !=null)
-	    	      {
-	    	         mtv.setText(mEventList.get(i).getName());
-	    	      }
-	    		  else
-	    			  mtv.setText("Hello "+i);
+	    		if(eventList!= null && iv != null)
+	    		{
+	    			 DataManager.getSingleton().downloadBitmap(eventList.get(i).getImage(),iv);
+	    			 mtv.setText(eventList.get(i).getName().substring(0, 6));	    			 
+	    		}	    	
 	    	}   
 	    	ly.addView(v);
 	    }
+	  }
     }
     
     
@@ -242,6 +365,192 @@ public class MainActivity extends Activity {
 	{
 		return restBmList;
 	}
+	 private List<Hashtable<String, String>> buildEventMap(List<Event> eventList ) {
+	    	List<Hashtable<String, String>> fillMaps = new ArrayList<Hashtable<String, String>>(eventList.size());
+			float[] distanceResults = new float[1];
+			android.location.Location currentLocation = AppLocationManager.getCurrentLocation();
+			DecimalFormat df = new DecimalFormat("#.#");
+			
+			for(int i = 0; i<eventList.size(); i++)
+			{
+				Event event = eventList.get(i);
+				Hashtable<String, String> entry = new Hashtable<String, String>();
+				entry.put("id", event.getId());
+				entry.put("event_id", event.getId());
+				entry.put("source", event.getSource().toString() );
+				entry.put("name", event.getName() );			
+				entry.put("time", DateFormat.format("EEEE, MMMM dd, h:mmaa", Long.valueOf( event.getTime() ) * 1000 ).toString() );
+				
+				String image = event.getImage();
+				if ( image != null && !image.isEmpty()) {
+					entry.put("image", event.getImage());
+				}
+				
+				Location location = event.getLocation();
+				
+				if ( location != null ) {
+					entry.put("place", location.getAddress() );
+					entry.put("latitude", location.getLatitude());
+					entry.put("longitude", location.getLongitude());
+					
+					if ( currentLocation != null ) {
+						android.location.Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), Double.valueOf(location.getLatitude()), Double.valueOf(location.getLongitude()), distanceResults);
+						double miles = distanceResults[0] / 1609.34;	// i mile = 1.60934km								
+						entry.put("distance", df.format(miles) + "mi" );
+					} else {
+						entry.put("distance", "0mi");
+					}
+				}
+				fillMaps.add(entry);
+			}
+			return fillMaps;
+	    }
+
+    private class EventLoader extends AsyncTask<Void, List<Event>, Integer> {
+
+    	private final WeakReference<MainActivity> mActivityReference;
+    	private ConcurrentEventListLoader mLoader = null;
+    	
+    	
+    	// need to get real preferences 
+    	
+    	protected EventCategoryFilter mCategoryFilter = EventCategoryFilter.Arts_Crafts;//SettingsActivity.getDefaultEventsCategory(getApplicationContext());//EventCategoryFilter.NONE;
+    	protected DateFilter mDataFilter = DateFilter.NEXT_30_DAYS;
+    	protected String mSearchRadius =  String.valueOf(SettingsActivity.getDefaultSearchRadius(getApplicationContext()));//"10";	// one mile by default
+    	protected String mQuery = null;
+    	protected boolean useNextPage = false;
+    	
+    	public EventLoader(MainActivity activity) {
+    		mActivityReference = new WeakReference<MainActivity>(activity);
+    	}
+//    	
+//    	public void cancelLoader() {
+//    		if ( mLoader != null ) {
+//    			mLoader.cancel();
+//    		}
+//    	}
+    	
+    	@SuppressWarnings("unchecked")
+		@Override
+		protected Integer doInBackground(Void... params) {
+			android.location.Location currentLocation = AppLocationManager.getCurrentLocation();
+			Location location = new Location( String.valueOf( currentLocation.getLatitude() ), String.valueOf(currentLocation.getLongitude()) );
+			
+			Integer total = 0;
+			
+			if(!this.useNextPage)
+				this.mLoader = DataManager.getSingleton().getConcurrentEventList(location, mCategoryFilter, mSearchRadius, mQuery, mDataFilter );
+			else
+				this.mLoader = DataManager.getSingleton().getConcurrentNextEventList();
+			
+			if ( this.mLoader != null ) {
+				List<Event> iter = null;
+				while ( (iter = this.mLoader.getNext()) != null ) {
+					total += iter.size();
+					
+					String source = iter.size() > 0 ? iter.get(0).getSource().toString() : "Unknow";
+					Logger.Debug("Add new set of data from " + source + " size = " + iter.size());
+					
+					if ( iter.size() > 0 ) {
+						this.publishProgress(iter);
+					}
+				}
+			}
+			return total;
+		}
+    	
+    	
+		@Override
+		protected void onProgressUpdate(List<Event>... eventList) {
+			if ( !this.isCancelled() && mActivityReference != null ) {
+				MainActivity activity = this.mActivityReference.get();
+				if ( activity != null ) {
+					for ( int i = 0; i < eventList.length; i++ ) {
+						activity.showEventList(eventList[i]);
+					}
+				}
+			}
+		}
+		
+		@Override
+		protected void onPostExecute(Integer total) {
+//			if ( !this.isCancelled() && mActivityReference != null ) {
+//				MainActivity activity = this.mActivityReference.get();
+//				if ( activity != null ) {
+//					activity.onDoneLoadingEvents(total);
+//				}
+//			}
+			Logger.Debug("Total events = " + total );
+		}		
+    }
+    
+    private class PlacesLoader extends AsyncTask<Void, List<Place>, Integer>
+    {
+    	protected PlaceCategoryFilter mCategory = PlaceCategoryFilter.RESTAURANT_BARS;
+    	protected String mSearchRadius = "1";
+    	protected String mQuery = null;
+    	protected boolean useNextPage = false;
+    	
+    	private final WeakReference<MainActivity> mActivityReference;
+    	private ConcurrentPlaceListLoader mLoader = null;
+    	
+    	public PlacesLoader( MainActivity activity) {
+    		mActivityReference = new WeakReference<MainActivity>(activity);
+    	}
+		@SuppressWarnings("unchecked")
+		@Override
+		protected Integer doInBackground(Void... params) {
+			android.location.Location currentLocation = AppLocationManager.getCurrentLocation();
+			Location location = new Location( String.valueOf( currentLocation.getLatitude() ), String.valueOf(currentLocation.getLongitude()) );
+			
+			Integer total = 0;
+			
+			if ( useNextPage ) {
+				mLoader = DataManager.getSingleton().getConcurrentNextPlaceList();
+			} else {
+				mLoader = DataManager.getSingleton().getConcurrentPlaceList(location, mCategory, mSearchRadius, mQuery);
+			}
+			
+			if ( mLoader != null ) {
+				List<Place> iter = null;
+				while ( (iter = mLoader.getNext()) != null ) {
+					int iterSize = iter.size();
+					total += iterSize;
+					
+					String source = iter.size() > 0 ? iter.get(0).getSource().toString() : "Unknow";
+					Logger.Debug("Add new set of data from " + source + " size = " + iterSize);
+					
+					if ( iterSize > 0 ) {
+						this.publishProgress(iter);
+					}
+				}
+			}
+			return total;
+			//return DataManager.getSingleton().getPlaceList(location, null, "500", null);
+		}
+		
+		@Override
+		protected void onProgressUpdate(List<Place>... placeList) {
+			if ( !this.isCancelled() && placeList != null && mActivityReference != null && mActivityReference.get() != null ) {
+				for( int i = 0; i < placeList.length; i++ ) {
+					mActivityReference.get().showPlaceList(placeList[i]);
+				}
+			}
+		}
+    	
+		@Override
+		protected void onPostExecute(Integer total) {
+			Logger.Debug("Total records = " + total );	
+
+		}
+    }
+    
+    public void showPlacesInMapView()
+    {
+    	PlacesMapViewActivity.placesLocationsList = mPlaceList;
+    	Intent intent = new Intent(this, PlacesMapViewActivity.class);
+		MainActivity.this.startActivity(intent);
+    }
 	
 	
 }

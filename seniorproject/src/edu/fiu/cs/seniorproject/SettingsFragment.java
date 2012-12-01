@@ -14,6 +14,7 @@ import android.preference.PreferenceFragment;
 
 public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener  {
 	
+	public static final String TIME                         = "pref_time"; 
 	public static final String KEY_DISTANCE_RADIUS 			= "pref_distanceradius";
 	public static final String KEY_DEFAULT_EVENT_CATEGORY 	= "pref_eventscategories";
 	public static final String KEY_DEFAULT_PLACE_CATEGORY 	= "pref_placescategories";
