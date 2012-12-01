@@ -7,6 +7,7 @@ import com.facebook.Response;
 import com.facebook.SessionState;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 public class FacebookLoginActivity extends FacebookActivity {
@@ -48,6 +49,9 @@ public class FacebookLoginActivity extends FacebookActivity {
             }
 		});
         Request.executeBatchAsync(request);
+    }
+    
+    public void onLogoutButtonClick(View view) {    	
     }
 }
 
