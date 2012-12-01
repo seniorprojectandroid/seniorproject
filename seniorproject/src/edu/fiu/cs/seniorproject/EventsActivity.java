@@ -356,6 +356,7 @@ public class EventsActivity extends FilterActivity {
     // It populates the static field locationsList
     public void showEventsInMapView(){
     	EventsMapViewActivity.locationsList = mEventList;
+    	EventsMapViewActivity.actvtitle = "Events";
     	Intent intent = new Intent(this, EventsMapViewActivity.class);
 		EventsActivity.this.startActivity(intent);
     }
@@ -433,5 +434,5 @@ public class EventsActivity extends FilterActivity {
 			}
 			Logger.Debug("Total events = " + total );
 		}		
-    }
+    }// end EventLoader
 }

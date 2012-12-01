@@ -22,8 +22,8 @@ public class XMLParser
 	public XmlResourceParser getXMLFromSRC(Activity activity, int r) 			
    {
 	  
-	   Resources res = activity.getResources();
-	   XmlResourceParser xpp = res.getXml(r);// tour is the xml index file on res	   
+	  Resources res = activity.getResources();
+	  XmlResourceParser xpp = res.getXml(r);// tour is the xml index file on res	   
 	   
 	   return xpp;
    }// end getTourFromAnXML
