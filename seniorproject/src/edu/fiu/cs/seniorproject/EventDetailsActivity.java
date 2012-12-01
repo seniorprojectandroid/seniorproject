@@ -104,6 +104,9 @@ public class EventDetailsActivity extends MapActivity {
             case R.id.share:
                 this.onShareEvent(item);
                 return true;  
+            case R.id.post_tweet:
+                this.onPostTweet(item);
+                return true; 
         }
         return super.onOptionsItemSelected(item);
     }
@@ -141,6 +144,14 @@ public class EventDetailsActivity extends MapActivity {
     	if ( this.currentEvent != null ) {
 	    	Intent intent = new Intent(this, FbPublishFeedActivity.class);
 	    	intent.putExtra("title", "Miami Beach Events");
+	    	intent.putExtra("message", "I was at " + this.currentEvent.getName() );
+	    	this.startActivity(intent);
+    	}
+    }
+    
+    public void onPostTweet(MenuItem menu) {
+    	if ( this.currentEvent != null ) {
+	    	Intent intent = new Intent(this, UpdateTwitterStatusActivity.class);
 	    	intent.putExtra("message", "I was at " + this.currentEvent.getName() );
 	    	this.startActivity(intent);
     	}
