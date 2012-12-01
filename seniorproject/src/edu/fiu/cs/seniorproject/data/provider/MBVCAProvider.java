@@ -142,6 +142,11 @@ public class MBVCAProvider extends DataProvider
 					if ( placeList != null && placeList.length() > 0 ) {
 						place = this.parsePlace(placeList.getJSONObject(0));
 						
+						// do not use the place if is outside miami beach
+						if ( !Place.IsInsideMiamiBeach(place.getZipCode())) {
+							place = null;
+						}
+						
 						if ( place != null ) {
 							String placeEvents = this.mMBVCAClient.getEventsAtPlace(place.getName());
 							
@@ -281,8 +286,9 @@ public class MBVCAProvider extends DataProvider
 					}
 					
 					if ( iter.has("prem_zip") && !iter.isNull("prem_zip")) {
+						place.setZipCode(iter.getString("prem_zip"));
 						if ( sb.length() > 0 ) sb.append(",");
-						sb.append(iter.getString("prem_zip"));
+						sb.append(place.getZipCode());
 					}
 					
 					location.setAddress(sb.toString());
@@ -358,6 +364,12 @@ public class MBVCAProvider extends DataProvider
 							JSONObject iter = placeList.getJSONObject(i);
 							
 							Place place = this.parsePlace(iter);
+							
+							// do not use the place if is outside miami beach
+							if ( !Place.IsInsideMiamiBeach(place.getZipCode())) {
+								place = null;
+							}
+							
 							if ( place != null ) {
 								result.add(place);
 							}

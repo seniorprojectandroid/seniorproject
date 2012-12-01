@@ -208,7 +208,7 @@ public class DataManager {
 	
 	public void downloadBitmap( String url, ImageView target ) {
 		try {
-			(new BitmapDownloader(target)).execute(url);
+			(new BitmapDownloader(target)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,url);
 		} catch (Exception e) {
 			Logger.Error("exception downloading bitmap " + e.getMessage());
 		}

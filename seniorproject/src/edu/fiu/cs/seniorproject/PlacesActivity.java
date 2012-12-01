@@ -175,14 +175,14 @@ public class PlacesActivity extends FilterActivity {
     	mPlacesLoader.mQuery = query;
     	mPlacesLoader.useNextPage = false;
     	
-        mPlacesLoader.execute();
+        mPlacesLoader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
     
     private void getMorePlaces() {
     	this.cancelLoader();
     	mPlacesLoader = new PlacesLoader(this);
     	mPlacesLoader.useNextPage = true;
-    	mPlacesLoader.execute();
+    	mPlacesLoader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
     
     public void showPlaceList( List<Place> places ) {

@@ -39,6 +39,7 @@ import edu.fiu.cs.seniorproject.manager.DataManager;
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class PlaceDetailsActivity extends MapActivity {
+	private PlaceDownloader mLoader = null;
 	private Place currentPlace = null;
 
 	MbGuideDB placeDB = new MbGuideDB(this);
@@ -63,12 +64,20 @@ public class PlaceDetailsActivity extends MapActivity {
 					.getSerializableExtra("source");
 			placeSourceToDB = source.toString();
 
-			(new PlaceDownloader(this)).execute(new PlaceSearchData(placeId,
-					source));
+			this.mLoader = new PlaceDownloader(this);
+			this.mLoader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PlaceSearchData(placeId,	source));
 		}
-
 	}
 
+	@Override
+	public void onDestroy() {
+		if ( this.mLoader != null && !this.mLoader.isCancelled() ) {
+			this.mLoader.cancel(true);			
+		}
+		this.mLoader = null;
+		super.onDestroy();
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_place_details, menu);
@@ -363,21 +372,22 @@ public class PlaceDetailsActivity extends MapActivity {
 		private WeakReference<PlaceDetailsActivity> mActivityReference;
 
 		public PlaceDownloader(PlaceDetailsActivity activity) {
-			mActivityReference = new WeakReference<PlaceDetailsActivity>(
-					activity);
+			mActivityReference = new WeakReference<PlaceDetailsActivity>(activity);
 		}
 
 		@Override
 		protected Place doInBackground(PlaceSearchData... params) {
-
-			return DataManager.getSingleton().getPlaceDetails(params[0].id,
-					params[0].source);
+			return DataManager.getSingleton().getPlaceDetails(params[0].id, params[0].source);
 		}
 
 		@Override
 		protected void onPostExecute(Place result) {
 			if (mActivityReference != null && mActivityReference.get() != null) {
-				mActivityReference.get().showPlace(result);
+				PlaceDetailsActivity activity = this.mActivityReference.get();
+				if ( activity != null ) {
+					activity.showPlace(result);
+					activity.mLoader = null;
+				}
 			}
 		}
 	}

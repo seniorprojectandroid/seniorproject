@@ -138,6 +138,11 @@ public class EventFullProvider extends DataProvider
 				JSONObject json = new JSONObject(placeStr);
 				if ( json != null ) {
 					place = this.parsePlace(json);
+					
+					// do not use the place if is outside miami beach
+					if ( !Place.IsInsideMiamiBeach(place.getZipCode())) {
+						place = null;
+					}
 				}
 			} catch (JSONException e ) {
 				place = null;
@@ -231,6 +236,12 @@ public class EventFullProvider extends DataProvider
 							JSONObject iter = jsonPlaceList.getJSONObject(i);
 							
 							Place place = this.parsePlace(iter);
+							
+							// do not use the place if is outside miami beach
+							if ( !Place.IsInsideMiamiBeach(place.getZipCode())) {
+								place = null;
+							}
+							
 							if ( place != null ) {
 								myPlaceList.add(place);
 							}
@@ -391,8 +402,9 @@ public class EventFullProvider extends DataProvider
 					
 					if( iter.has("postal_code") && !iter.isNull("postal_code"))
 					{
+						place.setZipCode(iter.getString("postal_code"));
 						if ( myAddress.length() > 0 ) myAddress.append(",");
-						myAddress.append(iter.getString("postal_code"));
+						myAddress.append(place.getZipCode());
 					}
 					
 					placeLocation.setAddress(myAddress.toString());

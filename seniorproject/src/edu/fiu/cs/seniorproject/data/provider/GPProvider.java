@@ -791,6 +791,11 @@ public class GPProvider extends DataProvider {
 									place.setId(eachPlace.getString("reference"));
 								}
 								
+								if(eachPlace.has("icon") && eachPlace.getString("icon") != null)
+								{
+									place.setImage(eachPlace.getString("icon"));
+								}
+								
 //								String id = eachPlace.getString("id");
 //								
 //								if(id != null)

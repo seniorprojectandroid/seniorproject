@@ -97,7 +97,6 @@ public class MbGuideDB {
 	public void closeDatabase() throws SQLException {
 		mbDatabase.close();
 		mbHelper.close();
-
 	}
 
 //	public void createEventRecord(String eventName, long eventCalendarID,
@@ -420,14 +419,10 @@ public class MbGuideDB {
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			db.execSQL("DROP TABLE IF EXISTS " + EVENT_TABLE_NAME);
-			onCreate(db);
 			db.execSQL("DROP TABLE IF EXISTS " + PLACE_TABLE_NAME);
+			db.execSQL("DROP TABLE IF EXISTS " + USER_PREFERENCES_TABLE_NAME );
 			onCreate(db);
-			db.execSQL("DROP TABLE IF EXISTS "+USER_PREFERENCES_TABLE_NAME );
-			onCreate(db);
-
 		}
-
 	}
 
 	public boolean isUserPrefSet() throws SQLException{

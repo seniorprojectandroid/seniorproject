@@ -43,6 +43,7 @@ import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class EventDetailsActivity extends MapActivity {
 	
+	private EventDownloader mLoader = null;
 
 	final static String TAG = "Miami Beach Guide";
 	CalendarEvent calendar = null;
@@ -66,11 +67,21 @@ public class EventDetailsActivity extends MapActivity {
         Intent intent = getIntent();
         if ( intent.hasExtra("event_id") && intent.hasExtra("source")) {
         	String eventId = intent.getStringExtra("event_id");
-        	SourceType source = (SourceType)intent.getSerializableExtra("source");        	
-        	(new EventDownloader(this)).execute(new EventSearchData(eventId, source));
+        	SourceType source = (SourceType)intent.getSerializableExtra("source"); 
+        	this.mLoader = new EventDownloader(this);
+        	this.mLoader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new EventSearchData(eventId, source));
         }
     }
 
+    @Override
+    public void onDestroy() {
+    	if ( this.mLoader != null && !this.mLoader.isCancelled() ) {
+    		this.mLoader.cancel(true);
+    		this.mLoader = null;
+    	}
+    	super.onDestroy();
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_event_details, menu);
@@ -300,7 +311,7 @@ public class EventDetailsActivity extends MapActivity {
         	 else{
             
      			listCalendars();       
-     	        if(calendarList.get(0)!= null)
+     	        if(calendarList!=null && calendarList.size() > 0 && calendarList.get(0)!= null)
      	        {	    
      	        	long startTimeInMilliseconds = Long.valueOf(eventToCalendar.getTime())* 1000;//startDate.getTimeInMillis();
      		        long endTimeInMilliseconds = Long.valueOf(eventToCalendar.getTime())* 1000;//endDate.getTimeInMillis();	    		        
@@ -575,7 +586,11 @@ public class EventDetailsActivity extends MapActivity {
 		@Override
 		protected void onPostExecute(Event result) {
 			if ( mActivityReference != null && mActivityReference.get() != null ) {
-				mActivityReference.get().showEvent(result);
+				EventDetailsActivity activity = mActivityReference.get();
+				if ( activity != null ) {
+					activity.showEvent(result);
+					activity.mLoader = null;
+				}
 			}
 	    }
 	}
