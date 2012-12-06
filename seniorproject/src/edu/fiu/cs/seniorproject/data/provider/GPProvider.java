@@ -293,7 +293,7 @@ public class GPProvider extends DataProvider {
 								{
 									JSONObject ltn = geometry.getJSONObject("location");
 									
-									if(ltn != null && ltn.has("lat") && ltn.has("lng"))
+									if(ltn != null && ltn.has("lat") && ltn.has("lng") && !ltn.isNull("lat") && !ltn.isNull("lng") )
 									{
 										loc.setLatitude(ltn.getString("lat"));
 										loc.setLongitude(ltn.getString("lng"));
@@ -397,7 +397,7 @@ public class GPProvider extends DataProvider {
 							{
 								resultLocation = geometry.getJSONObject("location");
 								
-								if(resultLocation != null && resultLocation.has("lng") && resultLocation.has("lat"))
+								if(resultLocation != null && resultLocation.has("lng") && resultLocation.has("lat") && !resultLocation.isNull("lat") && !resultLocation.isNull("lng"))
 								{
 									String longitude = resultLocation.getString("lng");
 									
@@ -571,7 +571,7 @@ public class GPProvider extends DataProvider {
 							{
 								JSONObject ltn = geometry.getJSONObject("location");
 								
-								if(ltn != null && ltn.has("lat") && ltn.has("lng"))
+								if(ltn != null && ltn.has("lat") && ltn.has("lng") && !ltn.isNull("lat") && !ltn.isNull("lng"))
 								{
 									String latitude = ltn.getString("lat");
 									
@@ -762,7 +762,7 @@ public class GPProvider extends DataProvider {
 								{
 									JSONObject ltn = geometry.getJSONObject("location");
 									
-									if(ltn != null && ltn.has("lat") && ltn.has("lng"))
+									if(ltn != null && ltn.has("lat") && ltn.has("lng") && !ltn.isNull("lat") && !ltn.isNull("lng"))
 									{
 										String latitude = ltn.getString("lat");
 										

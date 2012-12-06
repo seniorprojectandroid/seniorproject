@@ -211,7 +211,7 @@ public class MBVCAProvider extends DataProvider
 					event.setDescription(iter.getString("description"));
 				}
 				
-				if ( iter.has("lat") && iter.has("lng")) {
+				if ( iter.has("lat") && !iter.isNull("lat") && iter.has("lng") && !iter.isNull("lng") ) {
 					Location eventLocation = new Location(String.valueOf( iter.getDouble("lat") ),String.valueOf(iter.getDouble("lng")) );
 					
 					if ( iter.has("venue") ) {
@@ -267,7 +267,7 @@ public class MBVCAProvider extends DataProvider
 					place.setName(iter.getString("last_name"));
 				}
 				
-				if ( iter.has("lat") && iter.has("lng")) {
+				if ( iter.has("lat") && !iter.isNull("lat") && iter.has("lng") && !iter.isNull("lng") ) {
 					Location location = new Location(String.valueOf( iter.getDouble("lat") ),String.valueOf(iter.getDouble("lng")) );
 					
 					StringBuilder sb = new StringBuilder();

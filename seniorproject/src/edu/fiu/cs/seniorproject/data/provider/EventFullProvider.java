@@ -274,7 +274,7 @@ public class EventFullProvider extends DataProvider
 				}
 				
 				// Process the location
-				if ( iter.has("latitude") && iter.has("longitude"))
+				if ( iter.has("latitude") && !iter.isNull("latitude") && iter.has("longitude") && !iter.isNull("longitude") )
 				{
 					Location eventLocation = new Location(iter.getString("latitude"),iter.getString("longitude") );
 					
@@ -374,7 +374,7 @@ public class EventFullProvider extends DataProvider
 				place.setName(iter.getString("name"));	
 				
 				// Process the location
-				if ( iter.has("latitude") && iter.has("longitude"))
+				if ( iter.has("latitude") && !iter.isNull("latitude") && iter.has("longitude") && !iter.isNull("longitude"))
 				{
 					Location placeLocation = new Location(iter.getString("latitude"),iter.getString("longitude") );
 					
