@@ -10,7 +10,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.NumberPicker;
 
-public class FilterActivity extends Activity {
+public abstract class FilterActivity extends Activity {
 	
 	private boolean filterExpanded = false;
 	private Animation showFilterAnimation = null;

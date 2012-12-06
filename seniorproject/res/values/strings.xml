@@ -1,5 +1,4 @@
 <resources>
-
     <string name="app_name">Miami Beach Guide</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
@@ -108,4 +107,5 @@
     <string name="time_prompt">Select Time Period</string>
     <string name="title_activity_update_twitter_status">UpdateTwitterStatusActivity</string>
 	<string name="post_tweet">Post Tweet</string>
+	<string name="map_api_key">0f7bvw0dRHCH9_Amp0WBvAXmnY95nxeUVef3zHg</string>
 </resources>

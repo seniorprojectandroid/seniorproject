@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <resources>
+   <string-array name="distanceradius">
+     <item>1 Milla</item>
+     <item>5 Millas</item>
+     <item>10 Millas</item>
+     <item>15 Millas</item>
+     <item>20 Millas</item>
+     </string-array>
+
+   <string-array name="radiusvalues">
+     <item>1</item>
+     <item>5</item>
+     <item>10</item>
+     <item>15</item>
+     <item>20</item>
+   </string-array>
+   
+   <string-array name="placescategories">
+     <item>Restaurantes y Bares</item>
+     <item>Hoteles</item>
+     <item>Dulcerias</item>
+     <item>Dentistas</item>
+     <item>Comida</item>
+     <item>Gallerias</item>
+     <item>Licores</item>
+     <item>Cerrajero</item>
+     <item>Estacionar</item>
+     <item>Estacionamiento</item>
+     <item>Estacionamiento Provisional</item>
+     <item>Auto Estacionamiento</item>
+     <item>Estacionamiento Temporal</item>
+     <item>Estacionamiento Subutilizado</item>
+     <item>Valet Parking</item>
+     <item>Farmacia</item>
+     
+     </string-array>
+
+   <string-array name="PlacesValues">
+     <item>RESTAURANT_BARS</item>
+     <item>HOTEL</item>
+     <item>BAKERY</item>
+     <item>DENTISTS</item>
+     <item>FOOD_SALES</item>
+     <item>GALLERY_ART</item>
+     <item>LIQUOR_SALES</item>
+     <item>LOCKSMITH</item>
+     <item>PARKING_GARAGE</item>
+     <item>PARKING_LOT</item>
+     <item>PARKING_LOT_PROVISIONAL</item>
+     <item>PARKING_LOT_SELF_PARKING</item>
+     <item>PARKING_LOT_TEMPORARY</item>
+     <item>PARKING_LOT_UNDERUTILIZED</item>
+     <item>PARKING_LOT_VALET</item>
+     <item>PHARMACY</item>
+     
+   </string-array>
+   
+   <string-array name="eventscategories">
+		<item>Arte</item>
+        <item>Negocios</item>
+        <item>Comedia</item>
+        <item>Comunidad</item>
+        <item>Danza</item>
+        <item>Educacion</item>
+        <item>Ferias Festivales</item>
+        <item>Comida</item>
+        <item>Musica</item>
+        <item>Otros</item>
+        <item>Artes Escenicas</item>
+        <item>Comparas</item>
+        <item>Deportes</item>
+        <item>Artes Visuales</item>
+     </string-array>
+
+   <string-array name="EventsValues">
+		<item>Arts_Crafts</item>
+        <item>Business_Tech</item>
+        <item>Comedy</item>
+        <item>Community</item>
+        <item>Dance</item>
+        <item>Education_Campus</item>
+        <item>Fairs_Festivals</item>
+        <item>Food_Dining</item>
+        <item>Music</item>
+        <item>Other</item>
+        <item>Performing_Arts</item>
+        <item>Shopping</item>
+        <item>Sports_Outdoors</item>
+        <item>Visual_Arts</item>
+   </string-array>   
+   
+    <string-array name="time_filters">
+        <item>Hoy</item>
+        <item>Esta semana</item>
+        <item>Este mes</item>
+        <item>Este fin de semana</item>
+        <item>Proximos 30 dias</item>
+    </string-array>
+    
+ </resources>

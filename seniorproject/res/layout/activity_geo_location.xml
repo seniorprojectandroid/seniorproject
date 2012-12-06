@@ -61,7 +61,7 @@
         android:layout_height="0dp"
         android:layout_margin="8dp"
         android:layout_weight="1"
-        android:apiKey="0f7bvw0dRHCH9_Amp0WBvAXmnY95nxeUVef3zHg"
+        android:apiKey="@string/map_api_key"
         android:clickable="true" />
     
     <Button
