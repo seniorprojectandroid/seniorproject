@@ -285,20 +285,20 @@ public class EventDetailsActivity extends MapActivity {
 
 	public void addEventToCalendarAndDB()
 	{
-		String eName = eventToCalendar.getName();		
-		int commaIndex = eName.indexOf(',');		
-    	//int atIndex = eName.indexOf("at");    	
-    	int atLastIndex = eName.lastIndexOf("at");    	
-    	String eLocation = eName.substring(0, commaIndex);    	
-    	eLocation = eName.substring(atLastIndex+3);    	
-    	String eventNameOnly = eName.substring(0,commaIndex);
-    	eventNameOnly = eventNameOnly.trim(); 
+		String eName = this.getEventNameOnly();	
+//		int commaIndex = eName.indexOf(',');		
+//    	//int atIndex = eName.indexOf("at");    	
+//    	int atLastIndex = eName.lastIndexOf("at");    	
+//    	String eLocation = eName.substring(0, commaIndex);    	
+//    	eLocation = eName.substring(atLastIndex+3);    	
+//    	String eventNameOnly = eName.substring(0,commaIndex);
+//    	eventNameOnly = eventNameOnly.trim(); 
 
 		//int duration = Toast.LENGTH_LONG;
 
     	try{   	
         	eventDB.openDatabase();   
-        	boolean exists = eventDB.existsVersion3(eventNameOnly); 
+        	boolean exists = eventDB.existsVersion3(eName); 
         	 if(exists)
              {         		  
 		        	Dialog d2 = new Dialog(this);
@@ -315,9 +315,9 @@ public class EventDetailsActivity extends MapActivity {
      	        {	    
      	        	long startTimeInMilliseconds = Long.valueOf(eventToCalendar.getTime())* 1000;//startDate.getTimeInMillis();
      		        long endTimeInMilliseconds = Long.valueOf(eventToCalendar.getTime())* 1000;//endDate.getTimeInMillis();	    		        
-     		        long createdCalendarEventID = createEventToCalendar(calendarList.get(0).getCalendarId(),eventNameOnly,TAG, eLocation, startTimeInMilliseconds,  endTimeInMilliseconds );           
+     		        long createdCalendarEventID = createEventToCalendar(calendarList.get(0).getCalendarId(),eName,TAG, eName, startTimeInMilliseconds,  endTimeInMilliseconds );           
      		     //this VERSION IS NOT YET USED
-			         eventDB.createEventRecordVersion2(eventNameOnly, createdCalendarEventID, eLocation, startTimeInMilliseconds,  endTimeInMilliseconds);	    
+			         eventDB.createEventRecordVersion2(eName, createdCalendarEventID, eName, startTimeInMilliseconds,  endTimeInMilliseconds);	    
      			        	//eventDB.createEventRecord(eventNameOnly, createdCalendarEventID, eLocation);		  
      			     Dialog d = new Dialog(this);
      			     d.setTitle("New Event Added to your Event List!");
@@ -457,8 +457,7 @@ public class EventDetailsActivity extends MapActivity {
 
 	        // Call insert and get the returned ID
 	        Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
-	        eventID = ContentUris.parseId(uri);
-	        
+	        eventID = ContentUris.parseId(uri);	        
 	        return eventID;
 	        
 	  }
@@ -519,16 +518,27 @@ public class EventDetailsActivity extends MapActivity {
 	  
 	  private String getEventNameOnly()
 	  {
-		  String eName = eventToCalendar.getName();		
-			int commaIndex = eName.indexOf(',');		
+		  String eName ="null name"; 
+		  if(eventToCalendar != null)
+		  {
+			  String name = eventToCalendar.getName();	
+			  if(name != null){	  
+				  eName =name; 
+			  }
+			  else
+			  {
+				  eName = "Empty name";
+			  }
+		  }
+		//	int commaIndex = eName.indexOf(',');		
 	    //	int atIndex = eName.indexOf("at");    	
 	    //	int atLastIndex = eName.lastIndexOf("at");    	
 	    	//String eLocation = eName.substring(0, commaIndex);    	
 	    //	eLocation = eName.substring(atLastIndex+3);    	
-	    	String eventNameOnly = eName.substring(0,commaIndex);
-	    	eventNameOnly = eventNameOnly.trim();
+	    //	String eventNameOnly = eName.substring(0,commaIndex);
+	    //	eventNameOnly = eventNameOnly.trim();
 	    	
-	    	return eventNameOnly;
+	    	return eName;
 	  }
 	 
 	 /*
