@@ -79,9 +79,12 @@ public class BitmapSimpleAdapter extends SimpleAdapter {
 							}
 						}
 					} else {
+						Logger.Debug("No image, using default image");
 						iv.setImageResource(R.drawable.main_icon);
 					}
 				}
+			} else {
+				Logger.Warning("Unable to get item at " + position );
 			}
 		}
 		

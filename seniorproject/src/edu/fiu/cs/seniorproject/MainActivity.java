@@ -66,11 +66,11 @@ public class MainActivity extends Activity {
   
         mEventLoader = new EventLoader(this);
         if(mEventLoader != null)
-        	mEventLoader.execute();
+        	mEventLoader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         
         mPlacesLoader = new PlacesLoader(this);
         if(mPlacesLoader != null)
-        	mPlacesLoader.execute();    
+        	mPlacesLoader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);   
 
         db = new MbGuideDB(this);
         try
@@ -92,6 +92,20 @@ public class MainActivity extends Activity {
         
     }
 
+    @Override
+    public void onDestroy() {
+    	if ( this.mEventLoader != null && !this.mEventLoader.isCancelled() ) {
+    		this.mEventLoader.cancel(true);
+    		this.mEventLoader = null;
+    	}
+    	
+    	if ( this.mPlacesLoader != null && !this.mPlacesLoader.isCancelled() ) {
+    		this.mPlacesLoader.cancel(true);
+    		this.mPlacesLoader = null;
+    	}
+    	super.onDestroy();
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
@@ -206,7 +220,7 @@ public class MainActivity extends Activity {
     	 LayoutInflater inflater = (LayoutInflater)this.getLayoutInflater();
     	 LinearLayout ly = (LinearLayout)findViewById(R.id.child_linear_layout);
     	 int size  = getHotelBitmapList().size();
-    	 int pSize = placeList.size();
+    	 int pSize = placeList != null ? placeList.size() : 0;
     	 int mSize = 0;
 		if (placeList != null &&  pSize> 0) {
 			this.mPlaceList = this.buildPlaceList(placeList);			

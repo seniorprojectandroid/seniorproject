@@ -2,8 +2,11 @@ package edu.fiu.cs.seniorproject.data;
 import java.util.List;
 
 import edu.fiu.cs.seniorproject.data.Location;
+import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class Place {
+	
+	public static String[] MIAMI_BEACH_ZIP_CODES = new String[]{ "33109", "33139", "33140", "33141", "33154" };
 	
 	private String id;
 	private String name;
@@ -14,12 +17,12 @@ public class Place {
 	private String website;
 	private String image;
 	private String imageBase64;
+	private String zipCode;
 	private SourceType source = SourceType.MBVCA;	// default source to Miami beach api
 	private List<Event> eventsAtPlace = null;
 
 	public Place()
-	{	
-		
+	{		
 	}
 
 	public String getWebsite() {
@@ -121,4 +124,30 @@ public class Place {
 	public void setImageBase64(String imageBase64) {
 		this.imageBase64 = imageBase64;
 	}
+	
+	public String getZipCode() {
+		return zipCode;
+	}
+
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
+	}
+	
+	public static boolean IsInsideMiamiBeach( String zipCode ) {
+		boolean isInside = false;
+		
+		if ( zipCode != null && !zipCode.isEmpty() ) {
+			for( int i = 0; i < MIAMI_BEACH_ZIP_CODES.length; i++ ) {
+				if ( zipCode.startsWith(MIAMI_BEACH_ZIP_CODES[i])) {
+					isInside = true;
+					break;
+				}
+			}
+			
+			if ( !isInside ) {
+				Logger.Warning("Zip code rejected!!! code = " + zipCode );
+			}
+		}
+		return isInside;
+	}	
 }

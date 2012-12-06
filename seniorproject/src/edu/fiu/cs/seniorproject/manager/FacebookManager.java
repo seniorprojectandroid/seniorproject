@@ -38,6 +38,7 @@ public class FacebookManager {
 		login(activity, new String[] {}, listener);		
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void login(Activity activity, String[] permissions, final IRequestResult listener )
 	{
 		Facebook fb = getFacebookClient();
@@ -66,6 +67,7 @@ public class FacebookManager {
 		} );
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void logout(Context context) {
 		try {
 			Facebook fb = getFacebookClient();
@@ -75,6 +77,7 @@ public class FacebookManager {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void authorizeCallback(int requestCode, int resultCode, Intent data)
 	{
 		Facebook fb = getFacebookClient();
@@ -90,6 +93,7 @@ public class FacebookManager {
 		params.putString("place", placeId);
 		
 		try {
+			@SuppressWarnings("deprecation")
 			String response = getFacebookClient().request( "me/feed",params, "POST");	
 			Logger.Debug("response = " + response);
 		} catch (MalformedURLException e) {

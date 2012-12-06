@@ -117,7 +117,7 @@ public class EventsActivity extends FilterActivity {
     	this.cancelEventLoader();
     	mEventLoader = new EventLoader(this);
     	mEventLoader.useNextPage = true;
-    	mEventLoader.execute();
+    	mEventLoader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
     
     @Override
@@ -206,7 +206,7 @@ public class EventsActivity extends FilterActivity {
     		findViewById(android.R.id.progress).setVisibility(View.VISIBLE);
     		
     		mEventList = null;
-    		mEventLoader.execute();
+    		mEventLoader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     	}
     }
     
@@ -276,9 +276,8 @@ public class EventsActivity extends FilterActivity {
 		    			String[] from = new String[] {"name", "place", "time", "distance" };
 						int[] to = new int[] { R.id.event_name, R.id.event_place, R.id.event_time, R.id.event_distance };
 	
-						this.mEventList = this.buildEventMap(eventList);
-						
-						 this.listAdapter = new BitmapSimpleAdapter(this, this.mEventList, R.layout.event_row, from, to);
+						this.mEventList = this.buildEventMap(eventList);						
+						this.listAdapter = new BitmapSimpleAdapter(this, this.mEventList, R.layout.event_row, from, to);
 						lv.setAdapter(this.listAdapter);
 		    			lv.setVisibility(View.VISIBLE);
 		    			lv.setOnItemClickListener(mClickListener);

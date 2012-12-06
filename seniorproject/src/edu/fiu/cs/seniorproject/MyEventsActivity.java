@@ -18,15 +18,15 @@ public class MyEventsActivity extends ListActivity {
 	
 	MbGuideDB mb = new MbGuideDB(this); 
 	ArrayList<String> eList = null;
-	ArrayList<String> eList2 = null;
+	//ArrayList<String> eList2 = null;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getEventNames();
-        eList2 = new ArrayList<String>();
-        eList2.add("Joe");
-        eList2.add("Joe2");
-        this.showEventsList(eList2);
+        //eList2 = new ArrayList<String>();
+        //eList2.add("Joe");
+        //eList2.add("Joe2");
+        this.showEventsList(eList);
         
     }// end onCreate
     
