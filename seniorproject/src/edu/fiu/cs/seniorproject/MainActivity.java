@@ -55,13 +55,16 @@ public class MainActivity extends Activity {
 	private PlacesLoader mPlacesLoader = null;
 	private List<Hashtable<String, String>> mEventList = null;
 	private List<Hashtable<String, String>> mPlaceList = null;
+	private ArrayList pList = null;
+	private ArrayList<Event> eList = null;
+	
 	
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main); 
-        addBitmaps();
+        addBitmapss();
         AppLocationManager.init(this);     
   
         mEventLoader = new EventLoader(this);
@@ -90,6 +93,22 @@ public class MainActivity extends Activity {
         	
         }      
         
+    }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+      super.onSaveInstanceState(savedInstanceState);
+      // Save UI state changes to the savedInstanceState.
+      // This bundle will be passed to onCreate if the process is
+      // killed and restarted.
+      savedInstanceState.putBoolean("MyBoolean", true);
+      savedInstanceState.putDouble("myDouble", 1.9);
+      savedInstanceState.putInt("MyInt", 1);
+      savedInstanceState.putString("MyString", "Welcome back to Android");
+  
+  
+  //    savedInstanceState.putParcelableArrayList("eventList", value);
+      
+      // etc.
     }
 
     @Override
@@ -214,8 +233,28 @@ public class MainActivity extends Activity {
 		return placeList;
     }
     
+    private ArrayList<Place> convertPlaceListToArrayList(List <Place> list)
+    {
+    	ArrayList<Place> plList = new ArrayList<Place>();
+    	
+    	if(list != null)
+    	{
+    		int size =list.size();
+    		
+    		if(size>0)
+    		{
+    			for(int i=0; i<size; i++)
+    			{
+    				plList.add(list.get(i));
+    			}
+    		}
+    	}
+    	return plList;
+    }
+    
     private void showPlaceList(List<Place> placeList)
     {
+    	pList = this.convertPlaceListToArrayList(placeList);
     	 hv2 = (HorizontalScrollView)findViewById(R.id.horizontalScrollView2);
     	 LayoutInflater inflater = (LayoutInflater)this.getLayoutInflater();
     	 LinearLayout ly = (LinearLayout)findViewById(R.id.child_linear_layout);
@@ -224,14 +263,14 @@ public class MainActivity extends Activity {
     	 int mSize = 0;
 		if (placeList != null &&  pSize> 0) {
 			this.mPlaceList = this.buildPlaceList(placeList);			
-			if(size < pSize)
-				mSize = size;
+			if(pSize < size)
+				mSize = pSize;
 			else
-				mSize = pSize;				
+				mSize = 8;//pSize;				
 			for (int i = 0; i < mSize; i++) {				
 				View v = (View) inflater.inflate(R.layout.image_box_linear,	null);
 				ImageView iv = (ImageView) v.findViewById(R.id.image);
-				TextView mtv = (TextView) v.findViewById(R.id.text);				
+				//TextView mtv = (TextView) v.findViewById(R.id.text);				
 				if (iv != null && placeList.get(i).getImage() != null) {		
 					DataManager.getSingleton().downloadBitmap(placeList.get(i).getImage(),iv);
 			    	final Hashtable<String, String> map = mPlaceList.get(i);
@@ -247,16 +286,16 @@ public class MainActivity extends Activity {
 		                }
 		            });    				  
 			    	if(placeList.get(i) != null){
-			    		String pName = placeList.get(i).getName();			    		
+			    		//String pName = placeList.get(i).getName();			    		
 			    		int spaceIdx = 0;
-			    		if(pName.contains(" ")){
-			    			spaceIdx = pName.indexOf(' ');
-			    			String shortName = pName.substring(0, spaceIdx);
-			    			mtv.setText(shortName);
-			    		}else 
-			    			mtv.setText(pName);	
+			    		//if(pName.contains(" ")){
+			    		//	spaceIdx = pName.indexOf(' ');
+			    		//	String shortName = pName.substring(0, spaceIdx);
+			    		//	mtv.setText(shortName);
+			    	//	}else 
+			    	//		mtv.setText(pName);	
 			    	}else
-			    		mtv.setText("Hello " + i);
+			    	//	mtv.setText("Hello " + i);
 					if (hotBmList != null)
 						iv.setImageBitmap(getHotelBitmapList().get(i));
 					}
@@ -268,16 +307,18 @@ public class MainActivity extends Activity {
     private void showEventList(List<Event> eventList)
     {    	
     	 int size  = getHotelBitmapList().size();
-    	if(eventList!=null && eventList.size()>0){ 
+    	 if(eventList!=null && eventList.size()>0){ 
+    		
     		this.mEventList = this.buildEventMap(eventList);
     		 hv = (HorizontalScrollView)findViewById(R.id.horizontalScrollView1);
         	 LayoutInflater inflater = (LayoutInflater)this.getLayoutInflater();
         	 LinearLayout ly = (LinearLayout)findViewById(R.id.child_linear_layout2);
         int mSize = 0;
-        if(eventList.size()<size)
-        	mSize = eventList.size();
+        int evSize = eventList.size();
+        if(evSize < size)
+        	mSize = evSize;
         else
-        	mSize = size;
+        	mSize = 8;
 	    for(int i=0; i<mSize; i++)
 	    {
 	    	View v = (View)inflater.inflate(R.layout.image_box_linear, null);
@@ -294,7 +335,7 @@ public class MainActivity extends Activity {
     				}                              
                 }
             });
-	    	TextView mtv = (TextView) v.findViewById(R.id.text);       	
+	    	//TextView mtv = (TextView) v.findViewById(R.id.text);       	
 	    	
 	    	if(iv!=null){
 	    		if(restBmList!= null)
@@ -302,7 +343,7 @@ public class MainActivity extends Activity {
 	    		if(eventList!= null && iv != null)
 	    		{
 	    			 DataManager.getSingleton().downloadBitmap(eventList.get(i).getImage(),iv);
-	    			 mtv.setText(eventList.get(i).getName().substring(0, 6));	    			 
+	    			// mtv.setText(eventList.get(i).getName().substring(0, 6));	    			 
 	    		}	    	
 	    	}   
 	    	ly.addView(v);
@@ -311,9 +352,9 @@ public class MainActivity extends Activity {
     }
     
     
-    public void addBitmaps()
+    public void addBitmapss()
 	{
-		getHotelImages();
+		 getHotelImages();
 		getRestaurantImages();
 		//getRestaurantImages();
 		for(int i=0; i<9; i++)

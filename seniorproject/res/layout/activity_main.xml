@@ -116,13 +116,13 @@
         android:orientation="vertical"
         android:stretchColumns="0,1" >
 
-        <TextView
+      <!--    <TextView
             android:id="@+id/event_suggestion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/event_suggestion"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium" />-->
 
         <HorizontalScrollView
             android:id="@+id/horizontalScrollView2"
@@ -132,7 +132,7 @@
             <LinearLayout
                 android:id="@+id/child_linear_layout2"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                 android:layout_height="match_parent"
                 android:orientation="horizontal" >
             </LinearLayout>
         </HorizontalScrollView>
@@ -146,13 +146,13 @@
         android:orientation="vertical"
         android:stretchColumns="0,1" >
 
-        <TextView
+       <!--  <TextView
             android:id="@+id/suggestion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/place_suggestion"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium" /> -->
 
         <HorizontalScrollView
             android:id="@+id/horizontalScrollView1"
@@ -162,7 +162,7 @@
             <LinearLayout
                 android:id="@+id/child_linear_layout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="horizontal" >
             </LinearLayout>
         </HorizontalScrollView>
