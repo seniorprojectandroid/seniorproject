@@ -21,10 +21,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.HorizontalScrollView;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import edu.fiu.cs.seniorproject.data.DateFilter;
 import edu.fiu.cs.seniorproject.data.Event;
 import edu.fiu.cs.seniorproject.data.EventCategoryFilter;
@@ -46,8 +45,6 @@ public class MainActivity extends Activity {
 	private ArrayList<Integer> restdList =  new ArrayList<Integer>();	
 	private ArrayList<Bitmap> hotBmList =  new ArrayList<Bitmap>();
 	private ArrayList<Bitmap> restBmList =  new ArrayList<Bitmap>();
-	HorizontalScrollView hv;
-	HorizontalScrollView hv2;
 	EventsActivity mAct;
 	List <Event>mEventListm;
 	
@@ -55,10 +52,6 @@ public class MainActivity extends Activity {
 	private PlacesLoader mPlacesLoader = null;
 	private List<Hashtable<String, String>> mEventList = null;
 	private List<Hashtable<String, String>> mPlaceList = null;
-	private ArrayList pList = null;
-	private ArrayList<Event> eList = null;
-	
-	
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -234,7 +227,7 @@ public class MainActivity extends Activity {
 		return placeList;
     }
     
-    private ArrayList<Place> convertPlaceListToArrayList(List <Place> list)
+/*    private ArrayList<Place> convertPlaceListToArrayList(List <Place> list)
     {
     	ArrayList<Place> plList = new ArrayList<Place>();
     	
@@ -251,12 +244,11 @@ public class MainActivity extends Activity {
     		}
     	}
     	return plList;
-    }
+    }*/
     
     private void showPlaceList(List<Place> placeList)
     {
-    	pList = this.convertPlaceListToArrayList(placeList);
-    	 hv2 = (HorizontalScrollView)findViewById(R.id.horizontalScrollView2);
+    	//pList = this.convertPlaceListToArrayList(placeList);
     	 LayoutInflater inflater = (LayoutInflater)this.getLayoutInflater();
     	 LinearLayout ly = (LinearLayout)findViewById(R.id.child_linear_layout);
     	 int size  = getHotelBitmapList().size();
@@ -268,11 +260,13 @@ public class MainActivity extends Activity {
 				mSize = pSize;
 			else
 				mSize = 8;//pSize;				
-			for (int i = 0; i < mSize; i++) {				
-				View v = (View) inflater.inflate(R.layout.image_box_linear,	null);
-				ImageView iv = (ImageView) v.findViewById(R.id.image);
+			for (int i = 0; i < mSize; i++) {	
+				
 				//TextView mtv = (TextView) v.findViewById(R.id.text);				
-				if (iv != null && placeList.get(i).getImage() != null) {		
+				if (placeList.get(i).getImage() != null) {	
+					View v = (View) inflater.inflate(R.layout.image_box_linear,	null);
+					ImageView iv = (ImageView) v.findViewById(R.id.image);
+					
 					DataManager.getSingleton().downloadBitmap(placeList.get(i).getImage(),iv);
 			    	final Hashtable<String, String> map = mPlaceList.get(i);
 			    	iv.setOnClickListener(new OnClickListener() {
@@ -286,21 +280,10 @@ public class MainActivity extends Activity {
 		        				} 			                         
 		                }
 		            });    				  
-			    	if(placeList.get(i) != null){
-			    		//String pName = placeList.get(i).getName();			    		
-			    		int spaceIdx = 0;
-			    		//if(pName.contains(" ")){
-			    		//	spaceIdx = pName.indexOf(' ');
-			    		//	String shortName = pName.substring(0, spaceIdx);
-			    		//	mtv.setText(shortName);
-			    	//	}else 
-			    	//		mtv.setText(pName);	
-			    	}else
-			    	//	mtv.setText("Hello " + i);
-					if (hotBmList != null)
-						iv.setImageBitmap(getHotelBitmapList().get(i));
-					}
-				ly.addView(v);
+			    	ly.addView(v, LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+					
+				}
+				
 				}
 		}
     }
@@ -311,7 +294,6 @@ public class MainActivity extends Activity {
     	 if(eventList!=null && eventList.size()>0){ 
     		
     		this.mEventList = this.buildEventMap(eventList);
-    		 hv = (HorizontalScrollView)findViewById(R.id.horizontalScrollView1);
         	 LayoutInflater inflater = (LayoutInflater)this.getLayoutInflater();
         	 LinearLayout ly = (LinearLayout)findViewById(R.id.child_linear_layout2);
         int mSize = 0;
@@ -347,7 +329,7 @@ public class MainActivity extends Activity {
 	    			// mtv.setText(eventList.get(i).getName().substring(0, 6));	    			 
 	    		}	    	
 	    	}   
-	    	ly.addView(v);
+	    	ly.addView(v, LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
 	    }
 	  }
     }

@@ -5,11 +5,11 @@
     android:background="@drawable/beach_big_bkg"
     android:orientation="vertical"
     android:stretchColumns="0,1" >
-
+
     <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.2"
+        android:layout_height="0dp"
+        android:layout_weight="0.6"
         android:background="@drawable/beach_big_bkg"
         android:orientation="vertical"
         android:stretchColumns="0,1" >
@@ -107,65 +107,39 @@
 
   
     </TableLayout>
-
-    <TableLayout
+
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.4"
+        android:layout_height="0dp"
+        android:layout_weight="0.2"
         android:background="@drawable/beach_big_bkg"
-        android:orientation="vertical"
-        android:stretchColumns="0,1" >
+        android:orientation="vertical" >
 
-      <!--    <TextView
-            android:id="@+id/event_suggestion"
+        <LinearLayout
+            android:id="@+id/child_linear_layout2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/event_suggestion"
-            android:textAppearance="?android:attr/textAppearanceMedium" />-->
+             android:layout_height="match_parent"
+            android:orientation="horizontal" >
 
-        <HorizontalScrollView
-            android:id="@+id/horizontalScrollView2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <LinearLayout
-                android:id="@+id/child_linear_layout2"
-                android:layout_width="wrap_content"
-                 android:layout_height="match_parent"
-                android:orientation="horizontal" >
-            </LinearLayout>
-        </HorizontalScrollView>
-    </TableLayout>
-
-    <TableLayout
+        </LinearLayout>
+    </HorizontalScrollView>
+       
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.4"
+        android:layout_height="0dp"
+        android:layout_weight="0.2"
         android:background="@drawable/beach_big_bkg"
-        android:orientation="vertical"
-        android:stretchColumns="0,1" >
+        android:orientation="vertical" >
 
-       <!--  <TextView
-            android:id="@+id/suggestion"
+        <LinearLayout
+            android:id="@+id/child_linear_layout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/place_suggestion"
-            android:textAppearance="?android:attr/textAppearanceMedium" /> -->
+            android:layout_height="match_parent"
+            android:orientation="horizontal" >
+        </LinearLayout>
+    </HorizontalScrollView>
 
-        <HorizontalScrollView
-            android:id="@+id/horizontalScrollView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <LinearLayout
-                android:id="@+id/child_linear_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal" >
-            </LinearLayout>
-        </HorizontalScrollView>
-    </TableLayout>
 
 </LinearLayout>
