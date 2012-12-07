@@ -202,20 +202,21 @@ public class MainActivity extends Activity {
 		DecimalFormat df = new DecimalFormat("#.#");
 		
 		for( int i = 0; i < places.size(); i++ ) {
-			Hashtable<String, String> map = new Hashtable<String, String>();
 			
 			Place place = places.get(i);
-			map.put("id", place.getId());
-			map.put("name", place.getName());
-			map.put("source", place.getSource().toString());
-			
-			if ( place.getImage() != null ) {
-				map.put("image", place.getImage());
-			}
 			
 			Location location = place.getLocation();
 			if ( location != null && currentLocation != null ) {		
 
+				Hashtable<String, String> map = new Hashtable<String, String>();
+				map.put("id", place.getId());
+				map.put("name", place.getName());
+				map.put("source", place.getSource().toString());
+				
+				if ( place.getImage() != null ) {
+					map.put("image", place.getImage());
+				}
+				
 				// Adding the location to the Hashtable List map so it can be used to show all
 				// places in PlacesMapView Activity
 				map.put("latitude", location.getLatitude());

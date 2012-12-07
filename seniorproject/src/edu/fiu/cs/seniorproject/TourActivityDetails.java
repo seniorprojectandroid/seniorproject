@@ -157,11 +157,11 @@ public class TourActivityDetails extends Activity {
 			
 			Location location = place.getLocation();
 			
-			if ( location != null ) {				
+			if ( location != null && location.getLatitude() != null && location.getLongitude() != null) {				
 				entry.put("latitude", location.getLatitude());
 				entry.put("longitude", location.getLongitude());
+				fillMaps.add(entry);
 			}
-			fillMaps.add(entry);
 		}
 		return fillMaps;
     }// end buildPlaceMap

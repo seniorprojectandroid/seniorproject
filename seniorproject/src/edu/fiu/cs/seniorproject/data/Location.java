@@ -1,5 +1,7 @@
 package edu.fiu.cs.seniorproject.data;
 
+import edu.fiu.cs.seniorproject.manager.AppLocationManager;
+
 public class Location 
 {
 	private String latitude = null;
@@ -8,6 +10,7 @@ public class Location
 	
 	public Location()
 	{
+		this(AppLocationManager.MIAMI_BEACH_LATITUDE, AppLocationManager.MIAMI_BEACH_LONGITUDE);
 	}
 
 	public Location(String lat, String lng) {
@@ -22,7 +25,7 @@ public class Location
 
 	public void setLatitude(String latitude) 
 	{
-		this.latitude = latitude;
+		this.latitude = (latitude != null && !latitude.equals("null")) ? latitude : null;
 	}
 
 	public String getLongitude() {
@@ -30,7 +33,7 @@ public class Location
 	}
 
 	public void setLongitude(String longitude) {
-		this.longitude = longitude;
+		this.longitude = (longitude != null && !longitude.equals("null")) ? longitude : null;
 	}
 
 	public String getAddress() {
@@ -38,7 +41,7 @@ public class Location
 	}
 
 	public void setAddress(String address) {
-		this.address = address;
+		this.address = (address != null && !address.equals("null")) ? address : null;
 	}
 	
 	

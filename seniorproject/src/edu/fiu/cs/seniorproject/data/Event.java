@@ -46,7 +46,7 @@ public class Event
 	}
 
 	public void setLocation(Location location) {
-		this.location = location;
+		this.location = location != null && location.getLatitude() != null && location.getLongitude() != null ? location : null;
 	}
 
 	public SourceType getSource() {

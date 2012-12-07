@@ -49,14 +49,31 @@ public class DataUtils {
 	
 	public static boolean isSameEvent( Event a, Event b ) {
 		
-		float[] distance = new float[3];
-		Location.distanceBetween( Double.valueOf(a.getLocation().getLatitude()), Double.valueOf(a.getLocation().getLongitude()), Double.valueOf(b.getLocation().getLatitude()), Double.valueOf(b.getLocation().getLongitude()), distance);
+		boolean sameEvent = false;
 		
-		int lcs = LongestCommonSubsecuence(a.getName(), b.getName());
-		int minLength = min(a.getName().length(), b.getName().length());
+		try {
+			if ( a != null && b != null ) {
+				float[] distance = new float[3];
+				edu.fiu.cs.seniorproject.data.Location aLocation = a.getLocation();
+				edu.fiu.cs.seniorproject.data.Location bLocation = b.getLocation();
+				
+				if ( aLocation != null && bLocation != null ) {
+					Location.distanceBetween( Double.valueOf(a.getLocation().getLatitude()), Double.valueOf(a.getLocation().getLongitude()), Double.valueOf(b.getLocation().getLatitude()), Double.valueOf(b.getLocation().getLongitude()), distance);
+				} else {
+					distance[0] = 0;
+				}
+				
+				int lcs = LongestCommonSubsecuence(a.getName(), b.getName());
+				int minLength = min(a.getName().length(), b.getName().length());
+				
+				//Logger.Debug("compare events nameA=" + a.getName() + " nameB=" + b.getName() + " lcs=" + lcs + " distance=" + distance[0] );
+				sameEvent = ( ( (lcs / minLength >= 0.8 && distance[0] <= 100.0) || (lcs == minLength && distance[0] <= 500.0) ) && Math.abs( Long.valueOf( a.getTime() ) - Long.valueOf( b.getTime() ) ) <= 30 * 60 );
+			}
+		} catch (Exception e) {
+			sameEvent = false;
+		}
 		
-		//Logger.Debug("compare events nameA=" + a.getName() + " nameB=" + b.getName() + " lcs=" + lcs + " distance=" + distance[0] );
-		return ( ( (lcs / minLength >= 0.8 && distance[0] <= 100.0) || (lcs == minLength && distance[0] <= 500.0) ) && Math.abs( Long.valueOf( a.getTime() ) - Long.valueOf( b.getTime() ) ) <= 30 * 60 );
+		return sameEvent;
 	}
 	
 	public static boolean isSameAddress(String addressA, String addressB) {
