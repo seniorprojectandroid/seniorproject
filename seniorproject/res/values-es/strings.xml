@@ -101,4 +101,6 @@
     <string name="time_prompt">Seleciona un periodo</string>
     <string name="title_activity_update_twitter_status">Actualizar tu estado</string>
 	<string name="post_tweet">Enviar Tweet</string>
+	<string name="recomended_events">Eventos Recomendados</string>
+	<string name="recomended_places">Lugares Recomendados</string>
 </resources>

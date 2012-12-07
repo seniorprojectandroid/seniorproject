@@ -108,4 +108,6 @@
     <string name="title_activity_update_twitter_status">UpdateTwitterStatusActivity</string>
 	<string name="post_tweet">Post Tweet</string>
 	<string name="map_api_key">0f7bvw0dRHCH9_Amp0WBvAXmnY95nxeUVef3zHg</string>
+	<string name="recomended_events">Recomended Events</string>
+	<string name="recomended_places">Recomended Places</string>
 </resources>
