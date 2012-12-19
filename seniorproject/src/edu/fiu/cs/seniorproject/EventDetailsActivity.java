@@ -317,7 +317,13 @@ public class EventDetailsActivity extends MapActivity {
      		        long endTimeInMilliseconds = Long.valueOf(eventToCalendar.getTime())* 1000;//endDate.getTimeInMillis();	    		        
      		        long createdCalendarEventID = createEventToCalendar(calendarList.get(0).getCalendarId(),eName,TAG, eName, startTimeInMilliseconds,  endTimeInMilliseconds );           
      		     //this VERSION IS NOT YET USED
-			         eventDB.createEventRecordVersion2(eName, createdCalendarEventID, eName, startTimeInMilliseconds,  endTimeInMilliseconds);	    
+     		        
+     		       
+
+     		       eventDB.createEventRecord(eName, createdCalendarEventID, eventToCalendar.getId() , eventToCalendar.getDescription(), eventToCalendar.getLocation().getLatitude(),
+     		    		   eventToCalendar.getLocation().getLongitude() , startTimeInMilliseconds,  endTimeInMilliseconds, eventToCalendar.getSource().toString());	
+     		        
+			       //  eventDB.createEventRecordVersion2(eName, createdCalendarEventID, eventToCalendar.getLocation().toString(), startTimeInMilliseconds,  endTimeInMilliseconds);	    
      			        	//eventDB.createEventRecord(eventNameOnly, createdCalendarEventID, eLocation);		  
      			     Dialog d = new Dialog(this);
      			     d.setTitle("New Event Added to your Event List!");

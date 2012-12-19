@@ -1,6 +1,7 @@
 package edu.fiu.cs.seniorproject.data;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -14,7 +15,7 @@ public class MbGuideDB {
 
 	// Database Name and Version
 	private static final String DATABASE_NAME = "MB_Guide_DB";
-	private static final int DATABASE_VERSION = 6;
+	private static final int DATABASE_VERSION = 7;
 
 	// Database Tables
 	private static final String EVENT_TABLE_NAME = "Event";
@@ -27,12 +28,16 @@ public class MbGuideDB {
 	// Event table
 	public static final String EVENT_ID = "event_id";
 	public static final String EVENT_NAME = "event_name";
-	public static final String EVENT_CALENDAR_ID = "event_calendar_id";
+	public static final String EVENT_CALENDAR_ID = "event_calendar_id"; 
+	public static final String EVENT_DESCRIPTION = "event_description";
 	public static final String EVENT_LOCATION = "event_location";
+	public static final String EVENT_LATITUDE = "event_latitude";
+	public static final String EVENT_LONGITUDE = "event_longitude";
 	public static final String EVENT_CATEGORY_ID = "event_category_id";
 	public static final String EVENT_CATEGORY_DESCRIPTION = "event_category_description";
 	public static final String EVENT_TIME_STARTS = "event_time_start";
 	public static final String EVENT_TIME_ENDS = "event_time_end";
+	public static final String EVENT_SOURCE = "event_source";
 	public static final String EVENT_IS_DELETED_FLAG = "event_is_deleted_flag";
 	public static final String EVENT_IS_EXPIRED_FLAG = "event_is_expired_flag";
 	public static final String EVENT_PLACE_ID = "event_place_id";
@@ -100,14 +105,6 @@ public class MbGuideDB {
 
 	}
 
-//	public void createEventRecord(String eventName, long eventCalendarID,
-//			String eventLocation) throws SQLException {
-//		ContentValues contentValues = new ContentValues();
-//		contentValues.put(EVENT_NAME, eventName);
-//		contentValues.put(EVENT_CALENDAR_ID, eventCalendarID);
-//		contentValues.put(EVENT_LOCATION, eventLocation);
-//		mbDatabase.insert(EVENT_TABLE_NAME, null, contentValues);
-//	}
 	
 	public void createUserPrefRecord(String eCategory, String pCategory, String radius ) throws SQLException {
 		ContentValues contentValues = new ContentValues();
@@ -156,6 +153,32 @@ public class MbGuideDB {
 		mbDatabase.insert(EVENT_TABLE_NAME, null, contentValues);
 	}
    	
+   	public void createEventRecord(String eventName, long createdCalendarEventID,
+			String id, String description, String latitude, String longitude,
+			long startTimeInMilliseconds, long endTimeInMilliseconds,
+			String source)  throws SQLException{
+   		
+   		ContentValues contentValues = new ContentValues();
+   		
+   		String cName = cleanString(eventName);
+   		
+		contentValues.put(EVENT_NAME, cName);		
+		contentValues.put(EVENT_CALENDAR_ID, createdCalendarEventID);
+		contentValues.put(EVENT_ID, id);
+		contentValues.put(EVENT_DESCRIPTION, description);
+		contentValues.put(EVENT_LATITUDE, latitude);
+		contentValues.put(EVENT_LONGITUDE, longitude);
+
+		contentValues.put(EVENT_TIME_STARTS,startTimeInMilliseconds);
+		contentValues.put(EVENT_TIME_ENDS, endTimeInMilliseconds);
+		contentValues.put(EVENT_SOURCE, source);
+
+		mbDatabase.insert(EVENT_TABLE_NAME, null, contentValues);
+		
+		
+		
+	}
+   	
    	public void createPlaceRecord(String placeId, String placeName, String placeAddress, String placeLatitude, String placeLongitude, 
 			String placeDescrition, String  placeWebsite, String placeSourceType ) throws SQLException {
 		
@@ -187,53 +210,6 @@ public class MbGuideDB {
 		
 		mbDatabase.insert(PLACE_TABLE_NAME, null, contentValues);
 	}
-//
-//	public boolean existsEvent(String s) throws SQLException {
-//		String[] columns = new String[] { EVENT_NAME, EVENT_CALENDAR_ID,
-//				EVENT_LOCATION }; // KEY_ROW_ID,
-//		Cursor c = mbDatabase.query(EVENT_TABLE_NAME, columns, EVENT_NAME
-//				+ " = " + "'s'", null, null, null, null);
-//		if (c != null) {
-//			c.close();
-//			return true;
-//		} else {
-//			return false;
-//		}
-//	}
-//
-//	public boolean existsVersion2(String s) throws SQLException {
-//		String[] columns = new String[] { EVENT_NAME, EVENT_CALENDAR_ID,
-//				EVENT_LOCATION }; // KEY_ROW_ID,
-//		Cursor c = mbDatabase.query(EVENT_TABLE_NAME, columns, EVENT_NAME
-//				+ " = " + "'s'", null, null, null, null);
-//		String sTrimmed = s.trim();
-//		int iName = c.getColumnIndex(EVENT_NAME);
-//
-//		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-//			if (sTrimmed.equalsIgnoreCase(c.getString(iName).trim())) {
-//				c.close();
-//				return true;
-//			}
-//		}
-//
-//		c.close();
-//		return false;
-//	}
-
-//	public boolean existsVersion3_ussingFlag(String name) throws SQLException {
-//		Cursor cursor = mbDatabase.rawQuery("SELECT * FROM " + EVENT_TABLE_NAME
-//				+ " WHERE " + EVENT_NAME + " = '" + name + "' " + "AND "
-//				+ EVENT_IS_DELETED_FLAG + " = " + NOT_SET_DELETED_FLAG, null);
-//
-//		if (cursor != null) {
-//			if (cursor.getCount() > 0) {
-//				cursor.close();
-//				return true;
-//			}
-//		}
-//		cursor.close();
-//		return false;
-//	}
 
 	public boolean existsVersion3(String name) throws SQLException {
 		String cName = cleanString(name);
@@ -310,6 +286,54 @@ public class MbGuideDB {
 		}
 		return events;
 	}
+	
+	public List<Event> getEventList() throws SQLException {
+		
+	    ArrayList<Event> events = null;	    
+	    
+		String[] columns = new String[] { EVENT_NAME, EVENT_ID,  EVENT_DESCRIPTION, EVENT_LATITUDE, EVENT_LONGITUDE,EVENT_TIME_STARTS, EVENT_SOURCE}; 
+		Cursor c = mbDatabase.query(EVENT_TABLE_NAME, columns, null, null,
+				null, null, null);
+	
+		int iName = c.getColumnIndex(EVENT_NAME);
+		int iID = c.getColumnIndex(EVENT_ID);
+		int iDec = c.getColumnIndex(EVENT_DESCRIPTION);
+		int iLat = c.getColumnIndex(EVENT_LATITUDE);
+		int iLon = c.getColumnIndex(EVENT_LONGITUDE);
+		int iTim = c.getColumnIndex(EVENT_TIME_STARTS);
+	    int iSour = c.getColumnIndex(EVENT_SOURCE);
+	    
+	    if(c != null){
+	    	events = new ArrayList<Event>();
+    	
+	    	for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+	    		Event e = new Event();
+	    		e.setName(c.getString(iName));
+	    		e.setId(c.getString(iID));
+	    		e.setDescription(c.getString(iDec));
+	    		Location location = new Location(String.valueOf(c.getString(iLat)), String.valueOf(c.getString(iLon)));
+	    		e.setLocation(location);
+	    		e.setTime(c.getString(iTim));
+	    		
+	    		String source = c.getString(iSour);	    		
+	    		
+	    		 if(source.equalsIgnoreCase(SourceType.GOOGLE_PLACE.toString()))
+	 		    	e.setSource(SourceType.GOOGLE_PLACE);
+	 		    else if (source.equalsIgnoreCase(SourceType.MBVCA.toString()))
+	 		    	e.setSource(SourceType.MBVCA);
+	 		    else if (source.equalsIgnoreCase(SourceType.EVENTFUL.toString()))
+	 		    	e.setSource(SourceType.EVENTFUL);
+	 		    else if (source.equalsIgnoreCase(SourceType.FACEBOOK.toString()))
+	 		    	e.setSource(SourceType.FACEBOOK);
+	    		 
+	    		 events.add(e);		
+		}		
+	}
+    return events;
+	}
+	
+	
+	
 
 	
 	
@@ -342,13 +366,55 @@ public class MbGuideDB {
 		int iDesc = c.getColumnIndex(PLACE_DESCRIPTION);
 		int iWebs = c.getColumnIndex(PLACE_WEBSITE);
 		int iSourc = c.getColumnIndex(PLACE_SOURCE_TYPE);
+		
 
 		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
 			places.add(c.getString(iId)+ "..."+c.getString(iName)+ "..." +c.getString(iAdd)+ "..." +c.getString(iLat)+ "..." +c.getString(iLon)
 					+ "..." +c.getString(iDesc)+ "..." +c.getString(iWebs)+ "..." +c.getString(iSourc));
 		}
 		return places;
-	}
+	}     //"name", "address", "distance"
+	
+	public ArrayList<Place> getPlaceList() throws SQLException {
+		String[] columns = new String[] {PLACE_ID, PLACE_NAME, PLACE_ADDRESS, PLACE_LATITUDE, PLACE_LONGITUDE,
+											PLACE_DESCRIPTION, PLACE_WEBSITE, PLACE_SOURCE_TYPE};
+		Cursor c = mbDatabase.query(PLACE_TABLE_NAME, columns, null, null,
+				null, null, null);
+		ArrayList<Place> places = new ArrayList<Place>();
+		
+		int iId = c.getColumnIndex(PLACE_ID);
+		int iName = c.getColumnIndex(PLACE_NAME);
+	//	int iAdd = c.getColumnIndex(PLACE_ADDRESS);
+		int iLat = c.getColumnIndex(PLACE_LATITUDE);
+		int iLon = c.getColumnIndex(PLACE_LONGITUDE);
+		int iDesc = c.getColumnIndex(PLACE_DESCRIPTION);
+		//int iWebs = c.getColumnIndex(PLACE_WEBSITE);
+		int iSourc = c.getColumnIndex(PLACE_SOURCE_TYPE);
+		
+
+		for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+			
+			Place p = new Place();
+			p.setId(c.getString(iId));
+			p.setName(c.getString(iName));
+		    p.setLocation( new Location(String.valueOf(iLat), String.valueOf(iLon)));
+		    p.setDescription(c.getString(iDesc));
+		    
+		    String source = c.getString(iSourc);
+		    if(source.equalsIgnoreCase(SourceType.GOOGLE_PLACE.toString()))
+		    	p.setSource(SourceType.GOOGLE_PLACE);
+		    else if (source.equalsIgnoreCase(SourceType.MBVCA.toString()))
+		    	p.setSource(SourceType.MBVCA);
+		    else if (source.equalsIgnoreCase(SourceType.EVENTFUL.toString()))
+		    	p.setSource(SourceType.EVENTFUL);
+		    else if (source.equalsIgnoreCase(SourceType.FACEBOOK.toString()))
+		    	p.setSource(SourceType.FACEBOOK);
+		    
+		    places.add(p);	    
+		    
+		}
+		return places;
+	}     //"name", "address", "distance"
 
 	// this version will delete the all places physically from the dataase
 	public int deleteAllPlaces() throws SQLException
@@ -367,15 +433,21 @@ public class MbGuideDB {
 	 * Private class to create and work database
 	 */
 	private static class MbGuideHelper extends SQLiteOpenHelper {
+		
+	
 
 		private static final String createEventTableQuery = "CREATE TABLE "
-				+ EVENT_TABLE_NAME + " ( " +
-
-				EVENT_NAME + " TEXT PRIMARY KEY, " + EVENT_CALENDAR_ID
-				+ " INTEGER NOT NULL, " + EVENT_LOCATION + " TEXT NOT NULL, "
-				+ EVENT_CATEGORY_ID + " INTEGER, " + EVENT_CATEGORY_DESCRIPTION
-				+ " TEXT, " + EVENT_TIME_STARTS + " INTEGER NOT NULL, "
-				+ EVENT_TIME_ENDS + " INTEGER NOT NULL, "				
+				+ EVENT_TABLE_NAME + " ( " 
+				
+				+ EVENT_NAME + " TEXT PRIMARY KEY, "
+				+ EVENT_CALENDAR_ID	+ " INTEGER NOT NULL, " 
+				+ EVENT_ID + " TEXT,  "
+				+ EVENT_DESCRIPTION + " TEXT, "
+				+ EVENT_LATITUDE + " TEXT, "
+				+ EVENT_LONGITUDE + " TEXT, "		
+				+ EVENT_TIME_STARTS + " TEXT NOT NULL, "
+				+ EVENT_TIME_ENDS + " TEXT NOT NULL, "	
+				+ EVENT_SOURCE + " TEXT, "
 				+ EVENT_IS_EXPIRED_FLAG + " INTEGER DEFAULT (0), "
 				+ EVENT_PLACE_ID + " TEXT );";
 
@@ -481,5 +553,7 @@ public class MbGuideDB {
 		String radius = "";
 		return radius;
 	}
+
+	
 	
 }
