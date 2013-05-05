@@ -11,26 +11,21 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.FacebookActivity;
 import com.facebook.Session;
 import com.facebook.SessionState;
-import com.facebook.android.DialogError;
-import com.facebook.android.Facebook;
-import com.facebook.android.Facebook.DialogListener;
-import com.facebook.android.FacebookError;
+import com.facebook.widget.WebDialog;
+import com.facebook.FacebookException;
 
 import edu.fiu.cs.seniorproject.utils.Logger;
 
 public class FbRequestActivity extends FacebookActivity {
 
-	private Facebook facebook = null;
-	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fb_request);
         
-        facebook = new Facebook(getResources().getString(R.string.fb_app_id));
+        //facebook = new Facebook(getResources().getString(R.string.fb_app_id));
         
         if ( this.getSession() != null ) {
         	this.closeSession();
@@ -61,11 +56,10 @@ public class FbRequestActivity extends FacebookActivity {
         
         List<String> permissions = new ArrayList<String>(1);
         permissions.add("publish_stream");
-        
-        this.openSessionForPublish(getResources().getString(R.string.fb_app_id), permissions );        
+        this.requestPermissions(permissions);
+        //this.openSessionForPublish(getResources().getString(R.string.fb_app_id), permissions );        
     }
 
-    @SuppressWarnings("deprecation")
 	@Override
     protected void onSessionStateChange(SessionState state, Exception exception) {
       // user has either logged in or not ...
@@ -73,8 +67,8 @@ public class FbRequestActivity extends FacebookActivity {
     	  Logger.Debug("session is opened!!!");
     	  // Set the Facebook instance session variables
     	  
-          facebook.setAccessToken(Session.getActiveSession().getAccessToken());
-          facebook.setAccessExpires(Session.getActiveSession().getExpirationDate().getTime());
+          //facebook.setAccessToken(Session.getActiveSession().getAccessToken());
+          //facebook.setAccessExpires(Session.getActiveSession().getExpirationDate().getTime());
       } else {
     	  Logger.Debug("session is closed. exiting!!!");
     	  //this.finish();
@@ -94,8 +88,9 @@ public class FbRequestActivity extends FacebookActivity {
     		this.sendRequestDialog();
     	} else {
     		List<String> permissions = new ArrayList<String>(1);
-            permissions.add("publish_stream");            
-            this.openSessionForPublish(getResources().getString(R.string.fb_app_id), permissions );  
+            permissions.add("publish_stream");
+            this.requestPermissions(permissions);
+            //this.openSessionForPublish(getResources().getString(R.string.fb_app_id), permissions );  
     	}
     }
     
@@ -111,28 +106,31 @@ public class FbRequestActivity extends FacebookActivity {
     		params.putString("message", tv.getText().toString());
     	}
     	
-    	this.facebook.dialog(this, "apprequests", params, new DialogListener() {
-			
-			@Override
-			public void onFacebookError(FacebookError e) {
-				Toast.makeText(FbRequestActivity.this, getResources().getString(R.string.error_posting_request), Toast.LENGTH_SHORT).show();
-			}
-			
-			@Override
-			public void onError(DialogError e) {
-				Toast.makeText(FbRequestActivity.this, getResources().getString(R.string.error_posting_request), Toast.LENGTH_SHORT).show();
-			}
-			
-			@Override
-			public void onComplete(Bundle values) {
-				FbRequestActivity.this.finish();
-			}
-			
-			@Override
-			public void onCancel() {
-				Logger.Debug("User cancel the post");
-			}
-		});
+    	WebDialog requestsDialog = (
+	        new WebDialog.RequestsDialogBuilder(FbRequestActivity.this,
+	            Session.getActiveSession(),
+	            params))
+	            .setOnCompleteListener(new WebDialog.OnCompleteListener() {
+
+	                public void onComplete(Bundle values, FacebookException error) {
+	                    if (error != null) {
+	                        Toast.makeText(FbRequestActivity.this, getResources().getString(R.string.error_posting_request), Toast.LENGTH_SHORT).show();
+	                    } else {
+	                        final String requestId = values.getString("request");
+	                        if (requestId != null) {
+	                        	FbRequestActivity.this.finish();
+	                        } else {
+	                            Toast.makeText(FbRequestActivity.this.getApplicationContext(), 
+	                                "Request cancelled", 
+	                                Toast.LENGTH_SHORT).show();
+	                            Logger.Debug("User cancel the post");
+	                        }
+	                    }   
+	                }
+
+	            })
+	            .build();
+	    requestsDialog.show();    	    
     }
     
 }

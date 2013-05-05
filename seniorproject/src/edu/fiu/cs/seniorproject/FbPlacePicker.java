@@ -3,17 +3,14 @@ package edu.fiu.cs.seniorproject;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facebook.FacebookActivity;
-import com.facebook.GraphPlace;
 import com.facebook.HttpMethod;
-import com.facebook.LoginFragment;
-import com.facebook.PickerFragment.OnDoneButtonClickedListener;
-import com.facebook.PickerFragment.OnSelectionChangedListener;
-import com.facebook.PlacePickerFragment;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.model.GraphPlace;
+import com.facebook.widget.PickerFragment;
+import com.facebook.widget.PlacePickerFragment;
 
 import android.content.Intent;
 import android.content.res.Resources;
@@ -51,18 +48,18 @@ public class FbPlacePicker extends FacebookActivity {
 		  
 		  if ( manager != null ) {
 			  manager.beginTransaction().replace(R.id.picker_fragment, this.placePickerFragment).commit();
-		  }		
+		  }
 		  
-		  this.placePickerFragment.setOnSelectionChangedListener(new OnSelectionChangedListener() {
+		  this.placePickerFragment.setOnSelectionChangedListener(new PickerFragment.OnSelectionChangedListener() {
 				@Override
-				public void onSelectionChanged() {
+				public void onSelectionChanged(PickerFragment<?> fragment) {
 					updateSelectedPlace();
 				}
 			});
 		  
-		  this.placePickerFragment.setOnDoneButtonClickedListener(new OnDoneButtonClickedListener() {
+		  this.placePickerFragment.setOnDoneButtonClickedListener(new PickerFragment.OnDoneButtonClickedListener() {
 			@Override
-			public void onDoneButtonClicked() {
+			public void onDoneButtonClicked(PickerFragment<?> fragment) {
 				checkIn();
 				Logger.Debug("On done");
 			}
@@ -71,8 +68,8 @@ public class FbPlacePicker extends FacebookActivity {
 	  
         List<String> permissions = new ArrayList<String>(1);
         permissions.add("publish_stream");
-        
-        this.openSessionForPublish(getResources().getString(R.string.fb_app_id), permissions );        
+        this.requestPermissions(permissions);
+        //this.openSessionForPublish(getResources().getString(R.string.fb_app_id), permissions );        
     }
 
     @Override
@@ -114,10 +111,11 @@ public class FbPlacePicker extends FacebookActivity {
     private void onLoadOut() {
     	Session session = this.getSession();
     	if ( session != null && session.isOpened() ) {
-    		FragmentManager manager = this.getSupportFragmentManager();
-    		if ( manager != null ) {
-  			  manager.beginTransaction().replace(R.id.picker_fragment, new LoginFragment() ).commit();
-  		  }    		
+    		session.closeAndClearTokenInformation();
+//    		FragmentManager manager = this.getSupportFragmentManager();
+//    		if ( manager != null ) {
+//  			  manager.beginTransaction().replace(R.id.picker_fragment, new LoginFragment() ).commit();
+//  		  }    		
     	}
     }
     

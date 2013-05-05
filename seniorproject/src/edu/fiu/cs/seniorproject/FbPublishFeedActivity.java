@@ -3,7 +3,6 @@ package edu.fiu.cs.seniorproject;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facebook.FacebookActivity;
 import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.Response;
@@ -56,8 +55,8 @@ public class FbPublishFeedActivity extends FacebookActivity {
         List<String> permissions = new ArrayList<String>(1);
         permissions.add("publish_stream");
         permissions.add("publish_actions");
-        
-        this.openSessionForPublish(getResources().getString(R.string.fb_app_id), permissions );
+        this.requestPermissions(permissions);
+        //this.openSessionForPublish(getResources().getString(R.string.fb_app_id), permissions );
     }
 
     @Override
@@ -79,7 +78,8 @@ public class FbPublishFeedActivity extends FacebookActivity {
     		List<String> permissions = new ArrayList<String>(1);
     		permissions.add("publish_stream");
             permissions.add("publish_actions");      
-            this.openSessionForPublish(getResources().getString(R.string.fb_app_id), permissions );  
+            this.requestPermissions(permissions);
+            //this.openSessionForPublish(getResources().getString(R.string.fb_app_id), permissions );  
     	}
     }
     
